@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DocumentManager" default="web-copy" basedir="." >
+	<property name="src" location="src" />
+	<property name="ext" location="ext"/>
+	<property name="web" location="WebContent"/>
+	<property name="forced" value="forced"/>		
+	<property name="db" location="db"/>
+	<property name="lib" location="${web}/WEB-INF/lib"/>
+	<!-- property name="lib" location="D:/projects/lib"/ -->
+	<property name="servletlib" location="../libs/jetty"/>
+	<property name="classes" location="${web}/WEB-INF/classes"/>
+	<property name="bin" location="${web}/WEB-INF/classes"/>
+		
+	<!--property name="ext-web" location="ext-web"/>
+	<property name="ext-lib" location="${ext-web}/WEB-INF/lib"/-->
+	
+	<property name="jsp" location="${web}/WEB-INF/jsp"/>
+	<property name="jsp-gen" location="jsp-gen"/>
+	<property name="jsp-ext" location="${web}/WEB-INF/jsp-ext"/>
+	
+	<property name="target" location="../TesGenerator/"/>
+	<property name="srcbase" value="src/com/ams/"/>
+	<property name="srcdir" value="src/"/>
+			
+	<property name="deploy" location="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps/${ant.project.name}" />
+	<property name="classesDir" value="WEB-INF/classes"/>
+	<property name="jspDir" value="WEB-INF/jsp"/>
+	
+	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask">
+		<classpath>
+			<fileset dir="${lib}">
+				<include name="*.jar"/>
+				<exclude name="${ant.project.name}.jar"/>
+			</fileset>
+			<fileset dir=".">
+				<include name="log4j.xml"/>
+			</fileset>
+		</classpath>	
+	</taskdef>
+	
+	<path id="compile.class.path">
+		<fileset dir=".">
+			<include name="log4j.xml"/>
+		</fileset>
+		<fileset dir="${lib}">
+			<include name="*.jar"/>
+			<include name="*.zip"/>
+		</fileset>
+		<fileset dir="${servletlib}">
+			<include name="servlet*.jar"/>
+		</fileset>
+	</path>
+
+
+	<target name="init">
+		<mkdir dir="${bin}"/>
+		<mkdir dir="${jsp}"/>
+		<mkdir dir="${jsp-gen}"/>
+		<mkdir dir="${jsp-ext}"/>
+		<mkdir dir="log"/>
+		<mkdir dir="db"/>
+		<mkdir dir="${web}/WEB-INF/db"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${src}/com" failonerror="false"/>
+		<delete dir="${jsp}" failonerror="false"/>
+		<!-- delete dir="${jsp-gen}" failonerror="false" / -->
+		<delete dir="${bin}" failonerror="false"/>
+		<delete file="${web}/WEB-INF/lib/${ant.project.name}.jar" failonerror="false"/>
+	</target>
+	
+	<target name="codegen" depends="init" description="Generate files">
+		<java fork="true" maxmemory="256m" failonerror="true" classpathref="compile.class.path" classname="com.ams.codegen.MvcGenerator">
+			<arg value="all"/>
+			<arg value="${src}"/>			
+			<arg value="${web}"/>
+			<arg value="${forced}"/>
+		</java>
+	</target>
+	
+	<target name="codegen.nojsp" depends="init" description="Generate files">
+		<java fork="true" maxmemory="256m" failonerror="true" classpathref="compile.class.path" classname="com.ams.codegen.MvcGenerator">
+			<arg value="nojsp"/>
+			<arg value="${src}"/>
+			<arg value="${web}"/>
+			<arg value="${forced}"/>
+		</java>
+	</target>
+	<target name="codegen.jsp" depends="init" description="Generate files">
+		<java fork="true" maxmemory="256m" failonerror="true" classpathref="compile.class.path" classname="com.ams.codegen.MvcGenerator">
+			<arg value="jsp"/>
+			<arg value="${src}"/>
+			<arg value="${web}"/>
+			<arg value="${forced}"/>
+		</java>
+	</target>
+	<target name="codegen.form" depends="init" description="Generate files">
+		<java fork="true" maxmemory="256m" failonerror="true" classpathref="compile.class.path" classname="com.ams.codegen.MvcGenerator">
+			<arg value="form"/>
+			<arg value="${src}"/>	
+			<arg value="${web}"/>
+			<arg value="${forced}"/>
+		</java>
+	</target>
+	<target name="codegen.action" depends="init" description="Generate files">
+		<java fork="true" maxmemory="256m" failonerror="true" classpathref="compile.class.path" classname="com.ams.codegen.MvcGenerator">
+			<arg value="action"/>
+			<arg value="${src}"/>
+			<arg value="${web}"/>
+			<arg value="${forced}"/>
+		</java>
+	</target>
+	<target name="codegen.service" depends="init" description="Generate files">
+		<java fork="true" maxmemory="256m" failonerror="true" classpathref="compile.class.path" classname="com.ams.codegen.MvcGenerator">
+			<arg value="service"/>
+			<arg value="${src}"/>
+			<arg value="${web}"/>
+			<arg value="${forced}"/>
+		</java>
+	</target>
+	<target name="codegen.basic" depends="init" description="Generate files">
+		<java fork="true" maxmemory="256m" failonerror="true" classpathref="compile.class.path" classname="com.ams.codegen.MvcGenerator">
+			<arg value="basic"/>
+			<arg value="${src}"/>
+			<arg value="${web}"/>
+			<arg value="${forced}"/>
+		</java>
+	</target>
+	
+	<target name="manual.codegen.tes2" depends="manual.codegen.tes1">
+		<echo message="====== MANUAL CODEGEN TES 2======"/>
+	</target>
+	<target name="manual.codegen.tes1">
+		<echo message="====== MANUAL CODEGEN TES 1======"/>
+	</target>
+	
+	<target name="testing.codegen" depends="codegen,hibernate-java" description="Copy file2 codegen yg masih manual (belom bisa digenerate)">
+		<echo message="====== START ADDING MANUAL JAVA FILE ======"/>
+		<copy todir="D:\eclipse\workspace\TesGenerator\src\com\ams\apps\shared" overwrite="yes">
+			<fileset dir="D:\eclipse\workspace\TesGenerator\manual">
+				<include name="HibernateService.java" />
+				<include name="BaseAction.java" />
+				<include name="ObjectUtils.java" />
+				<include name="MessageSource.java" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="hibernate-java"  depends="init">
+
+		<hibernatetool destdir="${src}">
+			<classpath>
+				<path location="${src}"/>
+			</classpath>
+
+			<configuration configurationfile="${src}/hibernate.cfg.xml" />
+
+			<hbm2java  />
+		</hibernatetool>
+	</target>
+
+
+
+	<target name="hibernate-ddl">
+		<hibernatetool destdir="${db}" >
+			<classpath>
+				<path location="${src}"/>
+			</classpath>
+			<configuration configurationfile="${src}/hibernate.cfg.xml" />
+			<hbm2ddl export="true" drop="false" outputfilename="dbxml.ddl" />
+		</hibernatetool>
+	</target>
+	
+	
+	<target name="compile.check" depends="init">
+		<uptodate property="compile.no" targetfile="${lib}/${ant.project.name}.jar">
+			<srcfiles dir="${src}">
+				<include name="**/*.*"/>
+			</srcfiles>
+		</uptodate>
+	</target>
+
+	<target name="compileonly" >
+		<javac srcdir="${src}" destdir="${bin}">
+			<classpath>
+				<path refid="compile.class.path"/>
+			</classpath>    	
+		</javac>					
+		<jar jarfile="${ant.project.name}.jar" basedir="${bin}"/>		
+		<!-- jar jarfile="${lib}/${ant.project.name}.jar" basedir="${bin}"/ -->		
+	</target>
+	
+	<target name="compile" depends="init,compile.check, hbmcopy" description="Generate files" unless="compile.no">
+		<!-- copy todir="${src}" file="${classes}/MessageResources.properties" overwrite="yes"/>
+		<copy todir="${src}/com/ams/apps/shared" file="PartialList.java" overwrite="yes"/ -->
+		<javac srcdir="${src}" destdir="${bin}" fork="true" memoryinitialsize="256m" memorymaximumsize="512m" deprecation="false">
+			<classpath>
+				<path refid="compile.class.path"/>
+			</classpath>    	
+		</javac>					
+		<jar jarfile="${ant.project.name}.jar" basedir="${bin}"/>		
+		<!-- jar jarfile="${lib}/${ant.project.name}.jar" basedir="${bin}"/ -->		
+	</target>
+	
+
+	<!-- target name="hbm.check" >
+		<uptodate property="hbm.no" targetfile="${lib}/${ant.project.name}.jar">
+			<srcfiles dir="${src}/hbm">
+				<include name="**/*.*"/>
+			</srcfiles>
+			<srcfiles file="${src}/hibernate.cfg.xml" />
+		</uptodate>
+		depends="hbm.check" unless="hbm.no" >
+	</target -->
+	<target name="hbmcopy"  >
+		<copy todir="${bin}/hbm" overwrite="yes">
+			<fileset dir="${src}/hbm">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${web}/WEB-INF/classes" overwrite="yes"> 
+			<fileset dir="${src}">
+				<include name="*.properties" />
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="src-copy"  >
+		<copy todir="${src}" overwrite="yes">
+			<fileset dir="${ext}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- target name="web.check" >
+		<uptodate property="web.no" targetfile="${lib}/${ant.project.name}.jar">
+			<srcfiles dir="${ext-jsp}">
+				<include name="**/*.*"/>
+			</srcfiles>
+		</uptodate>
+		depends="web.check" unless="web.no"
+	</target -->
+		
+	<target name="web-copy" depends="init" >
+		<copy todir="${jsp}" overwrite="no">
+			<fileset dir="${jsp-gen}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${jsp}" overwrite="yes">
+			<fileset dir="${jsp-ext}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="web-clean" depends="init" >
+		<delete dir="${jsp}"/>
+		<mkdir dir="${jsp}"/>
+		<copy todir="${jsp}" overwrite="no">
+			<fileset dir="${jsp-gen}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy> 
+		<copy todir="${jsp}" overwrite="yes">
+			<fileset dir="${jsp-ext}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+		
+	
+	<target name="web" depends="init,compile,web-copy" description="Generate files">
+	</target>
+	
+	<target name="total.nojsp" depends="init,hibernate-java,codegen.nojsp,compile,web-copy" description="Generate files from ">
+	</target>
+	
+	<target name="total" depends="init,hibernate-java,codegen,compile,web-copy" description="Generate files">
+	</target>
+
+	<target name="regen" depends="init,hibernate-java,codegen,compile,web-copy" description="Generate files">
+	</target>
+	<target name="regen-clean" depends="clean,init,hibernate-java,codegen,compile,web-copy" description="Generate files">
+	</target>
+	
+	<target name="deploy" depends="init,compile,web-copy">
+		<copy todir="${deploy}" overwrite="yes">
+			<fileset dir="${web}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${deploy}/${classesDir}" overwrite="yes">
+			<fileset dir="${classes}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="deploy-web" depends="init,web-copy">
+		<copy todir="${deploy}/${jsp}" overwrite="yes">
+			<fileset dir="${jsp-gen}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="deployAll" depends="deploySource,deployWeb" />	
+	<target name="deployAllClean" depends="deployCleanSource,deployWeb" />	
+	<target name="deployWeb" >
+		<copy todir="${target}/jsp-gen" overwrite="yes">
+			<fileset dir="${jsp}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="deploySource" >
+		<copy todir="${target}/${srcbase}/action/base" overwrite="yes">
+			<fileset dir="${srcbase}/action/base">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/model" overwrite="yes">
+			<fileset dir="${srcbase}/model">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/service/base" overwrite="yes">
+			<fileset dir="${srcbase}/service/base">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${target}/${srcbase}/action" overwrite="no">
+			<fileset dir="${srcbase}/action">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/form" overwrite="no">
+			<fileset dir="${srcbase}/form">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/admin" overwrite="no">
+			<fileset dir="${srcbase}/admin">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/service" overwrite="no">
+			<fileset dir="${srcbase}/service">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="deployCleanSource" >
+		<copy todir="${target}/${srcbase}/action/base" overwrite="yes">
+			<fileset dir="${srcbase}/action/base">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/model" overwrite="yes">
+			<fileset dir="${srcbase}/model">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/service/base" overwrite="yes">
+			<fileset dir="${srcbase}/service/base">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${target}/${srcbase}/action" overwrite="yes">
+			<fileset dir="${srcbase}/action">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/form" overwrite="yes">
+			<fileset dir="${srcbase}/form">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/admin" overwrite="yes">
+			<fileset dir="${srcbase}/admin">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${srcbase}/service" overwrite="no">
+			<fileset dir="${srcbase}/service">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="deployHBM" >
+		<copy todir="${target}/${srcdir}/hbm" overwrite="yes">
+			<fileset dir="${srcdir}/hbm">
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="deployProperties" >
+		<copy todir="${target}/${srcdir}" overwrite="yes">
+			<fileset dir="${srcdir}">
+				<include name="*.properties" />
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+	</target>
+</project>
