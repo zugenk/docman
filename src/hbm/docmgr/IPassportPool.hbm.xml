@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="IPassportPool"
+		table="ipassport_pool"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="ipassport"
+			column="ipassport"
+			type="string"
+			not-null="true"
+			length="70"
+		/>
+
+		<property
+			name="loginId"
+			column="login_id"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+
+		<property
+			name="lastLogin"
+			column="last_login"
+			type="java.util.Date"
+			not-null="false"
+		/>
+
+		<property
+			name="lastActive"
+			column="last_active"
+			type="java.util.Date"
+			not-null="false"
+		/>
+	</class>
+</hibernate-mapping>

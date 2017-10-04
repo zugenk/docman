@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="AuditTrail"
+		table="audit_trail" lazy="false"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="auditTime"
+			column="audit_time"
+			type="java.util.Date"
+			not-null="true"
+		/>
+		<property
+			name="entity"
+			column="entity"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="doneBy"
+			column="done_by"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="sessionId"
+			column="session_id"
+			type="string"
+			not-null="true"
+			length="50"
+		/>
+		<property
+			name="approvedBy"
+			column="approved_by"
+			type="string"
+			not-null="false"
+			length="30"
+		/>
+		<property
+			name="actions"
+			column="actions"
+			type="string"
+			not-null="true"
+			length="255"
+		/>
+		<property
+			name="description"
+			column="description"
+			type="string"
+			not-null="false"
+			length="255"
+		/>
+
+
+	</class>
+</hibernate-mapping>

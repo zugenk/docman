@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="Notification"
+		table="notification"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+		<many-to-one
+			name="notificationType"
+			column="notification_type"
+			class="com.app.docmgr.model.Lookup"
+			not-null="true"
+		>
+		</many-to-one>
+		<many-to-one
+			name="postMessage"
+			column="post_message"
+			class="com.app.docmgr.model.Message"
+			not-null="true"
+		>
+		</many-to-one>
+		<many-to-one
+			name="subscriber"
+			column="subscriber"
+			class="com.app.docmgr.model.User"
+			not-null="true"
+		>
+		</many-to-one>
+
+		<property
+			name="flag"
+			column="flag"
+			type="string"
+			not-null="false"
+			length="10"
+		/>
+
+	</class>
+</hibernate-mapping>

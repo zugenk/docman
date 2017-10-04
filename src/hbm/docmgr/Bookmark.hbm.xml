@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="Bookmark"
+		table="bookmark"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+		<property
+			name="url"
+			column="url"
+			type="string"
+			not-null="true"
+			length="255"
+		/>
+		<property
+			name="name"
+			column="name"
+			type="string"
+			not-null="true"
+			length="100"
+		/>
+		<property
+			name="note"
+			column="note"
+			type="string"
+			not-null="true"
+			length="255"
+		/>
+		<many-to-one
+			name="bookmarkType"
+			column="message_type"
+			class="com.app.docmgr.model.Lookup"
+			not-null="true"
+		>
+		</many-to-one>
+
+		<property
+			name="createdDate"
+			column="created_date"
+			type="java.util.Date"
+			not-null="true"
+		/>
+		<property
+			name="createdBy"
+			column="created_by"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
+
+		<many-to-one
+			name="owner"
+			column="owner"
+			class="com.app.docmgr.model.User"
+			not-null="false"
+		>
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

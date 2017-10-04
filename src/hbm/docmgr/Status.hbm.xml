@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="Status"
+		table="status"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="type"
+			column="type"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="code"
+			column="code"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="state"
+			column="state"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="name"
+			column="name"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="description"
+			column="description"
+			type="string"
+			not-null="false"
+			length="100"
+		/>
+
+
+	</class>
+</hibernate-mapping>

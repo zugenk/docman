@@ -1,0 +1,159 @@
+<ModuleConfiguration>
+		<packageConfig
+		template="classic"
+		modelPkgName="model"
+		actionPkgName="action"
+		formPkgName="form"
+		servicePkgName="service"
+		daoPkgName="dao"
+		sharedPackage="com.app.shared"
+		basicPackage="com.app.basic"
+		connectionPackage="com.app.connection"
+		projectName="Document Manager"
+		projectVersion="1.0.0"
+		author="Martin"
+		vendor="Digibox"
+		generator="WebCode Generator 1.5"
+		jspRootPath="/WEB-INF/jsp"
+		DAOClass="Service"
+		emailBase="Document Manager"
+		emailDomain="digital.com"
+		validationMethod="formdef"
+		datePattern="dd/MM/yy"
+		entityIdClass="Long"
+		appUserClass="User"
+		privilegeClass="Privilege"
+		lookupClass="Lookup"
+		lookupType="type"
+		statusClass="Status"
+		statusType="type"
+		statusProperty="status"
+		nameProperty="name"
+		codeProperty="code"
+		typeProperty="type"
+		descriptionProperty="description"
+		createdDateProperty="createdDate"
+		createdByProperty="createdBy"
+		lastUpdatedDateProperty="lastUpdatedDate"
+		lastUpdatedByProperty="lastUpdatedBy"
+		defaultWebTemplate="default"
+		codeTemplate="default"
+		hiddenList="status:createdDate:createdBy:lastUpdatedDate:lastUpdatedBy"
+	/>
+
+	<queries>
+		<query  name="user_privilegeList" param="userId">
+			SELECT DISTINCT(p.name) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE ur.user_id={0}
+		</query>
+
+		<query  name="user_hasPrivilege" param="privilegeName,userId">
+			SELECT count(p.id) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE p.name='{0}' and ur.user_id={1}
+		</query>
+	</queries>
+	
+	
+	<statusList>
+		<status name="New" code="new" state="active" action="create" description="New " />
+		<status name="Submitted" code="submitted" state="active" action="submit" description="Submitted "  />
+		<status name="Approved" code="approved" state="active" action="approve" description="Approved "  />
+		<status name="Rejected" code="rejected" state="active" action="reject" description="Rejected "  />
+		<status name="Pending" code="pending" state="active" action="pending" description="Pending "  />
+		<status name="Processed" code="processed" state="active" action="process" description="Processed "  />
+
+		<status name="Deleted" code="deleted" state="inactive" action="delete" description="Deleted " />
+		<status name="Closed" code="closed" state="inactive" action="close" description="Closed "  />
+		<status name="Removed" code="removed" state="inactive" action="remove" description="Removed "  />
+		<status name="Cancelled" code="cancelled" state="inactive" action="cancel" description="Cancelled" />
+	</statusList>
+	<action
+		default="create:edit:delete:approve:reject:pending:process:close:cancel"
+		mandatory="list:detail"
+		optional="submit:remove"
+	/>
+	<hbm>
+		<mapping resource="hbm/docmgr/AuditTrail.hbm.xml" />
+		<mapping resource="hbm/docmgr/EmailLog.hbm.xml" />
+		<mapping resource="hbm/docmgr/Folder.hbm.xml" />
+		<mapping resource="hbm/docmgr/Forum.hbm.xml" />
+		<mapping resource="hbm/docmgr/Bookmark.hbm.xml" />
+		<mapping resource="hbm/docmgr/Document.hbm.xml" />
+		<mapping resource="hbm/docmgr/DocumentHistory.hbm.xml" />
+		<mapping resource="hbm/docmgr/Topic.hbm.xml" />
+		<mapping resource="hbm/docmgr/Message.hbm.xml" />
+		<mapping resource="hbm/docmgr/Notification.hbm.xml" />  
+		<mapping resource="hbm/docmgr/GenericReport.hbm.xml" />
+		<mapping resource="hbm/docmgr/IPassportPool.hbm.xml" />
+		<mapping resource="hbm/docmgr/LoginHistory.hbm.xml" />
+		<mapping resource="hbm/docmgr/Lookup.hbm.xml" />
+		<mapping resource="hbm/docmgr/Organization.hbm.xml" />
+		<mapping resource="hbm/docmgr/Privilege.hbm.xml" />
+		<mapping resource="hbm/docmgr/Role.hbm.xml" />
+		<mapping resource="hbm/docmgr/Status.hbm.xml" />
+		<mapping resource="hbm/docmgr/SystemParameter.hbm.xml" />
+		<mapping resource="hbm/docmgr/SystemParameterHistory.hbm.xml" />
+		<mapping resource="hbm/docmgr/SystemSequence.hbm.xml" />
+		<mapping resource="hbm/docmgr/User.hbm.xml" />
+		<mapping resource="hbm/docmgr/UserHistory.hbm.xml" />
+
+
+	</hbm>
+	<web>
+		<segment name="public" secured="yes" privilegeBase="" privilegeCache="yes">
+			<mapping resource="hbm/docmgr/AuditTrail.hbm.xml" />
+			<mapping resource="hbm/docmgr/EmailLog.hbm.xml" />
+			<mapping resource="hbm/docmgr/Folder.hbm.xml" />
+			<mapping resource="hbm/docmgr/Forum.hbm.xml" />
+			<mapping resource="hbm/docmgr/Bookmark.hbm.xml" />
+			<mapping resource="hbm/docmgr/Document.hbm.xml" />
+			<mapping resource="hbm/docmgr/DocumentHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/Topic.hbm.xml" />
+			<mapping resource="hbm/docmgr/Message.hbm.xml" />
+			<mapping resource="hbm/docmgr/Notification.hbm.xml" />  
+			<mapping resource="hbm/docmgr/GenericReport.hbm.xml" />
+			<mapping resource="hbm/docmgr/IPassportPool.hbm.xml" />
+			<mapping resource="hbm/docmgr/LoginHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/Lookup.hbm.xml" />
+			<mapping resource="hbm/docmgr/Organization.hbm.xml" />
+			<mapping resource="hbm/docmgr/Privilege.hbm.xml" />
+			<mapping resource="hbm/docmgr/Role.hbm.xml" />
+			<mapping resource="hbm/docmgr/Status.hbm.xml" />
+			<mapping resource="hbm/docmgr/SystemParameter.hbm.xml" />
+			<mapping resource="hbm/docmgr/SystemParameterHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/SystemSequence.hbm.xml" />
+			<mapping resource="hbm/docmgr/User.hbm.xml" />
+			<mapping resource="hbm/docmgr/UserHistory.hbm.xml" />
+
+		</segment>
+		<segment name="admin" secured="yes" privilegeBase="ADMIN" privilegeCache="no">
+			<mapping resource="hbm/docmgr/AuditTrail.hbm.xml" />
+			<mapping resource="hbm/docmgr/EmailLog.hbm.xml" />
+			<mapping resource="hbm/docmgr/Folder.hbm.xml" />
+			<mapping resource="hbm/docmgr/Forum.hbm.xml" />
+			<mapping resource="hbm/docmgr/Bookmark.hbm.xml" />
+			<mapping resource="hbm/docmgr/Document.hbm.xml" />
+			<mapping resource="hbm/docmgr/DocumentHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/Topic.hbm.xml" />
+			<mapping resource="hbm/docmgr/Message.hbm.xml" />
+			<mapping resource="hbm/docmgr/Notification.hbm.xml" />  
+			<mapping resource="hbm/docmgr/GenericReport.hbm.xml" />
+			<mapping resource="hbm/docmgr/IPassportPool.hbm.xml" />
+			<mapping resource="hbm/docmgr/LoginHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/Lookup.hbm.xml" />
+			<mapping resource="hbm/docmgr/Organization.hbm.xml" />
+			<mapping resource="hbm/docmgr/Privilege.hbm.xml" />
+			<mapping resource="hbm/docmgr/Role.hbm.xml" />
+			<mapping resource="hbm/docmgr/Status.hbm.xml" />
+			<mapping resource="hbm/docmgr/SystemParameter.hbm.xml" />
+			<mapping resource="hbm/docmgr/SystemParameterHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/SystemSequence.hbm.xml" />
+			<mapping resource="hbm/docmgr/User.hbm.xml" />
+			<mapping resource="hbm/docmgr/UserHistory.hbm.xml" />
+
+		</segment>
+	</web>
+	<MessageResources>
+		<message-resources parameter="MessageResources" />
+		<message-resources parameter="AdditionalResources" key="additional"/>
+	</MessageResources>
+
+</ModuleConfiguration>

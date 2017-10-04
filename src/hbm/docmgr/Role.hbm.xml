@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="Role"
+		table="role"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+		<property
+			name="name"
+			column="name"
+			type="string"
+			not-null="true"
+			length="50"
+		/>
+		<many-to-one
+			name="userLevel"
+			column="user_level"
+			class="com.app.docmgr.model.Lookup"
+			not-null="true"
+		>
+		</many-to-one>
+
+		<property
+			name="description"
+			column="description"
+			type="string"
+			not-null="false"
+			length="100"
+		/>
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
+		<property
+			name="createdDate"
+			column="created_date"
+			type="java.util.Date"
+			not-null="true"
+		/>
+		<property
+			name="createdBy"
+			column="created_by"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="lastUpdatedDate"
+			column="last_updated_date"
+			type="java.util.Date"
+			not-null="true"
+		/>
+		<property
+			name="lastUpdatedBy"
+			column="last_updated_by"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+
+		<set
+			name="privileges"
+			table="role_privilege"
+			cascade="all-delete-orphan"
+		>
+
+		<key column="role_id"/>
+			<many-to-many column="privilege_id" class="com.app.docmgr.model.Privilege"/>
+		</set>
+
+	</class>
+</hibernate-mapping>

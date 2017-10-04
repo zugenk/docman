@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<!--
+/**
+ * @author Martin - Digibox - WebCode Generator 1.5
+ * @project Document Manager
+ * @version 1.0.0
+ * @createDate 03-10-2017 20:59:59
+ */
+ -->
+<struts-config>
+
+  	<form-beans>
+    	<form-bean name="auditTrailForm" type="com.app.docmgr.form.AuditTrailForm" />
+    	<form-bean name="emailLogForm" type="com.app.docmgr.form.EmailLogForm" />
+    	<form-bean name="folderForm" type="com.app.docmgr.form.FolderForm" />
+    	<form-bean name="forumForm" type="com.app.docmgr.form.ForumForm" />
+    	<form-bean name="bookmarkForm" type="com.app.docmgr.form.BookmarkForm" />
+    	<form-bean name="documentForm" type="com.app.docmgr.form.DocumentForm" />
+    	<form-bean name="documentHistoryForm" type="com.app.docmgr.form.DocumentHistoryForm" />
+    	<form-bean name="topicForm" type="com.app.docmgr.form.TopicForm" />
+    	<form-bean name="messageForm" type="com.app.docmgr.form.MessageForm" />
+    	<form-bean name="notificationForm" type="com.app.docmgr.form.NotificationForm" />
+    	<form-bean name="genericReportForm" type="com.app.docmgr.form.GenericReportForm" />
+    	<form-bean name="iPassportPoolForm" type="com.app.docmgr.form.IPassportPoolForm" />
+    	<form-bean name="loginHistoryForm" type="com.app.docmgr.form.LoginHistoryForm" />
+    	<form-bean name="lookupForm" type="com.app.docmgr.form.LookupForm" />
+    	<form-bean name="organizationForm" type="com.app.docmgr.form.OrganizationForm" />
+    	<form-bean name="privilegeForm" type="com.app.docmgr.form.PrivilegeForm" />
+    	<form-bean name="roleForm" type="com.app.docmgr.form.RoleForm" />
+    	<form-bean name="statusForm" type="com.app.docmgr.form.StatusForm" />
+    	<form-bean name="systemParameterForm" type="com.app.docmgr.form.SystemParameterForm" />
+    	<form-bean name="systemParameterHistoryForm" type="com.app.docmgr.form.SystemParameterHistoryForm" />
+    	<form-bean name="systemSequenceForm" type="com.app.docmgr.form.SystemSequenceForm" />
+    	<form-bean name="userForm" type="com.app.docmgr.form.UserForm" />
+    	<form-bean name="userHistoryForm" type="com.app.docmgr.form.UserHistoryForm" />
+  	</form-beans>
+
+	<global-forwards>
+		<forward name="home" path="/index.jsp" />
+    	<forward name="login" path="/login.jsp" />
+        <forward name="logout" path="/logout.jsp" />
+        <forward name="error" path="/WEB-INF/jsp/common/error.jsp"  contextRelative="true"/>
+    	<forward name="not_authorized" path="/WEB-INF/jsp/common/notAuthorized.jsp"  contextRelative="true"/>
+		<forward name="not_allowed" path="/WEB-INF/jsp/common/notAllowed.jsp"  contextRelative="true"/>
+    </global-forwards>
+	
+	<action-mappings>
+		<action path="/login" type="com.app.basic.LoginAction" name="loginForm" input="login.jsp"  scope="request" >
+    		<forward name="success" path="/index.jsp" />
+    		<forward name="failure" path="/login.jsp" />
+        </action>
+        <action path="/logout" type="com.app.basic.LoginAction">
+    		<forward name="success" path="/login.jsp" />
+    		<forward name="failure" path="/index.jsp" />
+        </action>
+            <action  path="/locale" type="com.app.basic.LocaleAction" name="localeForm" input="/WEB-INF/jsp//common/locale.jsp" scope="request">
+       		<forward name="success" path="/index.jsp"/>
+    	</action>
+
+		<action path="/auditTrail" name="auditTrailForm" scope="request" input="/WEB-INF/jsp/auditTrail/auditTrail_create.jsp" type="com.app.docmgr.action.AuditTrailAction">
+    		<forward name="list_redirect" path="/auditTrail.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/auditTrail/auditTrail_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/auditTrail/auditTrail_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/auditTrail/auditTrail_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/auditTrail/auditTrail_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/auditTrail/auditTrail_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/auditTrail/auditTrail_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/emailLog" name="emailLogForm" scope="request" input="/WEB-INF/jsp/emailLog/emailLog_create.jsp" type="com.app.docmgr.action.EmailLogAction">
+    		<forward name="list_redirect" path="/emailLog.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/emailLog/emailLog_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/emailLog/emailLog_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/emailLog/emailLog_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/emailLog/emailLog_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/emailLog/emailLog_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/emailLog/emailLog_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/emailLog/emailLog_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/emailLog/emailLog_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/emailLog/emailLog_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/emailLog/emailLog_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/emailLog/emailLog_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/emailLog/emailLog_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/emailLog/emailLog_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/emailLog/emailLog_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/emailLog/emailLog_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/emailLog/emailLog_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/emailLog/emailLog_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/folder" name="folderForm" scope="request" input="/WEB-INF/jsp/folder/folder_create.jsp" type="com.app.docmgr.action.FolderAction">
+    		<forward name="list_redirect" path="/folder.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/folder/folder_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/folder/folder_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/folder/folder_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/folder/folder_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/folder/folder_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/folder/folder_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/folder/folder_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/folder/folder_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/folder/folder_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/folder/folder_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/folder/folder_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/folder/folder_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/folder/folder_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/folder/folder_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/folder/folder_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/folder/folder_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/folder/folder_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/forum" name="forumForm" scope="request" input="/WEB-INF/jsp/forum/forum_create.jsp" type="com.app.docmgr.action.ForumAction">
+    		<forward name="list_redirect" path="/forum.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/forum/forum_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/forum/forum_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/forum/forum_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/forum/forum_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/forum/forum_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/forum/forum_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/forum/forum_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/forum/forum_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/forum/forum_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/forum/forum_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/forum/forum_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/forum/forum_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/forum/forum_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/forum/forum_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/forum/forum_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/forum/forum_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/forum/forum_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/bookmark" name="bookmarkForm" scope="request" input="/WEB-INF/jsp/bookmark/bookmark_create.jsp" type="com.app.docmgr.action.BookmarkAction">
+    		<forward name="list_redirect" path="/bookmark.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/bookmark/bookmark_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/bookmark/bookmark_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/bookmark/bookmark_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/bookmark/bookmark_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/bookmark/bookmark_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/bookmark/bookmark_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/bookmark/bookmark_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/bookmark/bookmark_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/bookmark/bookmark_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/bookmark/bookmark_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/bookmark/bookmark_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/bookmark/bookmark_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/bookmark/bookmark_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/bookmark/bookmark_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/bookmark/bookmark_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/bookmark/bookmark_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/bookmark/bookmark_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/document" name="documentForm" scope="request" input="/WEB-INF/jsp/document/document_create.jsp" type="com.app.docmgr.action.DocumentAction">
+    		<forward name="list_redirect" path="/document.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/document/document_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/document/document_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/document/document_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/document/document_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/document/document_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/document/document_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/document/document_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/document/document_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/document/document_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/document/document_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/document/document_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/document/document_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/document/document_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/document/document_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/document/document_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/document/document_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/document/document_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/documentHistory" name="documentHistoryForm" scope="request" input="/WEB-INF/jsp/documentHistory/documentHistory_create.jsp" type="com.app.docmgr.action.DocumentHistoryAction">
+    		<forward name="list_redirect" path="/documentHistory.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/documentHistory/documentHistory_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/documentHistory/documentHistory_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/documentHistory/documentHistory_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/documentHistory/documentHistory_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/documentHistory/documentHistory_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/documentHistory/documentHistory_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/topic" name="topicForm" scope="request" input="/WEB-INF/jsp/topic/topic_create.jsp" type="com.app.docmgr.action.TopicAction">
+    		<forward name="list_redirect" path="/topic.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/topic/topic_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/topic/topic_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/topic/topic_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/topic/topic_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/topic/topic_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/topic/topic_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/topic/topic_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/topic/topic_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/topic/topic_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/topic/topic_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/topic/topic_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/topic/topic_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/topic/topic_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/topic/topic_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/topic/topic_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/topic/topic_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/topic/topic_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/message" name="messageForm" scope="request" input="/WEB-INF/jsp/message/message_create.jsp" type="com.app.docmgr.action.MessageAction">
+    		<forward name="list_redirect" path="/message.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/message/message_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/message/message_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/message/message_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/message/message_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/message/message_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/message/message_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/message/message_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/message/message_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/message/message_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/message/message_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/message/message_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/message/message_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/message/message_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/message/message_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/message/message_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/message/message_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/message/message_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/notification" name="notificationForm" scope="request" input="/WEB-INF/jsp/notification/notification_create.jsp" type="com.app.docmgr.action.NotificationAction">
+    		<forward name="list_redirect" path="/notification.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/notification/notification_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/notification/notification_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/notification/notification_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/notification/notification_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/notification/notification_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/notification/notification_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/notification/notification_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/notification/notification_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/notification/notification_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/notification/notification_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/notification/notification_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/notification/notification_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/notification/notification_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/notification/notification_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/notification/notification_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/notification/notification_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/notification/notification_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/genericReport" name="genericReportForm" scope="request" input="/WEB-INF/jsp/genericReport/genericReport_create.jsp" type="com.app.docmgr.action.GenericReportAction">
+    		<forward name="list_redirect" path="/genericReport.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/genericReport/genericReport_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/genericReport/genericReport_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/genericReport/genericReport_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/genericReport/genericReport_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/genericReport/genericReport_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/genericReport/genericReport_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/genericReport/genericReport_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/genericReport/genericReport_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/genericReport/genericReport_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/genericReport/genericReport_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/genericReport/genericReport_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/genericReport/genericReport_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/genericReport/genericReport_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/genericReport/genericReport_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/genericReport/genericReport_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/genericReport/genericReport_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/genericReport/genericReport_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/iPassportPool" name="iPassportPoolForm" scope="request" input="/WEB-INF/jsp/iPassportPool/iPassportPool_create.jsp" type="com.app.docmgr.action.IPassportPoolAction">
+    		<forward name="list_redirect" path="/iPassportPool.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/iPassportPool/iPassportPool_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/iPassportPool/iPassportPool_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/iPassportPool/iPassportPool_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/iPassportPool/iPassportPool_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/iPassportPool/iPassportPool_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/iPassportPool/iPassportPool_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/loginHistory" name="loginHistoryForm" scope="request" input="/WEB-INF/jsp/loginHistory/loginHistory_create.jsp" type="com.app.docmgr.action.LoginHistoryAction">
+    		<forward name="list_redirect" path="/loginHistory.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/loginHistory/loginHistory_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/loginHistory/loginHistory_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/loginHistory/loginHistory_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/loginHistory/loginHistory_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/loginHistory/loginHistory_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/loginHistory/loginHistory_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/lookup" name="lookupForm" scope="request" input="/WEB-INF/jsp/lookup/lookup_create.jsp" type="com.app.docmgr.action.LookupAction">
+    		<forward name="list_redirect" path="/lookup.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/lookup/lookup_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/lookup/lookup_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/lookup/lookup_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/lookup/lookup_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/lookup/lookup_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/lookup/lookup_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/lookup/lookup_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/lookup/lookup_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/lookup/lookup_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/lookup/lookup_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/lookup/lookup_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/lookup/lookup_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/lookup/lookup_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/lookup/lookup_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/lookup/lookup_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/lookup/lookup_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/lookup/lookup_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/organization" name="organizationForm" scope="request" input="/WEB-INF/jsp/organization/organization_create.jsp" type="com.app.docmgr.action.OrganizationAction">
+    		<forward name="list_redirect" path="/organization.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/organization/organization_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/organization/organization_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/organization/organization_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/organization/organization_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/organization/organization_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/organization/organization_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/organization/organization_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/organization/organization_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/organization/organization_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/organization/organization_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/organization/organization_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/organization/organization_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/organization/organization_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/organization/organization_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/organization/organization_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/organization/organization_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/organization/organization_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/privilege" name="privilegeForm" scope="request" input="/WEB-INF/jsp/privilege/privilege_create.jsp" type="com.app.docmgr.action.PrivilegeAction">
+    		<forward name="list_redirect" path="/privilege.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/privilege/privilege_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/privilege/privilege_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/privilege/privilege_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/privilege/privilege_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/privilege/privilege_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/privilege/privilege_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/privilege/privilege_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/privilege/privilege_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/privilege/privilege_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/privilege/privilege_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/privilege/privilege_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/privilege/privilege_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/privilege/privilege_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/privilege/privilege_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/privilege/privilege_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/privilege/privilege_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/privilege/privilege_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/role" name="roleForm" scope="request" input="/WEB-INF/jsp/role/role_create.jsp" type="com.app.docmgr.action.RoleAction">
+    		<forward name="list_redirect" path="/role.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/role/role_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/role/role_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/role/role_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/role/role_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/role/role_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/role/role_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/role/role_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/role/role_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/role/role_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/role/role_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/role/role_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/role/role_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/role/role_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/role/role_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/role/role_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/role/role_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/role/role_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/status" name="statusForm" scope="request" input="/WEB-INF/jsp/status/status_create.jsp" type="com.app.docmgr.action.StatusAction">
+    		<forward name="list_redirect" path="/status.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/status/status_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/status/status_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/status/status_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/status/status_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/status/status_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/status/status_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/status/status_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/status/status_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/status/status_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/status/status_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/status/status_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/status/status_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/status/status_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/status/status_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/status/status_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/status/status_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/status/status_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/systemParameter" name="systemParameterForm" scope="request" input="/WEB-INF/jsp/systemParameter/systemParameter_create.jsp" type="com.app.docmgr.action.SystemParameterAction">
+    		<forward name="list_redirect" path="/systemParameter.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/systemParameter/systemParameter_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/systemParameter/systemParameter_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/systemParameter/systemParameter_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/systemParameter/systemParameter_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/systemParameter/systemParameter_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/systemParameter/systemParameter_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/systemParameterHistory" name="systemParameterHistoryForm" scope="request" input="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_create.jsp" type="com.app.docmgr.action.SystemParameterHistoryAction">
+    		<forward name="list_redirect" path="/systemParameterHistory.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/systemSequence" name="systemSequenceForm" scope="request" input="/WEB-INF/jsp/systemSequence/systemSequence_create.jsp" type="com.app.docmgr.action.SystemSequenceAction">
+    		<forward name="list_redirect" path="/systemSequence.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/systemSequence/systemSequence_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/systemSequence/systemSequence_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/systemSequence/systemSequence_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/systemSequence/systemSequence_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/systemSequence/systemSequence_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/systemSequence/systemSequence_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/user" name="userForm" scope="request" input="/WEB-INF/jsp/user/user_create.jsp" type="com.app.docmgr.action.UserAction">
+    		<forward name="list_redirect" path="/user.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/user/user_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/user/user_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/user/user_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/user/user_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/user/user_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/user/user_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/user/user_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/user/user_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/user/user_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/user/user_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/user/user_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/user/user_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/user/user_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/user/user_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/user/user_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/user/user_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/user/user_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/userHistory" name="userHistoryForm" scope="request" input="/WEB-INF/jsp/userHistory/userHistory_create.jsp" type="com.app.docmgr.action.UserHistoryAction">
+    		<forward name="list_redirect" path="/userHistory.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/userHistory/userHistory_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/userHistory/userHistory_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/userHistory/userHistory_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/userHistory/userHistory_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/userHistory/userHistory_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/userHistory/userHistory_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/userHistory/userHistory_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/userHistory/userHistory_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/userHistory/userHistory_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/userHistory/userHistory_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/userHistory/userHistory_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/userHistory/userHistory_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/userHistory/userHistory_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/userHistory/userHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/userHistory/userHistory_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/userHistory/userHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/userHistory/userHistory_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+	</action-mappings>
+
+	<message-resources parameter="MessageResources" />
+	<message-resources key="additional" parameter="AdditionalResources" />
+
+</struts-config>

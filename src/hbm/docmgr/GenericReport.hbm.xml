@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="GenericReport"
+		table="generic_report"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="name"
+			column="name"
+			type="string"
+			not-null="true"
+			length="40"
+		/>
+		<property
+			name="reportFields"
+			column="report_fields"
+			type="string"
+			not-null="false"
+			length="250"
+		/>
+
+		<property
+			name="searchFields"
+			column="search_fields"
+			type="string"
+			not-null="false"
+			length="250"
+		/>
+
+		<property
+			name="reportSql"
+			column="report_sql"
+			type="string"
+			not-null="false"
+			length="300"
+		/>
+
+		<property
+			name="description"
+			column="description"
+			type="string"
+			not-null="false"
+			length="100"
+		/>
+
+		<property
+			name="columnAction"
+			column="column_action"
+			type="string"
+			not-null="false"
+			length="250"
+		/>
+
+
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="CorebankParam"
+		table="corebank_param"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="sequence">
+				<param name="sequence">corebank_param_id_seq</param>
+            </generator>
+		</id>
+		<property
+			name="parameter"
+			column="parameter"
+			type="string"
+			not-null="true"
+			length="50"
+		/>
+		<property
+			name="svalue"
+			column="svalue"
+			type="string"
+			not-null="false"
+			length="1000"
+		/>
+		<property
+			name="description"
+			column="description"
+			type="string"
+			not-null="false"
+			length="250"
+		/>
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
+		<property
+			name="createdDate"
+			column="created_date"
+			type="java.util.Date"
+			not-null="true"
+		/>
+		<property
+			name="createdBy"
+			column="created_by"
+			type="string"
+			not-null="true"
+			length="20"
+		/>
+		<property
+			name="lastUpdatedDate"
+			column="last_updated_date"
+			type="java.util.Date"
+			not-null="false"
+		/>
+		<property
+			name="lastUpdatedBy"
+			column="last_updated_by"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+	</class>	
+</hibernate-mapping>

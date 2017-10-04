@@ -1,0 +1,198 @@
+
+.1 {
+	background-color: #ede9e9; 
+}
+
+.2 {
+	background-color: #fff8f8; 
+}
+
+.all { 
+	FONT-WEIGHT: normal; 
+	font-size:12px; 
+	FONT-FAMILY: Arial, Verdana; 
+	color:#777777;
+}
+
+.allBold { 
+	FONT-WEIGHT: bold; 
+	font-size:12px; 
+	FONT-FAMILY: Arial, Verdana; 
+	color:#777777;
+}
+
+.allBold10 { 
+	FONT-WEIGHT: bold; 
+	font-size:10px; 
+	FONT-FAMILY: Arial, Verdana; 
+	color:#777777;
+}
+
+.allBoldRed { 
+	FONT-WEIGHT: bold; 
+	font-size:11px; 
+	FONT-FAMILY: Arial, Verdana; 
+	color:#c30015;
+}
+
+.allBoldWhite { 
+	FONT-WEIGHT: bold; 
+	font-size:12px; 
+	FONT-FAMILY: Arial, Verdana; 
+	color: white;
+}
+
+.title { 
+	FONT-WEIGHT: bold; 
+	font-size:18px; 
+	FONT-FAMILY: Trebuchet MS, Arial, Verdana; 
+	color:#777777;
+}
+
+.titles { 
+	FONT-WEIGHT: bold; 
+	font-size:14px; 
+	FONT-FAMILY: Trebuchet MS, Arial, Verdana; 
+	color:#777777;
+}
+
+table.header {
+	BORDER: 1px; 
+	border-color:#FFFFFF; 
+	background-color: #ffeeee; 
+	FONT-WEIGHT: bold; font-size:12px; 
+	FONT-FAMILY: Arial, Verdana; 
+	color:#777777;
+}
+
+table.content {
+	BORDER: 1px; 
+	border-color:#FFFFFF; 
+	background-color: #ffeeee; 
+	FONT-WEIGHT: normal; 
+	font-size:12px; 
+	FONT-FAMILY: Arial, Verdana; 
+	color:#777777;
+}
+
+BODY {
+	FONT-SIZE: 12px; 
+	MARGIN: 0px; 
+	COLOR: #333333; 
+	FONT-FAMILY: Arial, Verdana; 
+	BACKGROUND-COLOR: #ffffff
+}
+
+.footerRed {
+	FONT-WEIGHT: bold; COLOR:#c30015; FONT-SIZE: 10px; MARGIN: 0px; FONT-FAMILY: Trebuchet MS,Arial, Helvetica, sans-serif;HEIGHT=15
+}
+
+A.footer {
+	FONT-WEIGHT: bold; COLOR:#c30015; FONT-SIZE: 10px; MARGIN: 0px; FONT-FAMILY: Trebuchet MS,Arial, Helvetica, sans-serif;HEIGHT=15
+}
+A.footer:hover {
+	FONT-WEIGHT: bold; COLOR:#f0051e; FONT-SIZE: 10px; MARGIN: 0px; FONT-FAMILY: Trebuchet MS,Arial, Helvetica, sans-serif;HEIGHT=15
+}
+
+A.news {
+	COLOR: #5d5757; font-weight: normal; TEXT-DECORATION: none;
+}
+A.news:hover {
+	COLOR: #5d5757; font-weight: bold; TEXT-DECORATION: none;
+}
+
+A.detail {
+	COLOR: #b70014; FONT-SIZE: 10px; font-weight: normal; FONT-FAMILY: Arial, Helvetica, sans-serif; TEXT-DECORATION: none;
+}
+A.detail:hover {
+	COLOR: #e84557; FONT-SIZE: 10px; font-weight: normal; FONT-FAMILY: Arial, Helvetica, sans-serif; TEXT-DECORATION: none;
+}
+
+A {
+	COLOR: #ff0000; 
+	TEXT-DECORATION: none
+}
+
+A:hover {
+	COLOR: #c54957; 
+	TEXT-DECORATION: none; 
+	font-weight:bold
+}
+A:active {
+	COLOR: #c25e5e; 
+	TEXT-DECORATION: underline
+}
+
+
+.button {
+	BORDER-RIGHT: #808080 1px solid; 
+	BORDER-TOP: #d5d5d5 1px solid; 
+	FONT-WEIGHT: bold; 
+	BORDER-LEFT: #d5d5d5 1px solid; 
+	COLOR: #333; 
+	BORDER-BOTTOM: #808080 1px solid
+}
+.inputbox {
+	FONT-SIZE: 11px; 
+	Z-INDEX: -3; 
+	BACKGROUND: #e9eff5; 
+	COLOR: blue; 
+	FONT-FAMILY: Arial, Courier, Helvetica, sans-serif
+}
+.text_area {
+	BORDER-RIGHT: #999 1px solid; 
+	BORDER-TOP: #999 1px solid; 
+	FONT-SIZE: 11px; Z-INDEX: -3; 
+	BACKGROUND: #e9eff5; 
+	BORDER-LEFT: #999 1px solid; 
+	COLOR: blue; 
+	BORDER-BOTTOM: #999 1px solid; 
+	FONT-FAMILY: Arial, Courier, Helvetica, sans-serif
+}
+INPUT {
+	FONT-SIZE: 11px; Z-INDEX: -3; COLOR: #9a5252;
+}
+TEXTAREA {
+	FONT-SIZE: 11px; Z-INDEX: -3; COLOR: #333333;
+}
+SELECT {
+	FONT-SIZE: 11px; Z-INDEX: -3; COLOR: #333333;
+}
+
+
+SELECT.options {
+	BORDER-RIGHT: #999999 1px solid; 
+	BORDER-TOP: #999999 1px solid; 
+	FONT-WEIGHT: normal; 
+	FONT-SIZE: 8px; 
+	BORDER-LEFT: #999999 1px solid; 
+	BORDER-BOTTOM: #999999 1px solid
+}
+INPUT.options {
+	BORDER-RIGHT: #999999 1px solid; 
+	BORDER-TOP: #999999 1px solid; 
+	FONT-WEIGHT: normal; 
+	FONT-SIZE: 8px; 
+	BORDER-LEFT: #999999 1px solid; 
+	BORDER-BOTTOM: #999999 1px solid
+}
+
+
+/** add css **/
+
+.result{
+	FONT-WEIGHT: bold; FONT-SIZE: 14px; COLOR: #ff9900; 
+	FONT-FAMILY:  Arial, "Trebuchet MS", Helvetica, sans-serif; TEXT-ALIGN: center;
+	padding-top: 100px;padding-bottom: 100px;
+}
+
+.separator{
+	FONT-WEIGHT: bold; FONT-SIZE: 14px;COLOR: #777777; 
+	FONT-FAMILY:  Arial, "Trebuchet MS", Helvetica, sans-serif;
+	padding-top: 30px;padding-bottom: 10px;
+}
+
+.note{
+	FONT-SIZE: 10px;COLOR: #777777;
+	FONT-FAMILY:  Arial, "Trebuchet MS", Helvetica, sans-serif;
+}

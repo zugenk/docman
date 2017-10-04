@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="Topic"
+		table="topic"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+		<property
+			name="code"
+			column="code"
+			type="string"
+			not-null="true"
+			length="20"
+		/>
+		<property
+			name="icon"
+			column="icon"
+			type="string"
+			not-null="true"
+			length="50"
+		/>
+		<property
+			name="name"
+			column="name"
+			type="string"
+			not-null="true"
+			length="150"
+		/>
+
+		<property
+			name="description"
+			column="description"
+			type="string"
+			not-null="false"
+			length="255"
+		/>
+		<property
+			name="numberOfLike"
+			column="number_of_like"
+			type="java.lang.Integer"
+			not-null="false"
+		/>
+
+		<property
+			name="numberOfPost"
+			column="number_of_post"
+			type="java.lang.Integer"
+			not-null="false"
+		/>
+
+		<property
+			name="createdDate"
+			column="created_date"
+			type="java.util.Date"
+			not-null="true"
+		/>
+		<property
+			name="createdBy"
+			column="created_by"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="lastUpdatedDate"
+			column="last_updated_date"
+			type="java.util.Date"
+			not-null="false"
+		/>
+		<property
+			name="lastUpdatedBy"
+			column="last_updated_by"
+			type="string"
+			not-null="false"
+			length="30"
+		/>
+
+		<property
+			name="filterCode"
+			column="filter_code"
+			type="string"
+			not-null="false"
+			length="100"
+		/>
+		<many-to-one
+			name="parentForum"
+			column="parent_forum"
+			class="com.app.docmgr.model.Forum"
+			not-null="false"
+		>
+		</many-to-one>
+
+		<set
+			name="followers"
+			table="topic_user"
+			cascade="all-delete-orphan"
+		>
+
+			<key column="topic_id"/>
+			<many-to-many column="user_id" class="com.app.docmgr.model.User"/>
+		</set>
+
+
+
+	</class>
+</hibernate-mapping>

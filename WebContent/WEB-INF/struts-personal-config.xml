@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<!--
+/**
+ * @author Martin - Delivery Channel BSIM - WebCode Generator 1.0
+ * @project TesGenerator
+ * @version 1.0.0
+ * @createDate 23-08-2012 16:39:17
+ */
+ -->
+<struts-config>
+
+  	<form-beans>
+  	</form-beans>
+
+	<global-forwards>
+		<forward name="home" path="/index.jsp" />
+    	<forward name="login" path="/login.jsp" />
+        <forward name="logout" path="/logout.jsp" />
+        <forward name="error" path="/WEB-INF/jsp/personal/common/error.jsp"  contextRelative="true"/>
+    	<forward name="not_authorized" path="/WEB-INF/jsp/personal/common/notAuthorized.jsp"  contextRelative="true"/>
+		<forward name="not_allowed" path="/WEB-INF/jsp/personal/common/notAllowed.jsp"  contextRelative="true"/>
+    </global-forwards>
+	
+	<action-mappings>
+		<action path="/login" type="com.ams.apps.basic.LoginAction" name="loginForm" input="login.jsp"  scope="request" >
+    		<forward name="success" path="/index.jsp" />
+    		<forward name="failure" path="/login.jsp" />
+        </action>
+        <action path="/logout" type="com.ams.apps.basic.LoginAction">
+    		<forward name="success" path="/login.jsp" />
+    		<forward name="failure" path="/index.jsp" />
+        </action>
+            <action  path="/locale" type="com.ams.apps.basic.LocaleAction" name="localeForm" input="/WEB-INF/jsp/personal//common/locale.jsp" scope="request">
+       		<forward name="success" path="/index.jsp"/>
+    	</action>
+
+	</action-mappings>
+
+	<message-resources parameter="personal-MessageResources" />
+	<message-resources key="additional" parameter="personal-AdditionalResources" />
+
+</struts-config>

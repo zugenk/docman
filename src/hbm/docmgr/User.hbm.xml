@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="com.app.docmgr.model">
+	<class
+		name="User"
+		table="app_user" lazy="false"
+	>
+		<id
+			name="id"
+			type="java.lang.Long"
+			column="id"
+		>
+			<generator class="identity"/>
+		</id>
+
+		<property
+			name="loginName"
+			column="login_name"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="loginPassword"
+			column="login_password"
+			type="string"
+			not-null="true"
+			length="100"
+		/>
+
+		<property
+			name="pinCode"
+			column="pin_code"
+			type="string"
+			not-null="false"
+			length="100"
+		/>
+
+		<property
+			name="mobileNumber"
+			column="mobile_number"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+
+		<many-to-one
+			name="userLevel"
+			column="user_level"
+			class="com.app.docmgr.model.Lookup"
+			not-null="true"
+		>
+		</many-to-one>
+		<property
+			name="language"
+			column="language"
+			type="string"
+			not-null="false"
+			length="20"
+		/>
+		<property
+			name="title"
+			column="title"
+			type="string"
+			not-null="false"
+			length="10"
+		/>
+		<property
+			name="name"
+			column="name"
+			type="string"
+			not-null="true"
+			length="100"
+		/>
+		<property
+			name="email"
+			column="email"
+			type="string"
+			not-null="false"
+			length="100"
+		/>
+		<property
+			name="fullName"
+			column="full_name"
+			type="string"
+			not-null="false"
+			length="255"
+		/>
+		<property
+			name="homePhoneNumber"
+			column="home_phone_number"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+		 <property
+			name="mobilePhoneNumber"
+			column="mobile_phone_number"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+
+		<property
+			name="employeeNumber"
+			column="employee_number"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
+
+		<property
+			name="createdDate"
+			column="created_date"
+			type="java.util.Date"
+			not-null="true"
+		/>
+		<property
+			name="createdBy"
+			column="created_by"
+			type="string"
+			not-null="true"
+			length="30"
+		/>
+		<property
+			name="lastUpdatedDate"
+			column="last_updated_date"
+			type="java.util.Date"
+			not-null="false"
+		/>
+		<property
+			name="lastUpdatedBy"
+			column="last_updated_by"
+			type="string"
+			not-null="false"
+			length="30"
+		/>
+		<property
+			name="firstLogin"
+			column="first_login"
+			type="string"
+			not-null="false"
+			length="5"
+		/>
+		<property
+			name="lastPasswordUpdate"
+			column="last_password_update"
+			type="java.util.Date"
+			not-null="false"
+		/>
+		<property
+			name="lastPinCodeUpdate"
+			column="last_pincode_update"
+			type="java.util.Date"
+			not-null="false"
+		/>
+		<property
+			name="lastPassword"
+			column="last_password"
+			type="string"
+			not-null="false"
+		/>
+		<property
+			name="lastPinCode"
+			column="last_pincode"
+			type="string"
+			not-null="false"
+		/>
+		<many-to-one
+			name="organization"
+			column="organization_id"
+			class="com.app.docmgr.model.Organization"
+			not-null="false"
+		>
+		</many-to-one>
+
+		<set
+			name="roles"
+			table="user_role"
+			cascade="all-delete-orphan"
+		>
+
+		<key column="user_id"/>
+			<many-to-many column="role_id" class="com.app.docmgr.model.Role"/>
+		</set>
+
+		<property
+			name="loginFailed"
+			column="login_failed"
+			type="java.lang.Integer"
+			not-null="false"
+		/>
+
+		<property
+			name="maxRelease"
+			column="max_release"
+			type="java.lang.Integer"
+			not-null="false"
+		/>
+
+		<property
+			name="lastReleasedDate"
+			column="last_released_date"
+			type="java.util.Date"
+			not-null="false"
+		/>
+
+		<property
+			name="lastActive"
+			column="last_active"
+			type="java.util.Date"
+			not-null="false"
+		/>
+
+		<property
+			name="sessionCode"
+			column="session_code"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+
+		<property
+			name="IPassport"
+			column="ipassport"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+
+	</class>
+</hibernate-mapping>
