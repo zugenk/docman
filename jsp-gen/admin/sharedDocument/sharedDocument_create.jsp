@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 -->
 </HEAD>
@@ -118,22 +118,25 @@
 			</tr>
 		</logic:messagesPresent>
 		<tr>
-			<td width="150"><b><bean:message key="sharedDocument.user.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="sharedDocument.targetUser.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="sharedDocument" property="user" style="width:135"  value="${sharedDocument.user.id}">
+				<html-el:select  name="sharedDocument" property="targetUser" style="width:135"  value="${sharedDocument.targetUser.id}">
 					<option value=""></option>
-					<html:options collection="userList" property="id" labelProperty="name"/>
+					<html:options collection="targetUserList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>
-		<logic:messagesPresent property="sharedDocument.user">
-			<tr>
-				<td colspan="3">
-					<font color="red"><html:errors property="sharedDocument.user"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
+		<tr>
+			<td width="150"><b><bean:message key="sharedDocument.targetOrganization.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="sharedDocument" property="targetOrganization" style="width:135"  value="${sharedDocument.targetOrganization.id}">
+					<option value=""></option>
+					<html:options collection="targetOrganizationList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
 <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="sharedDocument.status.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>

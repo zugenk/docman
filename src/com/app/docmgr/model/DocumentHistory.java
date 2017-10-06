@@ -25,6 +25,7 @@ public class DocumentHistory  implements java.io.Serializable {
      private String documentVersion;
      private String description;
      private Lookup securityLevel;
+     private User owner;
      private Status status;
      private Date createdDate;
      private String createdBy;
@@ -191,6 +192,17 @@ public class DocumentHistory  implements java.io.Serializable {
     
     public void setSecurityLevel(Lookup securityLevel) {
         this.securityLevel = securityLevel;
+    }
+
+    /**
+     * 
+     */
+    public User getOwner() {
+        return this.owner;
+    }
+    
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     /**

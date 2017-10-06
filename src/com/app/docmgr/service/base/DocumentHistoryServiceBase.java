@@ -23,7 +23,7 @@ import com.app.docmgr.model.DocumentHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 
 	/**
@@ -61,6 +61,7 @@ public class DocumentHistoryServiceBase {
 		try {
 			documentHistory = (DocumentHistory) session.get(DocumentHistory.class, id);
 			Hibernate.initialize(documentHistory.getSecurityLevel());			
+			Hibernate.initialize(documentHistory.getOwner());			
 			Hibernate.initialize(documentHistory.getStatus());			
 			Hibernate.initialize(documentHistory.getParentFolder());			
 			Hibernate.initialize(documentHistory.getParentDocument());			
@@ -99,6 +100,7 @@ public class DocumentHistoryServiceBase {
 			documentHistory = (com.app.docmgr.model.DocumentHistory) query.uniqueResult();
 			if(documentHistory!=null) {
 				Hibernate.initialize(documentHistory.getSecurityLevel());			
+				Hibernate.initialize(documentHistory.getOwner());			
 				Hibernate.initialize(documentHistory.getStatus());			
 				Hibernate.initialize(documentHistory.getParentFolder());			
 				Hibernate.initialize(documentHistory.getParentDocument());			
@@ -300,6 +302,7 @@ public class DocumentHistoryServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.DocumentHistory documentHistory = (com.app.docmgr.model.DocumentHistory)itr.next();
 				Hibernate.initialize(documentHistory.getSecurityLevel());			
+				Hibernate.initialize(documentHistory.getOwner());			
 				Hibernate.initialize(documentHistory.getStatus());			
 				Hibernate.initialize(documentHistory.getParentFolder());			
 				Hibernate.initialize(documentHistory.getParentDocument());			

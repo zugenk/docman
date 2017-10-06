@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 
 
@@ -133,6 +133,9 @@ public class DocumentActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -282,6 +285,14 @@ public class DocumentActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("document_securityLevel_filter", param_document_securityLevel_filter);
+		String param_document_owner_filter = "";
+		if(request.getParameter("document_owner_filter")!=null){
+			param_document_owner_filter = request.getParameter("document_owner_filter");
+			if(param_document_owner_filter.length() > 0 ){				
+				document_filterSb.append("  AND document.owner = '"+param_document_owner_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("document_owner_filter", param_document_owner_filter);
 		String param_document_status_filter = "";
 		if(request.getParameter("document_status_filter")!=null){
 			param_document_status_filter = request.getParameter("document_status_filter");
@@ -425,6 +436,9 @@ public class DocumentActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -462,6 +476,9 @@ public class DocumentActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -522,6 +539,9 @@ public class DocumentActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -555,6 +575,9 @@ public class DocumentActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -1089,6 +1112,21 @@ public class DocumentActionBase extends Action{
 					document.setSecurityLevel(securityLevelObj);
 				}
 			}catch(Exception ex){}	
+			com.app.docmgr.model.User  ownerObj =null;
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			try{
+				String ownerStr = request.getParameter("owner");
+				
+				if(ownerStr == null || ownerStr.trim().length() == 0 ){
+					document.setOwner(null);
+				}else{			
+					ownerObj = ownerService.get(new Long(ownerStr));
+					document.setOwner(ownerObj);
+				}
+			}catch(Exception ex){}	
+			if(ownerObj==null){
+				errors.add("document.owner", new ActionError("error.document.owner"));
+			}
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

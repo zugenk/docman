@@ -23,7 +23,7 @@ import com.app.docmgr.model.SharedDocument;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 
 	/**
@@ -61,7 +61,8 @@ public class SharedDocumentServiceBase {
 		try {
 			sharedDocument = (SharedDocument) session.get(SharedDocument.class, id);
 			Hibernate.initialize(sharedDocument.getDocument());			
-			Hibernate.initialize(sharedDocument.getUser());			
+			Hibernate.initialize(sharedDocument.getTargetUser());			
+			Hibernate.initialize(sharedDocument.getTargetOrganization());			
 			Hibernate.initialize(sharedDocument.getStatus());			
 
 		} catch (ObjectNotFoundException onfe) {
@@ -98,7 +99,8 @@ public class SharedDocumentServiceBase {
 			sharedDocument = (com.app.docmgr.model.SharedDocument) query.uniqueResult();
 			if(sharedDocument!=null) {
 				Hibernate.initialize(sharedDocument.getDocument());			
-				Hibernate.initialize(sharedDocument.getUser());			
+				Hibernate.initialize(sharedDocument.getTargetUser());			
+				Hibernate.initialize(sharedDocument.getTargetOrganization());			
 				Hibernate.initialize(sharedDocument.getStatus());			
 			}
 			return sharedDocument;
@@ -298,7 +300,8 @@ public class SharedDocumentServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.SharedDocument sharedDocument = (com.app.docmgr.model.SharedDocument)itr.next();
 				Hibernate.initialize(sharedDocument.getDocument());			
-				Hibernate.initialize(sharedDocument.getUser());			
+				Hibernate.initialize(sharedDocument.getTargetUser());			
+				Hibernate.initialize(sharedDocument.getTargetOrganization());			
 				Hibernate.initialize(sharedDocument.getStatus());			
 			}			
 		} catch(HibernateException he) {

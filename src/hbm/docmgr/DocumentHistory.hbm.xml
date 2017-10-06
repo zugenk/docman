@@ -100,6 +100,13 @@
 		>
 		</many-to-one>
 		<many-to-one
+			name="owner"
+			column="owner"
+			class="com.app.docmgr.model.User"
+			not-null="true"
+		>
+		</many-to-one>
+		<many-to-one
 			name="status"
 			column="status"
 			class="com.app.docmgr.model.Status"

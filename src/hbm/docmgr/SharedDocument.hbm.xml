@@ -24,13 +24,19 @@
 		>
 		</many-to-one>
 		<many-to-one
-			name="user"
-			column="user"
+			name="targetUser"
+			column="target_user"
 			class="com.app.docmgr.model.User"
-			not-null="true"
+			not-null="false"
 		>
 		</many-to-one>
-		
+		<many-to-one
+			name="targetOrganization"
+			column="target_organization"
+			class="com.app.docmgr.model.Organization"
+			not-null="false"
+		>
+		</many-to-one>
 		<property
 			name="grantAction"
 			column="grant_action"

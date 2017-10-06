@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 
 
@@ -133,6 +133,9 @@ public class DocumentHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -318,6 +321,14 @@ public class DocumentHistoryActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("documentHistory_securityLevel_filter", param_documentHistory_securityLevel_filter);
+		String param_documentHistory_owner_filter = "";
+		if(request.getParameter("documentHistory_owner_filter")!=null){
+			param_documentHistory_owner_filter = request.getParameter("documentHistory_owner_filter");
+			if(param_documentHistory_owner_filter.length() > 0 ){				
+				documentHistory_filterSb.append("  AND documentHistory.owner = '"+param_documentHistory_owner_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("documentHistory_owner_filter", param_documentHistory_owner_filter);
 		String param_documentHistory_status_filter = "";
 		if(request.getParameter("documentHistory_status_filter")!=null){
 			param_documentHistory_status_filter = request.getParameter("documentHistory_status_filter");
@@ -461,6 +472,9 @@ public class DocumentHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -498,6 +512,9 @@ public class DocumentHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -558,6 +575,9 @@ public class DocumentHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -591,6 +611,9 @@ public class DocumentHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
 			request.setAttribute("securityLevelList", securityLevelList);
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			List ownerList = ownerService.getList(null, null);
+			request.setAttribute("ownerList", ownerList);
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -1157,6 +1180,21 @@ public class DocumentHistoryActionBase extends Action{
 					documentHistory.setSecurityLevel(securityLevelObj);
 				}
 			}catch(Exception ex){}	
+			com.app.docmgr.model.User  ownerObj =null;
+			com.app.docmgr.service.UserService ownerService = com.app.docmgr.service.UserService.getInstance();
+			try{
+				String ownerStr = request.getParameter("owner");
+				
+				if(ownerStr == null || ownerStr.trim().length() == 0 ){
+					documentHistory.setOwner(null);
+				}else{			
+					ownerObj = ownerService.get(new Long(ownerStr));
+					documentHistory.setOwner(ownerObj);
+				}
+			}catch(Exception ex){}	
+			if(ownerObj==null){
+				errors.add("documentHistory.owner", new ActionError("error.documentHistory.owner"));
+			}
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

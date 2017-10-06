@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 
 
@@ -133,9 +133,12 @@ public class SharedDocumentActionBase extends Action{
 			com.app.docmgr.service.DocumentService documentService = com.app.docmgr.service.DocumentService.getInstance();
 			List documentList = documentService.getList(null, null);
 			request.setAttribute("documentList", documentList);
-			com.app.docmgr.service.UserService userService = com.app.docmgr.service.UserService.getInstance();
-			List userList = userService.getList(null, null);
-			request.setAttribute("userList", userList);
+			com.app.docmgr.service.UserService targetUserService = com.app.docmgr.service.UserService.getInstance();
+			List targetUserList = targetUserService.getList(null, null);
+			request.setAttribute("targetUserList", targetUserList);
+			com.app.docmgr.service.OrganizationService targetOrganizationService = com.app.docmgr.service.OrganizationService.getInstance();
+			List targetOrganizationList = targetOrganizationService.getList(null, null);
+			request.setAttribute("targetOrganizationList", targetOrganizationList);
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='SharedDocument'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -195,14 +198,22 @@ public class SharedDocumentActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("sharedDocument_document_filter", param_sharedDocument_document_filter);
-		String param_sharedDocument_user_filter = "";
-		if(request.getParameter("sharedDocument_user_filter")!=null){
-			param_sharedDocument_user_filter = request.getParameter("sharedDocument_user_filter");
-			if(param_sharedDocument_user_filter.length() > 0 ){				
-				sharedDocument_filterSb.append("  AND sharedDocument.user = '"+param_sharedDocument_user_filter+"' ");
+		String param_sharedDocument_targetUser_filter = "";
+		if(request.getParameter("sharedDocument_targetUser_filter")!=null){
+			param_sharedDocument_targetUser_filter = request.getParameter("sharedDocument_targetUser_filter");
+			if(param_sharedDocument_targetUser_filter.length() > 0 ){				
+				sharedDocument_filterSb.append("  AND sharedDocument.targetUser = '"+param_sharedDocument_targetUser_filter+"' ");
 			}
 		}		
-		request.getSession().setAttribute("sharedDocument_user_filter", param_sharedDocument_user_filter);
+		request.getSession().setAttribute("sharedDocument_targetUser_filter", param_sharedDocument_targetUser_filter);
+		String param_sharedDocument_targetOrganization_filter = "";
+		if(request.getParameter("sharedDocument_targetOrganization_filter")!=null){
+			param_sharedDocument_targetOrganization_filter = request.getParameter("sharedDocument_targetOrganization_filter");
+			if(param_sharedDocument_targetOrganization_filter.length() > 0 ){				
+				sharedDocument_filterSb.append("  AND sharedDocument.targetOrganization = '"+param_sharedDocument_targetOrganization_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("sharedDocument_targetOrganization_filter", param_sharedDocument_targetOrganization_filter);
 		String param_sharedDocument_status_filter = "";
 		if(request.getParameter("sharedDocument_status_filter")!=null){
 			param_sharedDocument_status_filter = request.getParameter("sharedDocument_status_filter");
@@ -330,9 +341,12 @@ public class SharedDocumentActionBase extends Action{
 			com.app.docmgr.service.DocumentService documentService = com.app.docmgr.service.DocumentService.getInstance();
 			List documentList = documentService.getList(null, null);
 			request.setAttribute("documentList", documentList);
-			com.app.docmgr.service.UserService userService = com.app.docmgr.service.UserService.getInstance();
-			List userList = userService.getList(null, null);
-			request.setAttribute("userList", userList);
+			com.app.docmgr.service.UserService targetUserService = com.app.docmgr.service.UserService.getInstance();
+			List targetUserList = targetUserService.getList(null, null);
+			request.setAttribute("targetUserList", targetUserList);
+			com.app.docmgr.service.OrganizationService targetOrganizationService = com.app.docmgr.service.OrganizationService.getInstance();
+			List targetOrganizationList = targetOrganizationService.getList(null, null);
+			request.setAttribute("targetOrganizationList", targetOrganizationList);
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='SharedDocument'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -364,9 +378,12 @@ public class SharedDocumentActionBase extends Action{
 			com.app.docmgr.service.DocumentService documentService = com.app.docmgr.service.DocumentService.getInstance();
 			List documentList = documentService.getList(null, null);
 			request.setAttribute("documentList", documentList);
-			com.app.docmgr.service.UserService userService = com.app.docmgr.service.UserService.getInstance();
-			List userList = userService.getList(null, null);
-			request.setAttribute("userList", userList);
+			com.app.docmgr.service.UserService targetUserService = com.app.docmgr.service.UserService.getInstance();
+			List targetUserList = targetUserService.getList(null, null);
+			request.setAttribute("targetUserList", targetUserList);
+			com.app.docmgr.service.OrganizationService targetOrganizationService = com.app.docmgr.service.OrganizationService.getInstance();
+			List targetOrganizationList = targetOrganizationService.getList(null, null);
+			request.setAttribute("targetOrganizationList", targetOrganizationList);
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='SharedDocument'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -419,9 +436,12 @@ public class SharedDocumentActionBase extends Action{
 			com.app.docmgr.service.DocumentService documentService = com.app.docmgr.service.DocumentService.getInstance();
 			List documentList = documentService.getList(null, null);
 			request.setAttribute("documentList", documentList);
-			com.app.docmgr.service.UserService userService = com.app.docmgr.service.UserService.getInstance();
-			List userList = userService.getList(null, null);
-			request.setAttribute("userList", userList);
+			com.app.docmgr.service.UserService targetUserService = com.app.docmgr.service.UserService.getInstance();
+			List targetUserList = targetUserService.getList(null, null);
+			request.setAttribute("targetUserList", targetUserList);
+			com.app.docmgr.service.OrganizationService targetOrganizationService = com.app.docmgr.service.OrganizationService.getInstance();
+			List targetOrganizationList = targetOrganizationService.getList(null, null);
+			request.setAttribute("targetOrganizationList", targetOrganizationList);
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='SharedDocument'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -449,9 +469,12 @@ public class SharedDocumentActionBase extends Action{
 			com.app.docmgr.service.DocumentService documentService = com.app.docmgr.service.DocumentService.getInstance();
 			List documentList = documentService.getList(null, null);
 			request.setAttribute("documentList", documentList);
-			com.app.docmgr.service.UserService userService = com.app.docmgr.service.UserService.getInstance();
-			List userList = userService.getList(null, null);
-			request.setAttribute("userList", userList);
+			com.app.docmgr.service.UserService targetUserService = com.app.docmgr.service.UserService.getInstance();
+			List targetUserList = targetUserService.getList(null, null);
+			request.setAttribute("targetUserList", targetUserList);
+			com.app.docmgr.service.OrganizationService targetOrganizationService = com.app.docmgr.service.OrganizationService.getInstance();
+			List targetOrganizationList = targetOrganizationService.getList(null, null);
+			request.setAttribute("targetOrganizationList", targetOrganizationList);
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='SharedDocument'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -933,21 +956,30 @@ public class SharedDocumentActionBase extends Action{
 			if(documentObj==null){
 				errors.add("sharedDocument.document", new ActionError("error.sharedDocument.document"));
 			}
-			com.app.docmgr.model.User  userObj =null;
-			com.app.docmgr.service.UserService userService = com.app.docmgr.service.UserService.getInstance();
+			com.app.docmgr.model.User  targetUserObj =null;
+			com.app.docmgr.service.UserService targetUserService = com.app.docmgr.service.UserService.getInstance();
 			try{
-				String userStr = request.getParameter("user");
+				String targetUserStr = request.getParameter("targetUser");
 				
-				if(userStr == null || userStr.trim().length() == 0 ){
-					sharedDocument.setUser(null);
+				if(targetUserStr == null || targetUserStr.trim().length() == 0 ){
+					sharedDocument.setTargetUser(null);
 				}else{			
-					userObj = userService.get(new Long(userStr));
-					sharedDocument.setUser(userObj);
+					targetUserObj = targetUserService.get(new Long(targetUserStr));
+					sharedDocument.setTargetUser(targetUserObj);
 				}
 			}catch(Exception ex){}	
-			if(userObj==null){
-				errors.add("sharedDocument.user", new ActionError("error.sharedDocument.user"));
-			}
+			com.app.docmgr.model.Organization  targetOrganizationObj =null;
+			com.app.docmgr.service.OrganizationService targetOrganizationService = com.app.docmgr.service.OrganizationService.getInstance();
+			try{
+				String targetOrganizationStr = request.getParameter("targetOrganization");
+				
+				if(targetOrganizationStr == null || targetOrganizationStr.trim().length() == 0 ){
+					sharedDocument.setTargetOrganization(null);
+				}else{			
+					targetOrganizationObj = targetOrganizationService.get(new Long(targetOrganizationStr));
+					sharedDocument.setTargetOrganization(targetOrganizationObj);
+				}
+			}catch(Exception ex){}	
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

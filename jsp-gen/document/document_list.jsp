@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 -->
 </HEAD>
@@ -60,6 +60,7 @@
 			document.forms.document.document_lastUpdatedDate_filter_end.value="";
 			document.forms.document.document_lastUpdatedBy_filter.value="";
 			document.forms.document.document_securityLevel_filter.value="";
+			document.forms.document.document_owner_filter.value="";
 			document.forms.document.document_status_filter.value="";
 			document.forms.document.document_parentFolder_filter.value="";
 			document.forms.document.document_parentDocument_filter.value="";
@@ -262,6 +263,7 @@
 			</logic:notEqual>
 		</td>
 		<td><bean:message key="document.securityLevel.key"/></td>
+		<td><bean:message key="document.owner.key"/></td>
 		<td><bean:message key="document.status.key"/></td>
 		<td><bean:message key="document.parentFolder.key"/></td>
 		<td><bean:message key="document.parentDocument.key"/></td>
@@ -292,6 +294,12 @@
 		<td >
 				<logic:notEmpty name="element"	property="securityLevel">								
 					<bean:write name="element" property="securityLevel.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="owner">								
+					<bean:write name="element" property="owner.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -442,6 +450,30 @@
 							%>
 						>
 						<bean:write name="securityLevelElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="document.owner.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  document_owner_filter_value = (String)request.getSession().getAttribute("document_owner_filter");
+					if("".equals(document_owner_filter_value)) document_owner_filter_value = "0";
+				%>				
+				<select name="document_owner_filter">
+					<option value=""></option>
+					<logic:iterate id="ownerElement" name="ownerList"  type="com.app.docmgr.model.User">
+						
+						<option value="<bean:write name="ownerElement" property="id"/>" 
+							<%
+								Long document_owner_id = ownerElement.getId();							
+								Long document_owner_filter_value_c = new Long(document_owner_filter_value);
+								if(document_owner_filter_value_c.equals(document_owner_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="ownerElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

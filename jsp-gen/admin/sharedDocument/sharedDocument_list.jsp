@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 -->
 </HEAD>
@@ -51,7 +51,8 @@
 			document.forms.sharedDocument.sharedDocument_createdDate_filter_end.value="";
 			document.forms.sharedDocument.sharedDocument_createdBy_filter.value="";
 			document.forms.sharedDocument.sharedDocument_document_filter.value="";
-			document.forms.sharedDocument.sharedDocument_user_filter.value="";
+			document.forms.sharedDocument.sharedDocument_targetUser_filter.value="";
+			document.forms.sharedDocument.sharedDocument_targetOrganization_filter.value="";
 			document.forms.sharedDocument.sharedDocument_status_filter.value="";
 			document.forms.sharedDocument.submit();
 		}
@@ -140,7 +141,8 @@
 			</logic:notEqual>
 		</td>
 		<td><bean:message key="sharedDocument.document.key"/></td>
-		<td><bean:message key="sharedDocument.user.key"/></td>
+		<td><bean:message key="sharedDocument.targetUser.key"/></td>
+		<td><bean:message key="sharedDocument.targetOrganization.key"/></td>
 		<td><bean:message key="sharedDocument.status.key"/></td>
 
 		<td></td>
@@ -165,8 +167,14 @@
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="user">								
-					<bean:write name="element" property="user.name"/>
+				<logic:notEmpty name="element"	property="targetUser">								
+					<bean:write name="element" property="targetUser.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="targetOrganization">								
+					<bean:write name="element" property="targetOrganization.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -257,25 +265,49 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="sharedDocument.user.key"/></td>
+			<td width="150"><bean:message key="sharedDocument.targetUser.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  sharedDocument_user_filter_value = (String)request.getSession().getAttribute("sharedDocument_user_filter");
-					if("".equals(sharedDocument_user_filter_value)) sharedDocument_user_filter_value = "0";
+					String  sharedDocument_targetUser_filter_value = (String)request.getSession().getAttribute("sharedDocument_targetUser_filter");
+					if("".equals(sharedDocument_targetUser_filter_value)) sharedDocument_targetUser_filter_value = "0";
 				%>				
-				<select name="sharedDocument_user_filter">
+				<select name="sharedDocument_targetUser_filter">
 					<option value=""></option>
-					<logic:iterate id="userElement" name="userList"  type="com.app.docmgr.model.User">
+					<logic:iterate id="targetUserElement" name="targetUserList"  type="com.app.docmgr.model.User">
 						
-						<option value="<bean:write name="userElement" property="id"/>" 
+						<option value="<bean:write name="targetUserElement" property="id"/>" 
 							<%
-								Long sharedDocument_user_id = userElement.getId();							
-								Long sharedDocument_user_filter_value_c = new Long(sharedDocument_user_filter_value);
-								if(sharedDocument_user_filter_value_c.equals(sharedDocument_user_id))out.print(" SELECTED ");
+								Long sharedDocument_targetUser_id = targetUserElement.getId();							
+								Long sharedDocument_targetUser_filter_value_c = new Long(sharedDocument_targetUser_filter_value);
+								if(sharedDocument_targetUser_filter_value_c.equals(sharedDocument_targetUser_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="userElement" property="name"/></option>
+						<bean:write name="targetUserElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="sharedDocument.targetOrganization.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  sharedDocument_targetOrganization_filter_value = (String)request.getSession().getAttribute("sharedDocument_targetOrganization_filter");
+					if("".equals(sharedDocument_targetOrganization_filter_value)) sharedDocument_targetOrganization_filter_value = "0";
+				%>				
+				<select name="sharedDocument_targetOrganization_filter">
+					<option value=""></option>
+					<logic:iterate id="targetOrganizationElement" name="targetOrganizationList"  type="com.app.docmgr.model.Organization">
+						
+						<option value="<bean:write name="targetOrganizationElement" property="id"/>" 
+							<%
+								Long sharedDocument_targetOrganization_id = targetOrganizationElement.getId();							
+								Long sharedDocument_targetOrganization_filter_value_c = new Long(sharedDocument_targetOrganization_filter_value);
+								if(sharedDocument_targetOrganization_filter_value_c.equals(sharedDocument_targetOrganization_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="targetOrganizationElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

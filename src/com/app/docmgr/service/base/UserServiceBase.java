@@ -23,7 +23,7 @@ import com.app.docmgr.model.User;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 
 	/**
@@ -370,7 +370,7 @@ public class UserServiceBase {
 		   	List privilegeList = new LinkedList();
 		   	String[] param=new String[2];
 	   		param[0]=user.getId().toString() ;
-			String sqlQuery = ApplicationFactory.mergeParam("${project.queryList.appUser_privilegeList}",param);
+			String sqlQuery = ApplicationFactory.mergeParam("SELECT DISTINCT(p.name) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE ur.user_id={0}",param);
 			ps = session.connection().prepareStatement(sqlQuery);			
 			rs = ps.executeQuery();
 			while (rs.next()) { 
@@ -405,7 +405,7 @@ public class UserServiceBase {
 		   	String[] param=new String[2];
 		   		param[0]=privilegeName;
 		   		param[1]=user.getId().toString() ;
-			String sqlQuery = ApplicationFactory.mergeParam("${project.queryList.appUser_hasPrivilege}",param);
+			String sqlQuery = ApplicationFactory.mergeParam("SELECT count(p.id) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE p.name='{0}' and ur.user_id={1}",param);
 			ps = session.connection().prepareStatement(sqlQuery);			
 			rs = ps.executeQuery();
 			int count=0;

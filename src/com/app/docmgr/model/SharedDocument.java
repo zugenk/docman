@@ -14,7 +14,8 @@ public class SharedDocument  implements java.io.Serializable {
 
      private Long id;
      private Document document;
-     private User user;
+     private User targetUser;
+     private Organization targetOrganization;
      private String grantAction;
      private Status status;
      private Date createdDate;
@@ -62,12 +63,23 @@ public class SharedDocument  implements java.io.Serializable {
     /**
      * 
      */
-    public User getUser() {
-        return this.user;
+    public User getTargetUser() {
+        return this.targetUser;
     }
     
-    public void setUser(User user) {
-        this.user = user;
+    public void setTargetUser(User targetUser) {
+        this.targetUser = targetUser;
+    }
+
+    /**
+     * 
+     */
+    public Organization getTargetOrganization() {
+        return this.targetOrganization;
+    }
+    
+    public void setTargetOrganization(Organization targetOrganization) {
+        this.targetOrganization = targetOrganization;
     }
 
     /**

@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 -->
 </HEAD>
@@ -71,11 +71,20 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="sharedDocument.user.key"/></b></td>
+			<td width="150"><b><bean:message key="sharedDocument.targetUser.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<logic:notEmpty name="sharedDocument"	property="user">			
-					<bean:write name="sharedDocument" property="user.name"/>
+				<logic:notEmpty name="sharedDocument"	property="targetUser">			
+					<bean:write name="sharedDocument" property="targetUser.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="sharedDocument.targetOrganization.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="sharedDocument"	property="targetOrganization">			
+					<bean:write name="sharedDocument" property="targetOrganization.name"/>
 				</logic:notEmpty>
 			</td>
 		</tr>

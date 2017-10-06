@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 22:19:39
+ * @createDate 07-10-2017 06:18:15
  */
 -->
 </HEAD>
@@ -190,6 +190,23 @@
 				</html-el:select>															
 			</td>
 		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="document.owner.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="document" property="owner" style="width:135"  value="${document.owner.id}">
+					<option value=""></option>
+					<html:options collection="ownerList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
+		<logic:messagesPresent property="document.owner">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="document.owner"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
 <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="document.status.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
