@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 
@@ -373,6 +373,9 @@ public class OrganizationActionBase extends Action{
 */			com.app.docmgr.service.OrganizationService organizationService_user = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList_user = organizationService_user.getList(null, null);
 			request.setAttribute("organizationList_user", organizationList_user);
+			com.app.docmgr.service.LookupService securityLevelService_user = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList_user = securityLevelService_user.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList_user", securityLevelList_user);
     		request.getSession().setAttribute("organization", organization);
     		forward = mapping.findForward("create");
     	}catch(Exception ex){
@@ -411,6 +414,9 @@ public class OrganizationActionBase extends Action{
  */ 			com.app.docmgr.service.OrganizationService organizationService_user = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList_user = organizationService_user.getList(null, null);
 			request.setAttribute("organizationList_user", organizationList_user);
+			com.app.docmgr.service.LookupService securityLevelService_user = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList_user = securityLevelService_user.getList(null, null);
+			request.setAttribute("securityLevelList_user", securityLevelList_user);
     		loadParameter(request, form, organization, errors);
     		//set Many To One Property
     		
@@ -485,6 +491,9 @@ public class OrganizationActionBase extends Action{
 */			com.app.docmgr.service.OrganizationService organizationService_user = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList_user = organizationService_user.getList(null, null);
 			request.setAttribute("organizationList_user", organizationList_user);
+			com.app.docmgr.service.LookupService securityLevelService_user = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList_user = securityLevelService_user.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList_user", securityLevelList_user);
     		forward = mapping.findForward("edit");
     	}catch(Exception ex){
     		ex.printStackTrace();
@@ -520,6 +529,9 @@ public class OrganizationActionBase extends Action{
 */			com.app.docmgr.service.OrganizationService organizationService_user = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList_user = organizationService_user.getList(null, null);
 			request.setAttribute("organizationList_user", organizationList_user);
+			com.app.docmgr.service.LookupService securityLevelService_user = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList_user = securityLevelService_user.getList(null, null);
+			request.setAttribute("securityLevelList_user", securityLevelList_user);
     		loadParameter(request, form, organization, errors);
     		
 			com.app.docmgr.service.OrganizationService parentService = com.app.docmgr.service.OrganizationService.getInstance();
@@ -992,6 +1004,17 @@ public class OrganizationActionBase extends Action{
 				}else{			
 					organizationObj = organizationService.get(new Long(organizationStr));
 					user.setOrganization(organizationObj);
+				}
+			}catch(Exception ex){}				
+			com.app.docmgr.model.Lookup  securityLevelObj =null;
+			try{
+				com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+				String securityLevelStr = request.getParameter("securityLevel");
+				if(securityLevelStr == null || securityLevelStr.trim().length() == 0 ){
+					user.setSecurityLevel(null);
+				}else{			
+					securityLevelObj = securityLevelService.get(new Long(securityLevelStr));
+					user.setSecurityLevel(securityLevelObj);
 				}
 			}catch(Exception ex){}				
 	}

@@ -25,7 +25,7 @@ public class Topic  implements java.io.Serializable {
      private String lastUpdatedBy;
      private String filterCode;
      private Forum parentForum;
-     private Set followers;
+     private Set subscribers;
 
 
     // Constructors
@@ -190,12 +190,12 @@ public class Topic  implements java.io.Serializable {
     /**
      * 
      */
-    public Set getFollowers() {
-        return this.followers;
+    public Set getSubscribers() {
+        return this.subscribers;
     }
     
-    public void setFollowers(Set followers) {
-        this.followers = followers;
+    public void setSubscribers(Set subscribers) {
+        this.subscribers = subscribers;
     }
 
 

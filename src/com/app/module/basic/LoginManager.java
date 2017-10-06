@@ -1,5 +1,6 @@
 package com.app.module.basic;
 
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.struts.action.ActionError;
@@ -27,6 +28,23 @@ public class LoginManager {
 	 	return loginUser;
 	}
 	
+	 public User loginWithBasicAuth(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
+	    	String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
+	    	int idx=plain.indexOf(':');
+	    	String loginName=plain.substring(0,idx);
+	    	String passwd=plain.substring(idx+1);
+	    	System.out.println("["+loginName+"] -> ["+passwd+"]");
+	    	return login(loginName, passwd); // null; // 
+	 	}
+	    
+	public String setBasicAuth(String user, String password) {
+	    	String plainCreds = user+":"+password;//"okmAdmin:admin";
+	    	byte[] plainCredsBytes = plainCreds.getBytes();
+	    	byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
+	    	String base64Creds = new String(base64CredsBytes);
+	    	return "Basic " + base64Creds;
+		}
+	
 	public void checkPassport() {
 		// TODO Auto-generated method stub
 
@@ -35,13 +53,22 @@ public class LoginManager {
 	private void recordLoginHistory() {
 		// TODO Auto-generated method stub
 		LoginHistory hist=new LoginHistory();
-		hist.setLoginTime(loginTime);
-		hist.setLogoutTime(logoutTime);
-		hist.setSessionId(sessionId);
-		hist.getLastAccess();
-		hist.setDescription(description);
-		hist.setStatus(status);
-		hist.setUser(user);
+//		hist.setLoginTime(loginTime);
+//		hist.setLogoutTime(logoutTime);
+//		hist.setSessionId(sessionId);
+//		hist.getLastAccess();
+//		hist.setDescription(description);
+//		hist.setStatus(status);
+//		hist.setUser(user);
 		
+	}
+	public static void main(String[] args) {
+		LoginManager lm=new LoginManager();
+		String bauth=lm.setBasicAuth("admin","admin");
+		try {
+			lm.loginWithBasicAuth(bauth);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 }

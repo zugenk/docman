@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -31,13 +31,17 @@
 <script type="text/javascript" language="javascript">
 	<!--
 		var optRole = new OptionTransfer("selected_role","role_choice");
+		var optTopic = new OptionTransfer("selected_topic","topic_choice");
 		function initOption(){
 			optRole.init(document.forms[0]);
 			optRole.clearOptions();
+			optTopic.init(document.forms[0]);
+			optTopic.clearOptions();
 		}
 		
 		function markAll(){
 			optRole.markAll();
+			optTopic.markAll();
 		}
 
 	-->
@@ -369,6 +373,16 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="user.securityLevel.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="user" property="securityLevel" style="width:135"  value="${user.securityLevel.id}">
+					<option value=""></option>
+					<html:options collection="securityLevelList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
+		<tr>
 			<td width="150"></td>
 			<td width="10"></td>
 			<td >
@@ -418,6 +432,50 @@
 							<select name="role_choice" multiple style="width:100%" size="10" onDblClick="optRole.transferLeft()">
 							<logic:iterate id="role" name="roleSetList" type="com.app.docmgr.model.Role">
 								<option value="<bean:write name="role" property="id"/>"><bean:write name="role" property="name"/></option>
+							</logic:iterate>		
+							</select>				
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table border="0" width="98%" align="center">	
+		<tr class="title">
+			<td colspan="2"><bean:message key="user.favoriteTopics.key"/></td>
+		</tr>
+		<tr>
+			<td colspan="2" width="100%" align="center">
+				<table width="95%">
+					<%/*%>
+					<tr> 
+						<td width="100%" colspan="3" align="center">
+							Topic Type &nbsp;
+							<select name="filter_topic">
+								<option value="" >All</option>
+							</select>&nbsp;
+							<input type="button" value="<bean:message key="button.search" />" onclick="addAll('topic_choice','selected_topic')"  alt="add all Topic" />
+						</td>
+					</tr>
+					<%*/%>
+					<tr> 
+						<td width="45%">
+							<select name="selected_topic" multiple style="width:100%" size="10" onDblClick="optTopic.transferRight()">
+							<logic:iterate id="element" name="topicSet" type="com.app.docmgr.model.Topic">
+								<option value="<bean:write name="element" property="id"/>"><bean:write name="element" property="name"/></option>
+							</logic:iterate>		
+							</select>
+						</td>
+						<td width="5%" align="center">
+						<input type="button" value="&laquo;&laquo;" onclick="optTopic.transferAllLeft()"  alt="add all Topic" /><br/>
+						<input type="button" value="&laquo;" onclick="optTopic.transferLeft()"  alt="add selected Topic" /><br/>
+						<input type="button" value="&raquo;" onclick="optTopic.transferRight()"  alt="remove selected Topic" /><br/>
+						<input type="button" value="&raquo;&raquo;" onclick="optTopic.transferAllRight()"  alt="remove all Topic" />
+						<td width="45%">
+							<select name="topic_choice" multiple style="width:100%" size="10" onDblClick="optTopic.transferLeft()">
+							<logic:iterate id="topic" name="topicSetList" type="com.app.docmgr.model.Topic">
+								<option value="<bean:write name="topic" property="id"/>"><bean:write name="topic" property="name"/></option>
 							</logic:iterate>		
 							</select>				
 						</td>

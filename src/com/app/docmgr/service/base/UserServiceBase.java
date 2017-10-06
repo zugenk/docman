@@ -23,7 +23,7 @@ import com.app.docmgr.model.User;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 	/**
@@ -61,9 +61,11 @@ public class UserServiceBase {
 		try {
 			user = (User) session.get(User.class, id);
 			Hibernate.initialize(user.getRoles());			
+			Hibernate.initialize(user.getFavoriteTopics());			
 			Hibernate.initialize(user.getUserLevel());			
 			Hibernate.initialize(user.getStatus());			
 			Hibernate.initialize(user.getOrganization());			
+			Hibernate.initialize(user.getSecurityLevel());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -99,9 +101,11 @@ public class UserServiceBase {
 			user = (com.app.docmgr.model.User) query.uniqueResult();
 			if(user!=null) {
 				Hibernate.initialize(user.getRoles());			
+				Hibernate.initialize(user.getFavoriteTopics());			
 				Hibernate.initialize(user.getUserLevel());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
+				Hibernate.initialize(user.getSecurityLevel());			
 			}
 			return user;
 		} catch (HibernateException e) {
@@ -300,9 +304,11 @@ public class UserServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.User user = (com.app.docmgr.model.User)itr.next();
 				Hibernate.initialize(user.getRoles());			
+				Hibernate.initialize(user.getFavoriteTopics());			
 				Hibernate.initialize(user.getUserLevel());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
+				Hibernate.initialize(user.getSecurityLevel());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -364,7 +370,7 @@ public class UserServiceBase {
 		   	List privilegeList = new LinkedList();
 		   	String[] param=new String[2];
 	   		param[0]=user.getId().toString() ;
-			String sqlQuery = ApplicationFactory.mergeParam("SELECT DISTINCT(p.name) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE ur.user_id={0}",param);
+			String sqlQuery = ApplicationFactory.mergeParam("${project.queryList.appUser_privilegeList}",param);
 			ps = session.connection().prepareStatement(sqlQuery);			
 			rs = ps.executeQuery();
 			while (rs.next()) { 
@@ -399,7 +405,7 @@ public class UserServiceBase {
 		   	String[] param=new String[2];
 		   		param[0]=privilegeName;
 		   		param[1]=user.getId().toString() ;
-			String sqlQuery = ApplicationFactory.mergeParam("SELECT count(p.id) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE p.name='{0}' and ur.user_id={1}",param);
+			String sqlQuery = ApplicationFactory.mergeParam("${project.queryList.appUser_hasPrivilege}",param);
 			ps = session.connection().prepareStatement(sqlQuery);			
 			rs = ps.executeQuery();
 			int count=0;

@@ -60,6 +60,7 @@
 		<mapping resource="hbm/docmgr/Forum.hbm.xml" />
 		<mapping resource="hbm/docmgr/Bookmark.hbm.xml" />
 		<mapping resource="hbm/docmgr/Document.hbm.xml" />
+		<mapping resource="hbm/docmgr/SharedDocument.hbm.xml" />
 		<mapping resource="hbm/docmgr/DocumentHistory.hbm.xml" />
 		<mapping resource="hbm/docmgr/Topic.hbm.xml" />
 		<mapping resource="hbm/docmgr/Message.hbm.xml" />

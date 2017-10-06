@@ -23,7 +23,7 @@ import com.app.docmgr.model.UserHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 	/**
@@ -61,9 +61,11 @@ public class UserHistoryServiceBase {
 		try {
 			userHistory = (UserHistory) session.get(UserHistory.class, id);
 			Hibernate.initialize(userHistory.getRoles());			
+			Hibernate.initialize(userHistory.getFavoriteTopic());			
 			Hibernate.initialize(userHistory.getUserLevel());			
 			Hibernate.initialize(userHistory.getStatus());			
 			Hibernate.initialize(userHistory.getOrganization());			
+			Hibernate.initialize(userHistory.getSecurityLevel());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -99,9 +101,11 @@ public class UserHistoryServiceBase {
 			userHistory = (com.app.docmgr.model.UserHistory) query.uniqueResult();
 			if(userHistory!=null) {
 				Hibernate.initialize(userHistory.getRoles());			
+				Hibernate.initialize(userHistory.getFavoriteTopic());			
 				Hibernate.initialize(userHistory.getUserLevel());			
 				Hibernate.initialize(userHistory.getStatus());			
 				Hibernate.initialize(userHistory.getOrganization());			
+				Hibernate.initialize(userHistory.getSecurityLevel());			
 			}
 			return userHistory;
 		} catch (HibernateException e) {
@@ -300,9 +304,11 @@ public class UserHistoryServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.UserHistory userHistory = (com.app.docmgr.model.UserHistory)itr.next();
 				Hibernate.initialize(userHistory.getRoles());			
+				Hibernate.initialize(userHistory.getFavoriteTopic());			
 				Hibernate.initialize(userHistory.getUserLevel());			
 				Hibernate.initialize(userHistory.getStatus());			
 				Hibernate.initialize(userHistory.getOrganization());			
+				Hibernate.initialize(userHistory.getSecurityLevel());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());

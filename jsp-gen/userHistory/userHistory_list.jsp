@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -83,6 +83,7 @@
 			document.forms.userHistory.userHistory_userLevel_filter.value="";
 			document.forms.userHistory.userHistory_status_filter.value="";
 			document.forms.userHistory.userHistory_organization_filter.value="";
+			document.forms.userHistory.userHistory_securityLevel_filter.value="";
 			document.forms.userHistory.submit();
 		}
 
@@ -564,6 +565,7 @@
 		<td><bean:message key="userHistory.userLevel.key"/></td>
 		<td><bean:message key="userHistory.status.key"/></td>
 		<td><bean:message key="userHistory.organization.key"/></td>
+		<td><bean:message key="userHistory.securityLevel.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -623,6 +625,12 @@
 		<td >
 				<logic:notEmpty name="element"	property="organization">								
 					<bean:write name="element" property="organization.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="securityLevel">								
+					<bean:write name="element" property="securityLevel.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -948,6 +956,30 @@
 							%>
 						>
 						<bean:write name="organizationElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="userHistory.securityLevel.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  userHistory_securityLevel_filter_value = (String)request.getSession().getAttribute("userHistory_securityLevel_filter");
+					if("".equals(userHistory_securityLevel_filter_value)) userHistory_securityLevel_filter_value = "0";
+				%>				
+				<select name="userHistory_securityLevel_filter">
+					<option value=""></option>
+					<logic:iterate id="securityLevelElement" name="securityLevelList"  type="com.app.docmgr.model.Lookup">
+						
+						<option value="<bean:write name="securityLevelElement" property="id"/>" 
+							<%
+								Long userHistory_securityLevel_id = securityLevelElement.getId();							
+								Long userHistory_securityLevel_filter_value_c = new Long(userHistory_securityLevel_filter_value);
+								if(userHistory_securityLevel_filter_value_c.equals(userHistory_securityLevel_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="securityLevelElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -209,6 +209,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="user.securityLevel.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="user"	property="securityLevel">			
+					<bean:write name="user" property="securityLevel.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"></td>
 			<td width="10"></td>
 			<td >
@@ -229,6 +238,23 @@
 				<table width="90%" >
 					<logic:iterate id="role" name="roleSet" type="com.app.docmgr.model.Role">
 						<tr><td><bean:write name="role" property="name"/></td></tr>
+					</logic:iterate>	
+				</table>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table border="0" width="98%" align="center">	
+		<tr class="title">
+			<td><bean:message key="user.favoriteTopics.key"/></td>
+		</tr>
+		<tr>
+			<td align=center>
+				<div style="overflow:auto; height:110" >
+				<table width="90%" >
+					<logic:iterate id="topic" name="topicSet" type="com.app.docmgr.model.Topic">
+						<tr><td><bean:write name="topic" property="name"/></td></tr>
 					</logic:iterate>	
 				</table>
 				</div>

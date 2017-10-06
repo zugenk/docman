@@ -26,6 +26,7 @@ public class ACLManager {
 		actionList.add("CREATE");
 		actionList.add("LIST");
 		actionList.add("SEARCH");
+		actionList.add("SHARE");
 //		actionList.add("");
 //		actionList.add("");
 	}

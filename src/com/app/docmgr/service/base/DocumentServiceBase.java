@@ -23,7 +23,7 @@ import com.app.docmgr.model.Document;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 	/**
@@ -60,6 +60,7 @@ public class DocumentServiceBase {
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
 			document = (Document) session.get(Document.class, id);
+			Hibernate.initialize(document.getSecurityLevel());			
 			Hibernate.initialize(document.getStatus());			
 			Hibernate.initialize(document.getParentFolder());			
 			Hibernate.initialize(document.getParentDocument());			
@@ -97,6 +98,7 @@ public class DocumentServiceBase {
 			Query query = session.createQuery("SELECT document FROM com.app.docmgr.model.Document document "+filter+" ");
 			document = (com.app.docmgr.model.Document) query.uniqueResult();
 			if(document!=null) {
+				Hibernate.initialize(document.getSecurityLevel());			
 				Hibernate.initialize(document.getStatus());			
 				Hibernate.initialize(document.getParentFolder());			
 				Hibernate.initialize(document.getParentDocument());			
@@ -297,6 +299,7 @@ public class DocumentServiceBase {
 			java.util.Iterator itr = result.iterator();
 			while(itr.hasNext()){
 				com.app.docmgr.model.Document document = (com.app.docmgr.model.Document)itr.next();
+				Hibernate.initialize(document.getSecurityLevel());			
 				Hibernate.initialize(document.getStatus());			
 				Hibernate.initialize(document.getParentFolder());			
 				Hibernate.initialize(document.getParentDocument());			

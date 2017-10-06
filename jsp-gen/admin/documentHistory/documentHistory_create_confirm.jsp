@@ -19,7 +19,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -122,6 +122,15 @@
 			<td><bean:write name="documentHistory" property="lastUpdatedBy"/></td>
 		</tr>
  <% */ %> 
+		<tr>
+			<td width="150"><b><bean:message key="documentHistory.securityLevel.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="documentHistory" property="securityLevel">				
+					<bean:write name="documentHistory" property="securityLevel.name"/>
+				</logic:notEmpty>	
+			</td>
+		</tr>
   <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="documentHistory.status.key"/></b></td>
 			<td width="10">:</td>

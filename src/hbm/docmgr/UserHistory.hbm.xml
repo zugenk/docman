@@ -209,6 +209,13 @@
 			not-null="false"
 		>
 		</many-to-one>
+		<many-to-one
+			name="securityLevel"
+			column="security_level"
+			class="com.app.docmgr.model.Lookup"
+			not-null="false"
+		>
+		</many-to-one>
 
 		<set
 			name="roles"
@@ -218,7 +225,14 @@
 			<key column="user_history_id"/>
 			<many-to-many column="role_id" class="com.app.docmgr.model.Role"/>
 		</set>
-
+		<set
+			name="favoriteTopic"
+			table="favorite_topic"
+			cascade="all-delete-orphan"
+		>
+			<key column="user_id"/>
+			<many-to-many column="topic_id" class="com.app.docmgr.model.Topic"/>
+		</set>
 		<property
 			name="loginFailed"
 			column="login_failed"

@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 
@@ -130,6 +130,9 @@ public class DocumentHistoryActionBase extends Action{
 		request.getSession().setAttribute("documentHistory_orderType", documentHistory_orderType==null?"":documentHistory_orderType);
 		
 		try{ 
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -307,6 +310,14 @@ public class DocumentHistoryActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("documentHistory_lastUpdatedBy_filter", param_documentHistory_lastUpdatedBy_filter);
+		String param_documentHistory_securityLevel_filter = "";
+		if(request.getParameter("documentHistory_securityLevel_filter")!=null){
+			param_documentHistory_securityLevel_filter = request.getParameter("documentHistory_securityLevel_filter");
+			if(param_documentHistory_securityLevel_filter.length() > 0 ){				
+				documentHistory_filterSb.append("  AND documentHistory.securityLevel = '"+param_documentHistory_securityLevel_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("documentHistory_securityLevel_filter", param_documentHistory_securityLevel_filter);
 		String param_documentHistory_status_filter = "";
 		if(request.getParameter("documentHistory_status_filter")!=null){
 			param_documentHistory_status_filter = request.getParameter("documentHistory_status_filter");
@@ -447,6 +458,9 @@ public class DocumentHistoryActionBase extends Action{
     		DocumentHistory documentHistory = (DocumentHistory) request.getSession().getAttribute("documentHistory");
     		if(documentHistory == null) documentHistory = new DocumentHistory();
     		
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -481,6 +495,9 @@ public class DocumentHistoryActionBase extends Action{
     		loadParameter(request, form, documentHistory, errors);
     		//set Many To One Property
     		
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -538,6 +555,9 @@ public class DocumentHistoryActionBase extends Action{
     			return null;
     		}
     		
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -568,6 +588,9 @@ public class DocumentHistoryActionBase extends Action{
 
     		loadParameter(request, form, documentHistory, errors);
     		
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='DocumentHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -1122,6 +1145,18 @@ public class DocumentHistoryActionBase extends Action{
 */ /* 			String lastUpdatedBy = request.getParameter("lastUpdatedBy");
 			documentHistory.setLastUpdatedBy(lastUpdatedBy);
 */ 
+			com.app.docmgr.model.Lookup  securityLevelObj =null;
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			try{
+				String securityLevelStr = request.getParameter("securityLevel");
+				
+				if(securityLevelStr == null || securityLevelStr.trim().length() == 0 ){
+					documentHistory.setSecurityLevel(null);
+				}else{			
+					securityLevelObj = securityLevelService.get(new Long(securityLevelStr));
+					documentHistory.setSecurityLevel(securityLevelObj);
+				}
+			}catch(Exception ex){}	
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

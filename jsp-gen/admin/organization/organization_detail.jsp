@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -163,6 +163,7 @@
 			<td><bean:message key="user.userLevel.key"/></td>
    <% /* %> 			<td><bean:message key="user.status.key"/></td>
    <% */ %> 			<td><bean:message key="user.organization.key"/></td>
+			<td><bean:message key="user.securityLevel.key"/></td>
 		</tr>
 	<logic:iterate id="element_user" name="userSet" type="com.app.docmgr.model.User">		
 		<tr>
@@ -206,6 +207,11 @@
   <% */ %> 			<td>
 				<logic:notEmpty name="element_user" property="organization">
 					<bean:write name="element_user" property="organization.id"/>
+				</logic:notEmpty>				
+			</td>
+			<td>
+				<logic:notEmpty name="element_user" property="securityLevel">
+					<bean:write name="element_user" property="securityLevel.id"/>
 				</logic:notEmpty>				
 			</td>
 		</tr>						

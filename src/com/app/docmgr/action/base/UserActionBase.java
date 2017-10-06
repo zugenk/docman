@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 
@@ -139,6 +139,9 @@ public class UserActionBase extends Action{
 			com.app.docmgr.service.OrganizationService organizationService = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList = organizationService.getList(null, null);
 			request.setAttribute("organizationList", organizationList);
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 		}catch(Exception ex){
 		
 		}
@@ -487,6 +490,14 @@ public class UserActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("user_organization_filter", param_user_organization_filter);
+		String param_user_securityLevel_filter = "";
+		if(request.getParameter("user_securityLevel_filter")!=null){
+			param_user_securityLevel_filter = request.getParameter("user_securityLevel_filter");
+			if(param_user_securityLevel_filter.length() > 0 ){				
+				user_filterSb.append("  AND user.securityLevel = '"+param_user_securityLevel_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("user_securityLevel_filter", param_user_securityLevel_filter);
 		
 		if(user_fieldOrder!=null && user_orderType != null )user_filterSb.append(" ORDER BY "+user_fieldOrder+" "+user_orderType);
 		
@@ -564,6 +575,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("detail");
     	}catch(Exception ex){
@@ -591,6 +605,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		
     		forward = mapping.findForward("detail_popup");
@@ -618,6 +635,9 @@ public class UserActionBase extends Action{
  */ 			com.app.docmgr.service.OrganizationService organizationService = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList = organizationService.getList(null, null);
 			request.setAttribute("organizationList", organizationList);
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 
 			RoleService roleService = RoleService.getInstance();
 			List roleSetList = roleService.getList(null, null);
@@ -626,6 +646,13 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			TopicService topicService = TopicService.getInstance();
+			List topicSetList = topicService.getList(null, null);
+			request.setAttribute("topicSetList", topicSetList);
+
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
     		request.getSession().setAttribute("user", user);
     		forward = mapping.findForward("create");
     	}catch(Exception ex){
@@ -659,12 +686,22 @@ public class UserActionBase extends Action{
 */			com.app.docmgr.service.OrganizationService organizationService = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList = organizationService.getList(null, null);
 			request.setAttribute("organizationList", organizationList);
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 			RoleService roleService = RoleService.getInstance();
 			List roleSetList = roleService.getList(null, null);
 			request.setAttribute("roleSetList", roleSetList);
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);
+			
+			TopicService topicService = TopicService.getInstance();
+			List topicSetList = topicService.getList(null, null);
+			request.setAttribute("topicSetList", topicSetList);
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);
 			
 	
     		if(errors.isEmpty()){
@@ -723,12 +760,21 @@ public class UserActionBase extends Action{
 */ 			com.app.docmgr.service.OrganizationService organizationService = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList = organizationService.getList(null, null);
 			request.setAttribute("organizationList", organizationList);
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 			RoleService roleService = RoleService.getInstance();
 			List roleSetList = roleService.getList(null, null);
 			request.setAttribute("roleSetList", roleSetList);
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			TopicService topicService = TopicService.getInstance();
+			List topicSetList = topicService.getList(null, null);
+			request.setAttribute("topicSetList", topicSetList);
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("edit");
     	}catch(Exception ex){
@@ -759,6 +805,9 @@ public class UserActionBase extends Action{
  */			com.app.docmgr.service.OrganizationService organizationService = com.app.docmgr.service.OrganizationService.getInstance();
 			List organizationList = organizationService.getList(null, null);
 			request.setAttribute("organizationList", organizationList);
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			List securityLevelList = securityLevelService.getList("  and lookup.type='securityLevel'  ", null);
+			request.setAttribute("securityLevelList", securityLevelList);
 
 			RoleService roleService = RoleService.getInstance();
 			List roleSetList = roleService.getList(null, null);
@@ -766,6 +815,12 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			TopicService topicService = TopicService.getInstance();
+			List topicSetList = topicService.getList(null, null);
+			request.setAttribute("topicSetList", topicSetList);
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
     		if(errors.isEmpty()){
     			forward = mapping.findForward("edit_confirm");
     		}else{	
@@ -816,6 +871,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("delete_confirm");
     	}catch(Exception ex){
@@ -867,6 +925,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("submit_confirm");
     	}catch(Exception ex){
@@ -917,6 +978,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("approve_confirm");
     	}catch(Exception ex){
@@ -967,6 +1031,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("reject_confirm");
     	}catch(Exception ex){
@@ -1017,6 +1084,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("pending_confirm");
     	}catch(Exception ex){
@@ -1067,6 +1137,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("process_confirm");
     	}catch(Exception ex){
@@ -1117,6 +1190,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("close_confirm");
     	}catch(Exception ex){
@@ -1167,6 +1243,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("remove_confirm");
     	}catch(Exception ex){
@@ -1217,6 +1296,9 @@ public class UserActionBase extends Action{
 			Set roleSet = user.getRoles();			
 			if(roleSet == null) roleSet = new HashSet();
 			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
 
     		forward = mapping.findForward("cancel_confirm");
     	}catch(Exception ex){
@@ -1418,6 +1500,18 @@ public class UserActionBase extends Action{
 					user.setOrganization(organizationObj);
 				}
 			}catch(Exception ex){}	
+			com.app.docmgr.model.Lookup  securityLevelObj =null;
+			com.app.docmgr.service.LookupService securityLevelService = com.app.docmgr.service.LookupService.getInstance();
+			try{
+				String securityLevelStr = request.getParameter("securityLevel");
+				
+				if(securityLevelStr == null || securityLevelStr.trim().length() == 0 ){
+					user.setSecurityLevel(null);
+				}else{			
+					securityLevelObj = securityLevelService.get(new Long(securityLevelStr));
+					user.setSecurityLevel(securityLevelObj);
+				}
+			}catch(Exception ex){}	
 
 			Set roleSet = new HashSet();
 			String[] _selectedRole=request.getParameterValues("selected_role");
@@ -1445,6 +1539,32 @@ public class UserActionBase extends Action{
 				}
 			}
 			user.setRoles(roleSet);
+			Set topicSet = new HashSet();
+			String[] _selectedTopic=request.getParameterValues("selected_topic");
+			if (_selectedTopic!=null && _selectedTopic.length>0) {
+				TopicService topicService = TopicService.getInstance();
+				Set _orgTopicSet = user.getFavoriteTopics();
+				if (_orgTopicSet==null)_orgTopicSet=new HashSet();
+				Topic item=null;
+				boolean found=false;
+				long itemId =0;
+				for (int i = 0; i < _selectedTopic.length; i++) {
+					itemId = Long.parseLong(_selectedTopic[i]);
+					found=false;
+					try {
+						for (Iterator iter = _orgTopicSet.iterator(); iter.hasNext()&& !found;) {
+							item = (Topic) iter.next();
+							if (itemId==item.getId()){
+								found=true;
+								topicSet.add(item);
+							}
+						}
+						if (!found) topicSet.add(topicService.get(itemId));
+					} catch (Exception e) {
+					}
+				}
+			}
+			user.setFavoriteTopics(topicSet);
     	}catch(Exception ex){
     		ex.printStackTrace();
     	}

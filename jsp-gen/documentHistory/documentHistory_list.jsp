@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -62,6 +62,7 @@
 			document.forms.documentHistory.documentHistory_lastUpdatedDate_filter_start.value="";
 			document.forms.documentHistory.documentHistory_lastUpdatedDate_filter_end.value="";
 			document.forms.documentHistory.documentHistory_lastUpdatedBy_filter.value="";
+			document.forms.documentHistory.documentHistory_securityLevel_filter.value="";
 			document.forms.documentHistory.documentHistory_status_filter.value="";
 			document.forms.documentHistory.documentHistory_parentFolder_filter.value="";
 			document.forms.documentHistory.documentHistory_parentDocument_filter.value="";
@@ -319,6 +320,7 @@
 				<a href="#" onclick="doOrder('last_updated_by', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
+		<td><bean:message key="documentHistory.securityLevel.key"/></td>
 		<td><bean:message key="documentHistory.status.key"/></td>
 		<td><bean:message key="documentHistory.parentFolder.key"/></td>
 		<td><bean:message key="documentHistory.parentDocument.key"/></td>
@@ -350,6 +352,12 @@
 		<td><bean:write name="element" property="createdBy"/></td>
 		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="lastUpdatedBy"/></td>
+		<td >
+				<logic:notEmpty name="element"	property="securityLevel">								
+					<bean:write name="element" property="securityLevel.name"/>
+				</logic:notEmpty>	
+			
+		</td>
 		<td >
 				<logic:notEmpty name="element"	property="status">								
 					<bean:write name="element" property="status.name"/>
@@ -500,6 +508,30 @@
 		<td width="10">:</td>
 		<td><input type="text" name="documentHistory_lastUpdatedBy_filter" value="<bean:write name="documentHistory_lastUpdatedBy_filter"/>"></td>
 	</tr>
+		<tr>
+			<td width="150"><bean:message key="documentHistory.securityLevel.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  documentHistory_securityLevel_filter_value = (String)request.getSession().getAttribute("documentHistory_securityLevel_filter");
+					if("".equals(documentHistory_securityLevel_filter_value)) documentHistory_securityLevel_filter_value = "0";
+				%>				
+				<select name="documentHistory_securityLevel_filter">
+					<option value=""></option>
+					<logic:iterate id="securityLevelElement" name="securityLevelList"  type="com.app.docmgr.model.Lookup">
+						
+						<option value="<bean:write name="securityLevelElement" property="id"/>" 
+							<%
+								Long documentHistory_securityLevel_id = securityLevelElement.getId();							
+								Long documentHistory_securityLevel_filter_value_c = new Long(documentHistory_securityLevel_filter_value);
+								if(documentHistory_securityLevel_filter_value_c.equals(documentHistory_securityLevel_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="securityLevelElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
 		<tr>
 			<td width="150"><bean:message key="documentHistory.status.key"/></td>
 			<td width="10">:</td>

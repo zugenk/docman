@@ -23,7 +23,7 @@ import com.app.docmgr.model.Topic;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 	/**
@@ -60,7 +60,7 @@ public class TopicServiceBase {
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
 			topic = (Topic) session.get(Topic.class, id);
-			Hibernate.initialize(topic.getFollowers());			
+			Hibernate.initialize(topic.getSubscribers());			
 			Hibernate.initialize(topic.getParentForum());			
 
 		} catch (ObjectNotFoundException onfe) {
@@ -96,7 +96,7 @@ public class TopicServiceBase {
 			Query query = session.createQuery("SELECT topic FROM com.app.docmgr.model.Topic topic "+filter+" ");
 			topic = (com.app.docmgr.model.Topic) query.uniqueResult();
 			if(topic!=null) {
-				Hibernate.initialize(topic.getFollowers());			
+				Hibernate.initialize(topic.getSubscribers());			
 				Hibernate.initialize(topic.getParentForum());			
 			}
 			return topic;
@@ -295,7 +295,7 @@ public class TopicServiceBase {
 			java.util.Iterator itr = result.iterator();
 			while(itr.hasNext()){
 				com.app.docmgr.model.Topic topic = (com.app.docmgr.model.Topic)itr.next();
-				Hibernate.initialize(topic.getFollowers());			
+				Hibernate.initialize(topic.getSubscribers());			
 				Hibernate.initialize(topic.getParentForum());			
 			}			
 		} catch(HibernateException he) {

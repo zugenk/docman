@@ -13,7 +13,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -121,7 +121,7 @@
 	<br>
 	<table border="0" width="98%" align="center">	
 		<tr class="title">
-			<td><bean:message key="topic.followers.key"/></td>
+			<td><bean:message key="topic.subscribers.key"/></td>
 		</tr>
 		<tr>
 			<td align=center>

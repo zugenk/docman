@@ -101,8 +101,8 @@
 		</many-to-one>
 
 		<set
-			name="followers"
-			table="topic_user"
+			name="subscribers"
+			table="topic_subscriber"
 			cascade="all-delete-orphan"
 		>
 

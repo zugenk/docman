@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -180,6 +180,16 @@
 		</tr>
 
  <% */ %> 
+		<tr>
+			<td width="150"><b><bean:message key="document.securityLevel.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="document" property="securityLevel" style="width:135"  value="${document.securityLevel.id}">
+					<option value=""></option>
+					<html:options collection="securityLevelList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
 <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="document.status.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>

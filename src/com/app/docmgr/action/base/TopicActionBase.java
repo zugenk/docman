@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 
@@ -299,7 +299,7 @@ public class TopicActionBase extends Action{
     			return null;
     		}
     		
-			Set userSet = topic.getFollowers();			
+			Set userSet = topic.getSubscribers();			
 			if(userSet == null) userSet = new HashSet();
 			request.setAttribute("userSet", userSet);			
 
@@ -326,7 +326,7 @@ public class TopicActionBase extends Action{
     			return null;
     		}
     		
-			Set userSet = topic.getFollowers();			
+			Set userSet = topic.getSubscribers();			
 			if(userSet == null) userSet = new HashSet();
 			request.setAttribute("userSet", userSet);			
 
@@ -355,7 +355,7 @@ public class TopicActionBase extends Action{
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
 
-			Set userSet = topic.getFollowers();			
+			Set userSet = topic.getSubscribers();			
 			if(userSet == null) userSet = new HashSet();
 			request.setAttribute("userSet", userSet);			
     		request.getSession().setAttribute("topic", topic);
@@ -388,7 +388,7 @@ public class TopicActionBase extends Action{
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
-			Set userSet = topic.getFollowers();			
+			Set userSet = topic.getSubscribers();			
 			if(userSet == null) userSet = new HashSet();
 			request.setAttribute("userSet", userSet);
 			
@@ -445,7 +445,7 @@ public class TopicActionBase extends Action{
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
-			Set userSet = topic.getFollowers();			
+			Set userSet = topic.getSubscribers();			
 			if(userSet == null) userSet = new HashSet();
 			request.setAttribute("userSet", userSet);			
 
@@ -476,7 +476,7 @@ public class TopicActionBase extends Action{
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
-			Set userSet = topic.getFollowers();			
+			Set userSet = topic.getSubscribers();			
 			if(userSet == null) userSet = new HashSet();
 			request.setAttribute("userSet", userSet);			
     		if(errors.isEmpty()){
@@ -526,7 +526,7 @@ public class TopicActionBase extends Action{
     			response.sendRedirect("topic.do?action=detail");
     			return null;
     		}
-			Set userSet = topic.getFollowers();			
+			Set userSet = topic.getSubscribers();			
 			if(userSet == null) userSet = new HashSet();
 			request.setAttribute("userSet", userSet);			
 
@@ -640,7 +640,7 @@ public class TopicActionBase extends Action{
 			String[] _selectedUser=request.getParameterValues("selected_user");
 			if (_selectedUser!=null && _selectedUser.length>0) {
 				UserService userService = UserService.getInstance();
-				Set _orgUserSet = topic.getFollowers();
+				Set _orgUserSet = topic.getSubscribers();
 				if (_orgUserSet==null)_orgUserSet=new HashSet();
 				User item=null;
 				boolean found=false;
@@ -661,7 +661,7 @@ public class TopicActionBase extends Action{
 					}
 				}
 			}
-			topic.setFollowers(userSet);
+			topic.setSubscribers(userSet);
     	}catch(Exception ex){
     		ex.printStackTrace();
     	}

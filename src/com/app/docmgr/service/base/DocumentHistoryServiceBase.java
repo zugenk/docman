@@ -23,7 +23,7 @@ import com.app.docmgr.model.DocumentHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 
 	/**
@@ -60,6 +60,7 @@ public class DocumentHistoryServiceBase {
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
 			documentHistory = (DocumentHistory) session.get(DocumentHistory.class, id);
+			Hibernate.initialize(documentHistory.getSecurityLevel());			
 			Hibernate.initialize(documentHistory.getStatus());			
 			Hibernate.initialize(documentHistory.getParentFolder());			
 			Hibernate.initialize(documentHistory.getParentDocument());			
@@ -97,6 +98,7 @@ public class DocumentHistoryServiceBase {
 			Query query = session.createQuery("SELECT documentHistory FROM com.app.docmgr.model.DocumentHistory documentHistory "+filter+" ");
 			documentHistory = (com.app.docmgr.model.DocumentHistory) query.uniqueResult();
 			if(documentHistory!=null) {
+				Hibernate.initialize(documentHistory.getSecurityLevel());			
 				Hibernate.initialize(documentHistory.getStatus());			
 				Hibernate.initialize(documentHistory.getParentFolder());			
 				Hibernate.initialize(documentHistory.getParentDocument());			
@@ -297,6 +299,7 @@ public class DocumentHistoryServiceBase {
 			java.util.Iterator itr = result.iterator();
 			while(itr.hasNext()){
 				com.app.docmgr.model.DocumentHistory documentHistory = (com.app.docmgr.model.DocumentHistory)itr.next();
+				Hibernate.initialize(documentHistory.getSecurityLevel());			
 				Hibernate.initialize(documentHistory.getStatus());			
 				Hibernate.initialize(documentHistory.getParentFolder());			
 				Hibernate.initialize(documentHistory.getParentDocument());			

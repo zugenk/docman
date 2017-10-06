@@ -24,6 +24,7 @@ public class DocumentHistory  implements java.io.Serializable {
      private String repositoryId;
      private String documentVersion;
      private String description;
+     private Lookup securityLevel;
      private Status status;
      private Date createdDate;
      private String createdBy;
@@ -179,6 +180,17 @@ public class DocumentHistory  implements java.io.Serializable {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * 
+     */
+    public Lookup getSecurityLevel() {
+        return this.securityLevel;
+    }
+    
+    public void setSecurityLevel(Lookup securityLevel) {
+        this.securityLevel = securityLevel;
     }
 
     /**

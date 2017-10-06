@@ -41,7 +41,9 @@ public class UserHistory  implements java.io.Serializable {
      private String lastPassword;
      private String lastPinCode;
      private Organization organization;
+     private Lookup securityLevel;
      private Set roles;
+     private Set favoriteTopic;
      private Integer loginFailed;
      private Integer maxRelease;
      private Date lastReleasedDate;
@@ -388,12 +390,34 @@ public class UserHistory  implements java.io.Serializable {
     /**
      * 
      */
+    public Lookup getSecurityLevel() {
+        return this.securityLevel;
+    }
+    
+    public void setSecurityLevel(Lookup securityLevel) {
+        this.securityLevel = securityLevel;
+    }
+
+    /**
+     * 
+     */
     public Set getRoles() {
         return this.roles;
     }
     
     public void setRoles(Set roles) {
         this.roles = roles;
+    }
+
+    /**
+     * 
+     */
+    public Set getFavoriteTopic() {
+        return this.favoriteTopic;
+    }
+    
+    public void setFavoriteTopic(Set favoriteTopic) {
+        this.favoriteTopic = favoriteTopic;
     }
 
     /**

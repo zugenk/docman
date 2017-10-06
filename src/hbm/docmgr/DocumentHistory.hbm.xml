@@ -93,6 +93,13 @@
 			length="1000"
 		/>
 		<many-to-one
+			name="securityLevel"
+			column="security_level"
+			class="com.app.docmgr.model.Lookup"
+			not-null="false"
+		>
+		</many-to-one>
+		<many-to-one
 			name="status"
 			column="status"
 			class="com.app.docmgr.model.Status"
@@ -133,6 +140,7 @@
 			not-null="true"
 		>
 		</many-to-one>
+		
 		<many-to-one
 			name="parentDocument"
 			column="parent_document"

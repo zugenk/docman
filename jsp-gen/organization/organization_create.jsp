@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 06-10-2017 22:19:39
  */
 -->
 </HEAD>
@@ -248,6 +248,7 @@
 			<td><b><bean:message key="user.userLevel.key"/> <font color="#FF0000">*</font></b></td>
  <% /* %> 			<td><b><bean:message key="user.status.key"/> <font color="#FF0000">*</font></b></td>
  <% */ %> 			<td><b><bean:message key="user.organization.key"/></b></td>
+			<td><b><bean:message key="user.securityLevel.key"/></b></td>
 			<td></td>	
 		</tr>
 	<logic:iterate id="element_user" name="userSet" type="com.app.docmgr.model.User">
@@ -352,6 +353,11 @@
 					<bean:write name="element_user" property="organization.id"/>
 				</logic:notEmpty>	
 			</td>
+			<td>
+				<logic:notEmpty name="element_user" property="securityLevel">
+					<bean:write name="element_user" property="securityLevel.id"/>
+				</logic:notEmpty>	
+			</td>
 			<td><input type="button" value="<bean:message key="button.edit"/>" onclick="javascript:doEditUser(<% out.print(String.valueOf(i)); %>);"/><input type="button" value="<bean:message key="button.remove"/>" onclick="javascript:doDeleteUser(<% out.print(String.valueOf(i)); %>);"/></td>
 		</tr>						
 	</logic:iterate>
@@ -447,6 +453,9 @@
 				</logic:messagesPresent>			
   <% */ %> 				<logic:messagesPresent property="user.organization">
 					<html:errors property="user.organization"/>
+				</logic:messagesPresent>			
+				<logic:messagesPresent property="user.securityLevel">
+					<html:errors property="user.securityLevel"/>
 				</logic:messagesPresent>			
 			</td>
 		</tr>
@@ -549,6 +558,12 @@
 				<html-el:select  name="element_user" property="organization" style="width:135"  value="${user.organization.id}">
 					<option value=""></option>
 					<html:options collection="organizationList_user" property="id" labelProperty="name"/>
+				</html-el:select>																		
+			</td>
+			<td>
+				<html-el:select  name="element_user" property="securityLevel" style="width:135"  value="${user.securityLevel.id}">
+					<option value=""></option>
+					<html:options collection="securityLevelList_user" property="id" labelProperty="name"/>
 				</html-el:select>																		
 			</td>
 			<td><input type="button" value="<bean:message key="button.add"/>" onclick="javascript:doAddUser();"/></td>
