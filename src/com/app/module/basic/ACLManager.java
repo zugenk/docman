@@ -11,6 +11,7 @@ import com.app.docmgr.model.Forum;
 import com.app.docmgr.model.Organization;
 import com.app.docmgr.model.Topic;
 import com.app.docmgr.model.User;
+import com.app.docmgr.service.SharedDocumentService;
 
 
 
@@ -47,10 +48,17 @@ public class ACLManager {
 				return true;
 			} else if ("PRIVATE".equals(d.getSecurityLevel().getCode())) {
 				//means its publicly accessible;
+				
 				d.getOwner();
 			} else if ((d.getSecurityLevel().getCode()).startsWith("LEVEL-") && (actor.getSecurityLevel().getCode()).startsWith("LEVEL-")) {
+				//based on security level
 				return (d.getSecurityLevel().getPriority() <= actor.getSecurityLevel().getPriority());
 			}
+			
+			//Check Document sharing
+			//TODO: Create Filter param for sharedDoc
+			String filterParam=null;//" document ="++" and targetUser="
+			//SharedDocumentService.getInstance().getBy(filterParam);
 		}
 		
 		if (targetObj.getClass().getPackage().getName().equals(DOCMAN_PACKAGE) ){

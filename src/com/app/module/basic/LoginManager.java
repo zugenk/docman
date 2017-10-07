@@ -1,6 +1,7 @@
 package com.app.module.basic;
 
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.struts.action.ActionError;
@@ -45,10 +46,7 @@ public class LoginManager {
 	    	return "Basic " + base64Creds;
 		}
 	
-	public void checkPassport() {
-		// TODO Auto-generated method stub
-
-	}
+	
 	
 	private void recordLoginHistory() {
 		// TODO Auto-generated method stub
