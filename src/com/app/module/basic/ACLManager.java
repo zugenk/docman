@@ -8,6 +8,7 @@ import javax.sound.sampled.TargetDataLine;
 
 import com.app.docmgr.model.Document;
 import com.app.docmgr.model.Forum;
+import com.app.docmgr.model.Organization;
 import com.app.docmgr.model.Topic;
 import com.app.docmgr.model.User;
 
@@ -31,7 +32,7 @@ public class ACLManager {
 //		actionList.add("");
 	}
 	
-	public static boolean isAllowed(String toAction,Object targetObj,User actor){
+	public static boolean isAuthorized(String toAction,Object targetObj,User actor){
 		//todo: Need to add accessType to all object (Public/Private/Confidential
 		//Target object: Topic,
 		if (targetObj instanceof Topic) {
@@ -40,10 +41,20 @@ public class ACLManager {
 		}
 		if (targetObj instanceof Document) {
 			Document d=(Document) targetObj;
-			d.getCreatedBy();
+			if (d.getSecurityLevel() == null) {
+				//means its publicly accessible;
+				
+				return true;
+			} else if ("PRIVATE".equals(d.getSecurityLevel().getCode())) {
+				//means its publicly accessible;
+				d.getOwner();
+			} else if ((d.getSecurityLevel().getCode()).startsWith("LEVEL-") && (actor.getSecurityLevel().getCode()).startsWith("LEVEL-")) {
+				return (d.getSecurityLevel().getPriority() <= actor.getSecurityLevel().getPriority());
+			}
 		}
 		
 		if (targetObj.getClass().getPackage().getName().equals(DOCMAN_PACKAGE) ){
+		
 			try {
 				Method gcb=targetObj.getClass().getMethod("getCreatedBy");
 				String creator=(String) gcb.invoke(targetObj, null);
@@ -56,12 +67,11 @@ public class ACLManager {
 		return false;
 	}
 	
-	private void isSibling() {
-		// TODO Auto-generated method stub
-
+	private boolean isSibling(User owner, User guest) {
+		return guest.getOrganization().getId()==owner.getUserLevel().getId();
 	}
 	
-	private void isSuperior() {
+	private void isSuperior(Organization refOrg, Organization guestOrg) {
 		// TODO Auto-generated method stub
 
 	}
