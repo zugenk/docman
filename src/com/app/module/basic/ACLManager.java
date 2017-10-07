@@ -57,7 +57,7 @@ public class ACLManager {
 			
 			//Check Document sharing
 			//TODO: Create Filter param for sharedDoc
-			String filterParam=null;//" document ="++" and targetUser="
+			String filterParam=null;//" AND sharedDocument.targetUser = '2'   AND sharedDocument.status = '62' 
 			//SharedDocumentService.getInstance().getBy(filterParam);
 		}
 		

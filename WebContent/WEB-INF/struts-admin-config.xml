@@ -7,7 +7,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 07-10-2017 06:18:15
  */
  -->
 <struts-config>
@@ -19,6 +19,7 @@
     	<form-bean name="forumForm" type="com.app.docmgr.admin.form.ForumForm" />
     	<form-bean name="bookmarkForm" type="com.app.docmgr.admin.form.BookmarkForm" />
     	<form-bean name="documentForm" type="com.app.docmgr.admin.form.DocumentForm" />
+    	<form-bean name="sharedDocumentForm" type="com.app.docmgr.admin.form.SharedDocumentForm" />
     	<form-bean name="documentHistoryForm" type="com.app.docmgr.admin.form.DocumentHistoryForm" />
     	<form-bean name="topicForm" type="com.app.docmgr.admin.form.TopicForm" />
     	<form-bean name="messageForm" type="com.app.docmgr.admin.form.MessageForm" />
@@ -179,6 +180,26 @@
     		<forward name="close_confirm" path="/WEB-INF/jsp/admin/document/document_close_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/admin/document/document_remove_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/admin/document/document_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/sharedDocument" name="sharedDocumentForm" scope="request" input="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_create.jsp" type="com.app.docmgr.admin.action.SharedDocumentAction">
+    		<forward name="list_redirect" path="/sharedDocument.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/admin/sharedDocument/sharedDocument_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/documentHistory" name="documentHistoryForm" scope="request" input="/WEB-INF/jsp/admin/documentHistory/documentHistory_create.jsp" type="com.app.docmgr.admin.action.DocumentHistoryAction">
     		<forward name="list_redirect" path="/documentHistory.do" redirect="true"/>

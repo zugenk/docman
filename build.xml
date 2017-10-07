@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="DocumentManager" default="web-copy" basedir="." >
+<project name="DocumentManagerGen" default="web-copy" basedir="." >
 	<property name="src" location="src" />
 	<property name="ext" location="ext"/>
 	<property name="web" location="WebContent"/>
@@ -18,13 +18,13 @@
 	<property name="jsp-gen" location="jsp-gen"/>
 	<property name="jsp-ext" location="${web}/WEB-INF/jsp-ext"/>
 	
-	<property name="target" location="../TesGenerator/"/>
-	<property name="srcbase" value="src/com/ams/"/>
+	<property name="target" location="../DocumentManager/"/>
 	<property name="srcdir" value="src/"/>
+	<property name="pkgbase" value="${srcdir}com/app/docmgr/"/>
 			
-	<property name="deploy" location="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps/${ant.project.name}" />
-	<property name="classesDir" value="WEB-INF/classes"/>
-	<property name="jspDir" value="WEB-INF/jsp"/>
+	<property name="deploy" location="./Docker/tomcat/${ant.project.name}" />
+	<property name="classesDir" value="/WEB-INF/classes"/>
+	<property name="jspDir" value="/WEB-INF/jsp"/>
 	
 	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask">
 		<classpath>
@@ -307,103 +307,117 @@
 		</copy>
 	</target>
 
-	<target name="deployAll" depends="deploySource,deployWeb" />	
-	<target name="deployAllClean" depends="deployCleanSource,deployWeb" />	
-	<target name="deployWeb" >
+	<target name="upgradeAll" depends="upgradeSource,upgradeWeb,upgradeHBM,upgradeProperties" />	
+	<target name="upgradeAllClean" depends="upgradeCleanSource,upgradeWeb" />	
+	<target name="upgradeWeb" >
 		<copy todir="${target}/jsp-gen" overwrite="yes">
 			<fileset dir="${jsp}">
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
 	</target>
-	<target name="deploySource" >
-		<copy todir="${target}/${srcbase}/action/base" overwrite="yes">
-			<fileset dir="${srcbase}/action/base">
+	<target name="upgradeSource" >
+		<copy todir="${target}/${pkgbase}/action/base" overwrite="yes">
+			<fileset dir="${pkgbase}/action/base">
 				<include name="*.*" />
 			</fileset>
 		</copy>
-		<copy todir="${target}/${srcbase}/model" overwrite="yes">
-			<fileset dir="${srcbase}/model">
+		<copy todir="${target}/${pkgbase}/model" overwrite="yes">
+			<fileset dir="${pkgbase}/model">
 				<include name="*.*" />
 			</fileset>
 		</copy>
-		<copy todir="${target}/${srcbase}/service/base" overwrite="yes">
-			<fileset dir="${srcbase}/service/base">
-				<include name="*.*" />
-			</fileset>
-		</copy>
-		
-		<copy todir="${target}/${srcbase}/action" overwrite="no">
-			<fileset dir="${srcbase}/action">
-				<include name="*.*" />
-			</fileset>
-		</copy>
-		<copy todir="${target}/${srcbase}/form" overwrite="no">
-			<fileset dir="${srcbase}/form">
-				<include name="*.*" />
-			</fileset>
-		</copy>
-		<copy todir="${target}/${srcbase}/admin" overwrite="no">
-			<fileset dir="${srcbase}/admin">
-				<include name="**/*.*" />
-			</fileset>
-		</copy>
-		<copy todir="${target}/${srcbase}/service" overwrite="no">
-			<fileset dir="${srcbase}/service">
-				<include name="*.*" />
-			</fileset>
-		</copy>
-	</target>
-	<target name="deployCleanSource" >
-		<copy todir="${target}/${srcbase}/action/base" overwrite="yes">
-			<fileset dir="${srcbase}/action/base">
-				<include name="*.*" />
-			</fileset>
-		</copy>
-		<copy todir="${target}/${srcbase}/model" overwrite="yes">
-			<fileset dir="${srcbase}/model">
-				<include name="*.*" />
-			</fileset>
-		</copy>
-		<copy todir="${target}/${srcbase}/service/base" overwrite="yes">
-			<fileset dir="${srcbase}/service/base">
+		<copy todir="${target}/${pkgbase}/service/base" overwrite="yes">
+			<fileset dir="${pkgbase}/service/base">
 				<include name="*.*" />
 			</fileset>
 		</copy>
 		
-		<copy todir="${target}/${srcbase}/action" overwrite="yes">
-			<fileset dir="${srcbase}/action">
+		<copy todir="${target}/${pkgbase}/action" overwrite="no">
+			<fileset dir="${pkgbase}/action">
 				<include name="*.*" />
 			</fileset>
 		</copy>
-		<copy todir="${target}/${srcbase}/form" overwrite="yes">
-			<fileset dir="${srcbase}/form">
+		<copy todir="${target}/${pkgbase}/form" overwrite="no">
+			<fileset dir="${pkgbase}/form">
 				<include name="*.*" />
 			</fileset>
 		</copy>
-		<copy todir="${target}/${srcbase}/admin" overwrite="yes">
-			<fileset dir="${srcbase}/admin">
+		<copy todir="${target}/${pkgbase}/admin" overwrite="no">
+			<fileset dir="${pkgbase}/admin">
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
-		<copy todir="${target}/${srcbase}/service" overwrite="no">
-			<fileset dir="${srcbase}/service">
+		<copy todir="${target}/${pkgbase}/service" overwrite="no">
+			<fileset dir="${pkgbase}/service">
 				<include name="*.*" />
 			</fileset>
 		</copy>
 	</target>
-	<target name="deployHBM" >
+	<target name="upgradeCleanSource" >
+		<copy todir="${target}/${pkgbase}/action/base" overwrite="yes">
+			<fileset dir="${pkgbase}/action/base">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${pkgbase}/model" overwrite="yes">
+			<fileset dir="${pkgbase}/model">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${pkgbase}/service/base" overwrite="yes">
+			<fileset dir="${pkgbase}/service/base">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="${target}/${pkgbase}/action" overwrite="yes">
+			<fileset dir="${pkgbase}/action">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${pkgbase}/form" overwrite="yes">
+			<fileset dir="${pkgbase}/form">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${pkgbase}/admin" overwrite="yes">
+			<fileset dir="${pkgbase}/admin">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${target}/${pkgbase}/service" overwrite="yes">
+			<fileset dir="${pkgbase}/service">
+				<include name="*.*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="upgradeHBM" >
 		<copy todir="${target}/${srcdir}/hbm" overwrite="yes">
 			<fileset dir="${srcdir}/hbm">
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
+		<copy todir="${target}/${srcdir}" overwrite="yes">
+			<fileset dir="${srcdir}">
+				<include name="*.cfg.xml" />
+			</fileset>
+		</copy>
 	</target>
-	<target name="deployProperties" >
+	<target name="upgradeStrutClean" >
+		<copy todir="${target}/WebContent/WEB-INF/" overwrite="yes">
+			<fileset dir="${web}/WEB-INF/">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="upgradeProperties" >
 		<copy todir="${target}/${srcdir}" overwrite="yes">
 			<fileset dir="${srcdir}">
 				<include name="*.properties" />
-				<include name="*.xml" />
+				<!-- include name="*.xml" / -->
 			</fileset>
 		</copy>
 	</target>
