@@ -31,9 +31,11 @@ public class LoginController {
 			@RequestHeader(value="Authorisation") String bauth,
 			@RequestHeader(value="ipassport") String ipass,
 			HttpServletResponse response) {
+		
 		if(ipass !=null) {
+			log.debug("Login with ipassport");
 			LoginManager.
-		}
+		} 
 		
 		return null;
 	}

@@ -22,7 +22,7 @@ static String IPASSPORT_COLLECTION="IPassportData";
 	
 	
 	public static Document checkPassport(String ipassport) throws Exception{
-		Document searchQ=new Document("ipassport", ipassport);
+		Document searchQ=new Document("ipassport", ipassport).append("lastUpdate", System.currentTimeMillis());
 		return MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
 	}
 	
