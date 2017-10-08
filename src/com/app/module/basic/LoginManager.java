@@ -7,12 +7,14 @@ import java.util.List;
 import org.apache.struts.action.ActionError;
 
 import com.app.docmgr.model.LoginHistory;
+import com.app.docmgr.model.Status;
 import com.app.docmgr.model.User;
+import com.app.docmgr.service.LoginHistoryService;
 import com.app.docmgr.service.UserService;
 import com.app.shared.ApplicationFactory;
 
 public class LoginManager {
-	public User login(String loginName,String passwd) throws Exception{
+	public static User login(String loginName,String passwd) throws Exception{
 		// TODO Auto-generated method stub
 		UserService userService = UserService.getInstance();
 		User loginUser = null;
@@ -25,44 +27,51 @@ public class LoginManager {
 	 	if(!encriptedPassword.equals(loginUser.getLoginPassword())){
 	 		throw new Exception("error.login.password");
 	 	} 
-	 	recordLoginHistory();
+	 	//recordLoginHistory();
 	 	return loginUser;
 	}
 	
-	 public User loginWithBasicAuth(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
-	    	String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
-	    	int idx=plain.indexOf(':');
-	    	String loginName=plain.substring(0,idx);
-	    	String passwd=plain.substring(idx+1);
-	    	System.out.println("["+loginName+"] -> ["+passwd+"]");
-	    	return login(loginName, passwd); // null; // 
-	 	}
+	public static User loginWithBasicAuth(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
+    	String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
+    	int idx=plain.indexOf(':');
+    	String loginName=plain.substring(0,idx);
+    	String passwd=plain.substring(idx+1);
+    	System.out.println("["+loginName+"] -> ["+passwd+"]");
+    	return login(loginName, passwd); // null; // 
+ 	}
 	    
-	public String setBasicAuth(String user, String password) {
-	    	String plainCreds = user+":"+password;//"okmAdmin:admin";
-	    	byte[] plainCredsBytes = plainCreds.getBytes();
-	    	byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
-	    	String base64Creds = new String(base64CredsBytes);
-	    	return "Basic " + base64Creds;
-		}
-	
-	
-	
-	private void recordLoginHistory() {
-		// TODO Auto-generated method stub
-		LoginHistory hist=new LoginHistory();
-//		hist.setLoginTime(loginTime);
-//		hist.setLogoutTime(logoutTime);
-//		hist.setSessionId(sessionId);
-//		hist.getLastAccess();
-//		hist.setDescription(description);
-//		hist.setStatus(status);
-//		hist.setUser(user);
-		
+	public static String makeBasicAuth(String user, String password) {
+    	String plainCreds = user+":"+password;//"okmAdmin:admin";
+    	byte[] plainCredsBytes = plainCreds.getBytes();
+    	byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
+    	String base64Creds = new String(base64CredsBytes);
+    	return "Basic " + base64Creds;
 	}
+	
+	
+	
+	private static LoginHistory recordLoginHistory(User user,Status status,String sessionId,String description) {
+		LoginHistory hist=new LoginHistory();
+		try {
+			hist.setLoginTime(new Date());
+//			hist.setLogoutTime(logoutTime);
+//			hist.setSessionId(sessionId);
+			hist.getLastAccess();
+			hist.setDescription(description);
+			hist.setStatus(status);
+			hist.setUser(user);
+			LoginHistoryService.getInstance().add(hist);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return hist;
+	}
+	
 	public static void main(String[] args) {
 		LoginManager lm=new LoginManager();
-		String bauth=lm.setBasicAuth("admin","admin");
+		String bauth=lm.makeBasicAuth("admin","admin");
 		try {
 			lm.loginWithBasicAuth(bauth);
 		} catch (Exception e) {
