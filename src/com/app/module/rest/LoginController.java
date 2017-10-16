@@ -20,44 +20,24 @@ import com.app.module.basic.LoginManager;
 import com.app.module.basic.PassportManager;
 import com.app.shared.ApplicationFactory;
 
-
-
-
 @Controller
 @RequestMapping("/v1")
 public class LoginController {
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
 	
-	@RequestMapping(value = "action/login")
-	public String login(@RequestHeader HttpHeaders httpHeaders,
-//			@RequestHeader(value="Accept") String accept,
-//			@RequestHeader(value="Accept-Language") String acceptLanguage,
-//			@RequestHeader(value="Authorization") String basicAuth,
-//			@RequestHeader(value="ipassport") String ipassport,
-	
-			HttpServletResponse response) {
-		
-		String ipassport =httpHeaders.getFirst("ipassport");
-		log.debug("Try Login REST Api... [");
-		Document iPassDoc=null;
-		if(ipassport !=null) {
-			log.debug("Login with ipassport");
-			try {
-				iPassDoc=PassportManager.checkPassport(ipassport);
-			} catch (Exception e) {
-			}
-		} 
-		if (iPassDoc==null && httpHeaders.getFirst("Authorization")!=null) {
-			try {
-				log.debug("Login with basic auth =["+httpHeaders.getFirst("Authorization")+"]");
-				LoginManager.loginWithBasicAuth(httpHeaders.getFirst("Authorization"));
-							
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+	@RequestMapping(value = "action/login",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> login(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+		Map resp=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport,basicAuth);
+			if(iPass==null)	resp.put("errormMessage", "error.authentication.failed");
+			else return new ResponseEntity<Map>(iPass,HttpStatus.OK);
+		} catch (Exception e) {
+			resp.put("errormMessage", e.getMessage());
 		}
-		
-		return null;
+		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
 	}
 	
 	

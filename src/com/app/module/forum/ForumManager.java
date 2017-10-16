@@ -2,8 +2,11 @@ package com.app.module.forum;
 
 import java.util.List;
 
+import org.bson.Document;
+
 import com.app.docmgr.model.Forum;
 import com.app.docmgr.service.ForumService;
+import com.app.module.basic.LoginManager;
 
 public class ForumManager {
 	private List<Forum> getForums() throws Exception {

@@ -8,28 +8,78 @@
           <param name="ConversionPattern" value="%d %-5p %c.%M:%L - %m%n"/> 
        </layout> 
     </appender>
- 
-    <!-- specify the logging level for loggers from other libraries
-    <logger name="com.opensymphony">
-    	<level value="ERROR" />
-    </logger>
+    
+    <appender name="server-debug" class="org.apache.log4j.FileAppender">
+		<param name="File" value="DOCMAN_server-debug.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
+		</layout>
+	</appender>
 
-    <logger name="com.ams.codegen">
+	<appender name="hiberfile" class="org.apache.log4j.FileAppender">
+		<param name="File" value="DOCMAN_Hibernate.log" />
+		<param name="MaxFileSize" value="10240KB" />
+		<param name="MaxBackupIndex" value="2" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p [%t] %C{2} (%F:%L) - [%X{loginName}]%m%n" />
+		</layout>
+	</appender>
+
+	<appender name="rootfile"
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="DOCMAN_root.log" />
+		<param name="MaxFileSize" value="10240KB" />
+		<param name="MaxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p [%t] %C (%F:%L) - [%X{loginName}]%m%n" />
+				
+		</layout>
+	</appender>
+	<appender name="appfile"
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="DOCMAN_app.log" />
+		<param name="MaxFileSize" value="10240KB" />
+		<param name="MaxBackupIndex" value="50" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p [%t] %C{2} (%F:%L) - [%X{loginName}]%m%n" />
+		</layout>
+	</appender>
+ 
+     <logger name="com.ams.codegen">
     	 <level value="DEBUG" />
+    	 <appender-ref ref="console" />
     </logger>
    
    
-  - - >
-  <category name="com.ams" additivity="false">
-  	<priority value="DEBUG"/>
-  	<appender-ref ref="console"/>
-  </category>
+  	<category name="org.hibernate">
+		<priority value="warn" />
+		<appender-ref ref="hiberfile" />
+	</category>
+	<!--  
+  	<category name="com.app">
+		<priority value="debug" />
+		<appender-ref ref="appfile" />
+	</category>
+	
+	<category name="org.springframework.web">
+		<priority value="error" />
+		<appender-ref ref="console" />
+	</category>
+  -->
   
-  
-   < ! - - for all other loggers log only debug and above log messages -->
+	  <category name="com.mchange">
+			<priority value="info" />
+	  </category>
      <root>
         <priority value="trace"/> 
-        <appender-ref ref="console" /> 
+        <!--   
+        <appender-ref ref="rootfile" />
+        -->  
+        <appender-ref ref="console" />
      </root> 
     
 </log4j:configuration> 
