@@ -26,16 +26,24 @@ public class LoginController {
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
 	
 	@RequestMapping(value = "action/login",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Map> login(
+	public @ResponseBody ResponseEntity<Map> login( //){
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
 		Map resp=new HashMap();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport,basicAuth);
-			if(iPass==null)	resp.put("errormMessage", "error.authentication.failed");
-			else return new ResponseEntity<Map>(iPass,HttpStatus.OK);
-		} catch (Exception e) {
-			resp.put("errormMessage", e.getMessage());
+			Document iPass=LoginManager.authenticate(ipassport,basicAuth); //(null,"Basic YWRtaW46YWRtaW4="); //
+			if(iPass==null)	{
+				System.out.println("LOGIN >> FAILED");
+				log.debug("Login Failed..");
+				resp.put("errorMessage", "error.authentication.failed");
+			} else {
+				log.debug("HOREEE LOGIN SUCCESS");
+				System.out.println("LOGIN >> SUCCESFULL");
+				return new ResponseEntity<Map>((Map)iPass,HttpStatus.OK); //resp,HttpStatus.OK); // 
+			}
+		} catch (Exception e) {	
+			resp.put("errorMessage", e.getMessage());
+			log.debug("Login Exception..");
 		}
 		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
 	}

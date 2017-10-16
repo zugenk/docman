@@ -33,7 +33,7 @@ public class LoginManager {
 		 //List userList = userService.getList(" AND lower(user.loginName) = lower('"+id+"') ", null); //AND appUser.loginPassword='"+pwd+"' 
 		List userList = userService.getList(" AND user.loginName = '"+loginName+"' AND user.status <> '"+blockedStatus.getId()+"' ", null); 
 		if(userList.size()<=0) throw new Exception("error.login.failed");
-	 	
+	 	log.debug("login User found ="+userList.size());
 		loginUser = (User) userList.iterator().next();
 	 	String encriptedPassword=ApplicationFactory.encrypt(passwd);
 	 	//String encriptedPassword=pwd;
@@ -45,9 +45,10 @@ public class LoginManager {
 	 		}
 	 		loginUser.setLoginFailed(ctr+1);
 	 		UserService.getInstance().update(loginUser);
-	 		
+	 		log.debug("SALAH PASWORD");
 	 		throw new Exception("error.login.password");
 	 	} 
+	 	log.debug("PASWORD OK");
 	 	Document iPass=PassportManager.issuePassport(loginUser);
 	 	Long lhId=recordLoginHistory(loginUser,"success",(String) iPass.get("passport"),"Login Success via Rest");
 	 	iPass.put("loginHistId",lhId);
@@ -60,7 +61,7 @@ public class LoginManager {
     	int idx=plain.indexOf(':');
     	String loginName=plain.substring(0,idx);
     	String passwd=plain.substring(idx+1);
-//    	log.debug("["+loginName+"] -> ["+passwd+"]");
+    	log.debug("["+loginName+"] -> ["+passwd+"]");
     	return login(loginName, passwd); // null; // 
  	}
 	    
