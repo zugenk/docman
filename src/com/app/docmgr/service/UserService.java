@@ -1,5 +1,12 @@
 package com.app.docmgr.service;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.app.docmgr.model.Role;
+import com.app.docmgr.model.Topic;
+import com.app.docmgr.model.User;
 import com.app.docmgr.service.base.UserServiceBase;
 
 /**
@@ -17,5 +24,23 @@ public class UserService extends com.app.docmgr.service.base.UserServiceBase{
 			instance = new UserService();
 		}
 		return instance;
+	}
+	
+	public static List<String> getRoleNames(User user) {
+		List<String> roleNames=new LinkedList<String>();
+		for (Iterator iterator = user.getRoles().iterator(); iterator.hasNext();) {
+			Role role = (Role) iterator.next();
+			roleNames.add(role.getName());
+		}
+		return roleNames;
+	}
+
+	public static List<Long> getFavTopicIds(User user) {
+		List<Long> favTopicIds=new LinkedList<Long>();
+		for (Iterator iterator = user.getFavoriteTopics().iterator(); iterator.hasNext();) {
+			Topic topic = (Topic) iterator.next();
+			favTopicIds.add(topic.getId());
+		}
+		return favTopicIds;
 	}
 }

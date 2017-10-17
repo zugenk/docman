@@ -19,6 +19,8 @@ import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
 import com.app.shared.ApplicationFactory;
 import com.meterware.httpunit.HttpHeader;
+import com.simas.db.MongoManager;
+import com.simas.webservice.Utility;
 
 public class LoginManager {
 	private static Logger log = Logger.getLogger(LoginManager.class.getName());
@@ -28,31 +30,30 @@ public class LoginManager {
 		
 		// TODO Auto-generated method stub
 		UserService userService = UserService.getInstance();
-		Status blockedStatus=StatusService.getInstance().getByTypeandCode("User", "Blocked");
+		Status blockedStatus=StatusService.getInstance().getByTypeandCode("User", "removed");
+		
 		User loginUser = null;
-		 //List userList = userService.getList(" AND lower(user.loginName) = lower('"+id+"') ", null); //AND appUser.loginPassword='"+pwd+"' 
-		List userList = userService.getList(" AND user.loginName = '"+loginName+"' AND user.status <> '"+blockedStatus.getId()+"' ", null); 
-		if(userList.size()<=0) throw new Exception("error.login.failed");
-	 	log.debug("login User found ="+userList.size());
-		loginUser = (User) userList.iterator().next();
-	 	String encriptedPassword=ApplicationFactory.encrypt(passwd);
+		loginUser = userService.getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+blockedStatus.getId()+"' "); 
+		if(loginUser==null) throw new Exception("error.login.failed");
+		System.out.println(Utility.debug(loginUser));
+		
+		String encriptedPassword=ApplicationFactory.encrypt(passwd);
 	 	//String encriptedPassword=pwd;
 	 	if(!encriptedPassword.equals(loginUser.getLoginPassword())){
-	 		recordLoginHistory(loginUser,"error.login.password",null,"Wrong Password");
+	 		recordLoginHistory(loginUser,"rejected",null,"Wrong Password");
 	 		int ctr=loginUser.getLoginFailed()+1;
 	 		if (ctr>=MAX_WRONG_PASSWD_ATTEMPT) {
 	 			loginUser.setStatus(blockedStatus);
 	 		}
 	 		loginUser.setLoginFailed(ctr+1);
 	 		UserService.getInstance().update(loginUser);
-	 		log.debug("SALAH PASWORD");
 	 		throw new Exception("error.login.password");
 	 	} 
-	 	log.debug("PASWORD OK");
 	 	Document iPass=PassportManager.issuePassport(loginUser);
-	 	Long lhId=recordLoginHistory(loginUser,"success",(String) iPass.get("passport"),"Login Success via Rest");
+	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
 	 	iPass.put("loginHistId",lhId);
-	 	iPass.put("loginUser",loginUser);
+	 	//iPass.put("loginUser",loginUser);
+	 	PassportManager.savePassport(iPass);
 	 	return iPass;
 	}
 	
@@ -61,7 +62,7 @@ public class LoginManager {
     	int idx=plain.indexOf(':');
     	String loginName=plain.substring(0,idx);
     	String passwd=plain.substring(idx+1);
-    	log.debug("["+loginName+"] -> ["+passwd+"]");
+    	//log.debug("["+loginName+"] -> ["+passwd+"]");
     	return login(loginName, passwd); // null; // 
  	}
 	    
@@ -81,12 +82,13 @@ public class LoginManager {
 			hist.setLoginTime(new Date());
 //			hist.setLogoutTime(logoutTime);
 //			hist.setSessionId(sessionId);
-//			hist.getLastAccess();
+			hist.setLastAccess(new Date());
 			hist.setDescription(description);
 			hist.setStatus(StatusService.getInstance().getByTypeandCode("LoginHistory", statusCode));
 			hist.setUser(user);
-			LoginHistoryService.getInstance().add(hist);
+			LoginHistoryService.getInstance().update(hist);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return hist.getId();
 	}
@@ -125,21 +127,18 @@ public class LoginManager {
 	}
 	
 	public static Document authenticate(String ipassport, String basicAuth) {
-		log.debug("Authenticate... [");
+		log.debug("Authenticate ["+ipassport+":"+basicAuth+"]");
 		Document iPass=null;
 		if(ipassport !=null && ipassport.length()>0) {
 			try {
 				iPass=PassportManager.checkPassport(ipassport);
-				if(iPass!=null) log.debug("ipassport still active..!!");
 			} catch (Exception e) {
 			}
 		} 
 		
 		if (basicAuth!=null && basicAuth.length()>0) {
 			try {
-				log.debug("Login with basic auth =["+basicAuth+"]");
 				iPass=LoginManager.loginWithBasicAuth(basicAuth);
-				if(iPass!=null) log.debug("login successfull..!!");
 			} catch (Exception e) {
 			}
 		}

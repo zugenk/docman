@@ -33,17 +33,13 @@ public class LoginController {
 		try {
 			Document iPass=LoginManager.authenticate(ipassport,basicAuth); //(null,"Basic YWRtaW46YWRtaW4="); //
 			if(iPass==null)	{
-				System.out.println("LOGIN >> FAILED");
-				log.debug("Login Failed..");
 				resp.put("errorMessage", "error.authentication.failed");
 			} else {
-				log.debug("HOREEE LOGIN SUCCESS");
-				System.out.println("LOGIN >> SUCCESFULL");
 				return new ResponseEntity<Map>((Map)iPass,HttpStatus.OK); //resp,HttpStatus.OK); // 
 			}
 		} catch (Exception e) {	
+	//		e.printStackTrace();
 			resp.put("errorMessage", e.getMessage());
-			log.debug("Login Exception..");
 		}
 		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
 	}
