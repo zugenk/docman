@@ -1,9 +1,13 @@
 package com.app.module.document;
 
+import java.util.List;
+
 import com.app.docmgr.model.Document;
 import com.app.docmgr.model.Lookup;
+import com.app.docmgr.model.SharedDocument;
 import com.app.docmgr.model.User;
 import com.app.docmgr.service.SharedDocumentService;
+import com.app.shared.PartialList;
 
 public class ACLManager {
 	public static boolean isAllowed(Document doc, User actor,String action) {
@@ -46,16 +50,8 @@ public class ACLManager {
 				e.printStackTrace();
 			}
 			
-		} else if("READ".equals(action)) {
-			//SEARCH for INDIVIDUAL SHARING 
-			String filterParam="";
-			String orderParam=null;
-			//SharedDocumentService.getInstance().getList(filterParam, orderParam);
-			
-			
-			//SEARCH for ORG SHARING 
-			//SharedDocumentService.getInstance().getList(filterParam, orderParam);
-			
+		} else { // if("READ".equals(action)) {
+			return isShared(doc,actor,action);
 		}
 		
 		
@@ -67,19 +63,49 @@ public class ACLManager {
 		return false;
 	}
 
-	private void isSibling() {
-		// TODO Auto-generated method stub
-
-	}
-	 
-	private void isSuperior() {
-		// TODO Auto-generated method stub
+	
+	public static boolean isShared(Document doc,User actor, String action) {
+		//SEARCH for INDIVIDUAL SHARING 
+		String orderParam=null;
+		PartialList sdList;
+		try {
+			String filterParam=" AND sharedDocument.document="+doc.getId()+" AND sharedDocument.targetUser="+actor.getId(); //+" AND sharedDocument.grantAction like '%"+action+"%' ";
+			sdList= SharedDocumentService.getInstance().getPartialList(filterParam, orderParam, 1, 1);
+			if(!sdList.isEmpty()) return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		//SEARCH for ORG SHARING 
+		try {
+			String filterParam=" AND sharedDocument.document="+doc.getId()+" AND sharedDocument.targetOrganization="+actor.getOrganization().getId(); //+" AND sharedDocument.grantAction like '%"+action+"%' ";
+			sdList= SharedDocumentService.getInstance().getPartialList(filterParam, orderParam, 1, 1);
+			if(!sdList.isEmpty()) return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 
 	}
 	
-	private void isDescendent() {
+	public static boolean isSibling(User actor, User owner) {
+		if (actor.getOrganization().getId() == owner.getOrganization().getId()) return true;
+		return false;
+
+	}
+	 
+	public static boolean isSuperior(User actor, User owner) {
+		// TODO Auto-generated method stub
+		
+		return false;
+	}
+	
+	public static boolean isDescendent(User actor, User owner) {
 		// TODO Auto-generated method stub
 
+		return false;
 	}
 	
 	

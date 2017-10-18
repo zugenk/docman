@@ -6,12 +6,29 @@ import org.bson.Document;
 
 import com.app.docmgr.model.Forum;
 import com.app.docmgr.service.ForumService;
-import com.app.module.basic.LoginManager;
+import com.app.shared.PartialList;
 
 public class ForumManager {
+	public static int itemPerPage=20;
+	
+	public static PartialList getForumList(int start){
+		PartialList resultList=null;
+		try {
+			String filterParam=null; 
+			String orderParam=" ORDER BY message.id ASC ";
+			resultList= ForumService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+			//if(!resultList.isEmpty()) return true;
+		} catch (Exception e) {
+//			e.printStackTrace();
+		}
+		return resultList;
+	}
+	
 	private List<Forum> getForums() throws Exception {
 		// TODO Auto-generated method stub
 		return ForumService.getInstance().getListAll(null, null);
+		
+		
 	}
 	
 	private void createForum() {
