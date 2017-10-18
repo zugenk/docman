@@ -75,7 +75,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		Document iPass= MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
 		if (iPass!=null) {
 			iPass.put("lastAccess", System.currentTimeMillis());
-			log.debug("PASSPORT CHECKED ="+iPass.getString("ipassport"));
+			log.debug("PASSPORT CHECKED OK ="+iPass.getString("ipassport"));
 		}
 		return iPass;
 	}
@@ -87,9 +87,8 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		Document iPass= MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
 		if (iPass!=null) {
 			iPass.put("lastAccess", System.currentTimeMillis());
-			log.debug("PASSPORT CHECKED ="+iPass.getString("ipassport"));
-		}
-		log.debug("PASSPORT INVALID "+ipassport);
+			log.debug("PASSPORT CHECKED OK ="+iPass.getString("ipassport"));
+		} else  log.debug("PASSPORT INVALID "+ipassport);
 		return iPass;
 	}
 	
