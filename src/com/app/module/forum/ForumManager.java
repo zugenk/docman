@@ -15,7 +15,7 @@ public class ForumManager {
 		PartialList resultList=null;
 		try {
 			String filterParam=null; 
-			String orderParam=" ORDER BY message.id ASC ";
+			String orderParam=" ORDER BY forum.id ASC ";
 			resultList= ForumService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {

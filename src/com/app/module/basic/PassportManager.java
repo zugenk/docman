@@ -15,7 +15,7 @@ import com.simas.db.MongoManager;
 
 public class PassportManager {
 static String IPASSPORT_COLLECTION="IPassportData";
-static String DB_CFG="DEFAULT|localhost|27017|DOCMAN";
+static String DB_CFG="DEFAULT|mongo-docman|27017|DOCMAN";
 static boolean inited=false;
 
 static int TIMEOUT_PERIOD=600000; //10 Mins

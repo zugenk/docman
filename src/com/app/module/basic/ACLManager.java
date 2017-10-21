@@ -81,11 +81,27 @@ public class ACLManager {
 	
 	private void isSuperior(Organization refOrg, Organization guestOrg) {
 		// TODO Auto-generated method stub
+//		WITH RECURSIVE q AS (SELECT forum.id, forum.code,forum.name, forum.parent_forum
+//                FROM forum
+//               WHERE forum.id=6 --parent_forum is null
+//               UNION ALL
+//              SELECT x.id, x.code,x.name, x.parent_forum
+//                FROM forum  x
+//                JOIN q ON q.id = x.parent_forum)
+// SELECT * FROM q
+		
 
 	}
 	private void isDescendent() {
 		// TODO Auto-generated method stub
-
+//		WITH RECURSIVE q AS (SELECT forum.id, forum.code,forum.name, forum.parent_forum
+//              FROM forum
+//             WHERE forum.id=6 --parent_forum is null
+//             UNION ALL
+//            SELECT x.id, x.code,x.name, x.parent_forum
+//              FROM forum  x
+//              JOIN q ON q.parent_forum = x.id)
+//SELECT * FROM q
 	}
 	
 	public static boolean isSharedTo(String toAction,Object targetObj,User actor){

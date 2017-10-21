@@ -12,7 +12,7 @@ public class TopicManager {
 		PartialList resultList=null;
 		try {
 			String filterParam=null; 
-			String orderParam=" ORDER BY message.id ASC ";
+			String orderParam=" ORDER BY topic.id ASC ";
 			resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {
@@ -25,7 +25,7 @@ public class TopicManager {
 		PartialList resultList=null;
 		try {
 			String filterParam=" AND topic.forum="+forum.getId(); 
-			String orderParam=" ORDER BY message.id ASC ";
+			String orderParam=" ORDER BY topic.id ASC ";
 			resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {

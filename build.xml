@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="DocumentManagerGen" default="web-copy" basedir="." >
+<project name="DocumentManager" default="web-copy" basedir="." >
 	<property name="src" location="src" />
 	<property name="ext" location="ext"/>
 	<property name="web" location="WebContent"/>
@@ -25,6 +25,8 @@
 	<property name="deploy" location="./Docker/tomcat/${ant.project.name}" />
 	<property name="classesDir" value="/WEB-INF/classes"/>
 	<property name="jspDir" value="/WEB-INF/jsp"/>
+	
+	<property name="release" value="./Docker/Release/" />
 	
 	<taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask">
 		<classpath>
@@ -187,7 +189,7 @@
 				<path refid="compile.class.path"/>
 			</classpath>    	
 		</javac>					
-		<jar jarfile="${ant.project.name}.jar" basedir="${bin}"/>		
+		<!-- jar jarfile="${ant.project.name}.jar" basedir="${bin}"/ -->		
 		<!-- jar jarfile="${lib}/${ant.project.name}.jar" basedir="${bin}"/ -->		
 	</target>
 	
@@ -199,7 +201,7 @@
 				<path refid="compile.class.path"/>
 			</classpath>    	
 		</javac>					
-		<jar jarfile="${ant.project.name}.jar" basedir="${bin}"/>		
+		<!-- jar jarfile="${ant.project.name}.jar" basedir="${bin}"/-->		
 		<!-- jar jarfile="${lib}/${ant.project.name}.jar" basedir="${bin}"/ -->		
 	</target>
 	
@@ -420,5 +422,24 @@
 				<!-- include name="*.xml" / -->
 			</fileset>
 		</copy>
+	</target>
+	
+	
+	<target name="release.war" depends="compile" 
+		description="Generate WAR deploy package">	
+		<echo message="Generate WAR deploy package"/>
+		<jar jarfile="${release}/${ant.project.name}.jar" basedir="${bin}"/>
+		<war destfile="${release}/${ant.project.name}.war">
+		  	<fileset dir="${web}">
+		  		<exclude name="WEB-INF/classes/"/>
+		  		<exclude name="WEB-INF/db/"/>
+		  		<exclude name="WEB-INF/jsp-ext/"/>
+			</fileset>
+		</war>
+		<delete file="${lib}/${ant.project.name}.jar"></delete>
+	</target>
+	
+	<target name="release.jar" depends="compile" description="Packaging Project Jar" >
+		<jar jarfile="${release}/${ant.project.name}.jar" basedir="${bin}"/>
 	</target>
 </project>
