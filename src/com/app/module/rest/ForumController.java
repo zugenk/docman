@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,47 +17,83 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.LoginManager;
+import com.app.module.forum.ForumManager;
 
 @Controller
 @RequestMapping("/v1")
 public class ForumController {
 private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
-/*	
-	@RequestMapping(produces = "application/json", method = RequestMethod.GET, value = "data")
-	@ResponseBody
-	public ResponseEntity<Data> getData(@RequestHeader(value="User-Agent") String userAgent, @RequestParam(value = "ID", defaultValue = "") String id)    
-	{
-	//code goes here
-	}
-
-	@RequestMapping(produces = "application/json", method = RequestMethod.GET, value = "data")
-	@ResponseBody
-	public ResponseEntity<Data> getData(HttpServletRequest request, @RequestParam(value = "ID", defaultValue = "") String id)    
-	{
-	    String userAgent = request.getHeader("user-agent");
-	}
-* /	
-	
-	@RequestMapping(value = "forum")
-	public @ResponseBody ResponseEntity<Map> login(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
-		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass==null) {
-				//Not authenticated/failed
-				
-			}
-			
-			//return new ResponseEntity<Map>(LoginManager.authenticate(ipassport,basicAuth),HttpStatus.OK);
-		} catch (Exception e) {
-			Map resp=new HashMap();
-			resp.put("errormMessage", e.getMessage());
-			return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
+@RequestMapping(value = "forum/tree",produces = "application/json", method = RequestMethod.GET)
+public @ResponseBody ResponseEntity<Map> getTree(
+		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+		@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+	Map response=new HashMap();
+	try {
+		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+		if (iPass!=null) {
+			response.put("fullTree",ForumManager.getTree(null));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		}
+	} catch (Exception e) {
+		response.put("errorMessage", e.getMessage());
 	}
-	
-	*/
+	return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+}
+
+@RequestMapping(value = "forum/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
+public @ResponseBody ResponseEntity<Map> getTree(
+		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+		@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+		@PathVariable(value="ID") String startId) {
+	Map response=new HashMap();
+	try {
+		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+		if (iPass!=null) {
+			response.put("result",ForumManager.getTree(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		}
+	} catch (Exception e) {
+		response.put("errorMessage", e.getMessage());
+	}
+	return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+}
+
+@RequestMapping(value = "forum/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
+public @ResponseBody ResponseEntity<Map> getDownline(
+		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+		@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+		@PathVariable(value="ID") String startId
+		) {
+	Map response=new HashMap();
+	try {
+		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+		if (iPass!=null) {
+			response.put("result",ForumManager.getDownline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		}
+	} catch (Exception e) {
+		response.put("errorMessage", e.getMessage());
+	}
+	return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+}
+
+@RequestMapping(value = "forum/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
+public @ResponseBody ResponseEntity<Map> getUpline(
+		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+		@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+		@PathVariable(value="ID") String startId) {
+	Map response=new HashMap();
+	try {
+		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+		if (iPass!=null) {
+			response.put("result",ForumManager.getUpline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		}
+	} catch (Exception e) {
+		response.put("errorMessage", e.getMessage());
+	}
+	return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+}
 
 
 }

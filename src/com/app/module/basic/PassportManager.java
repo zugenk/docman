@@ -63,8 +63,8 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 	private static void init() {
 		if(inited) return;
 		MongoManager.init(DB_CFG);
-	    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
-	    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
+	    MongoManager.getCollection("DOCMAN",IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
+	    MongoManager.getCollection("DOCMAN",IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
 	    inited=true;
 	}
 	
