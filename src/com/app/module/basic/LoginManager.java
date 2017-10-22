@@ -35,7 +35,7 @@ public class LoginManager {
 		User loginUser = null;
 		loginUser = userService.getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+blockedStatus.getId()+"' "); 
 		if(loginUser==null) throw new Exception("error.login.failed");
-		System.out.println(Utility.debug(loginUser));
+		//log.debug(Utility.debug(loginUser));
 		
 		String encriptedPassword=ApplicationFactory.encrypt(passwd);
 	 	//String encriptedPassword=pwd;

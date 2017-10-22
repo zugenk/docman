@@ -3,13 +3,18 @@ package com.app.module.forum;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.app.docmgr.model.Forum;
 import com.app.docmgr.service.ForumService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
+import com.app.module.basic.LoginManager;
 import com.app.shared.PartialList;
+import com.simas.webservice.Utility;
 
 public class ForumManager {
+	private static Logger log = Logger.getLogger(ForumManager.class.getName());
 	public static int itemPerPage=20;
 	
 	public static PartialList getForumList(int start){
@@ -57,7 +62,7 @@ public class ForumManager {
 	   " JOIN forum f ON f.parent_forum = c.id )"+
 	   " SELECT * FROM   frm ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("ForumTree", sqlQuery, null);
-		//System.out.println(Utility.debug(list));
+		//log.debug(Utility.debug(list));
 		return BaseUtil.constructTreeList(list);
 	}	
 	
@@ -71,7 +76,7 @@ public class ForumManager {
 		  " JOIN q ON q.id = x.parent_forum) "+ 
 		  " SELECT * FROM q order by level ASC";
 		List list= DBQueryManager.getList("ForumDownline", sqlQuery, null); //new String[]{startId});
-		//System.out.println(Utility.debug(list));
+		//log.debug(Utility.debug(list));
 		return list;
 	}	
 
@@ -83,7 +88,7 @@ public class ForumManager {
 		  " JOIN q ON q.parent_forum = x.id) "+ 
 		  " SELECT * FROM q order by level desc";
 		List list= DBQueryManager.getList("ForumUpline", sqlQuery, null);// new String[]{startId});
-		//System.out.println(Utility.debug(list));
+		//log.debug(Utility.debug(list));
 		return list;
 	}	
 

@@ -31,7 +31,7 @@ public @ResponseBody ResponseEntity<Map> getTree(
 	try {
 		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 		if (iPass!=null) {
-			response.put("fullTree",ForumManager.getTree(null));
+			response.put("result",ForumManager.getTree(null));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		}
 	} catch (Exception e) {

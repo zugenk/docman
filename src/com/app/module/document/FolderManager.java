@@ -4,14 +4,18 @@ package com.app.module.document;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.app.docmgr.model.Folder;
 import com.app.docmgr.service.FolderService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
+import com.app.module.basic.LoginManager;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
 public class FolderManager {
+	private static Logger log = Logger.getLogger(FolderManager.class.getName());
 	public static int itemPerPage=20;
 	
 	public static PartialList getFolderList(int start){
@@ -56,7 +60,7 @@ public class FolderManager {
 	   " JOIN folder f ON f.parent_folder = c.id )"+
 	   " SELECT * FROM   frm ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("FolderTree", sqlQuery, null);
-		//System.out.println(Utility.debug(list));
+		//log.debug(Utility.debug(list));
 		return BaseUtil.constructTreeList(list);
 	}	
 	
@@ -70,7 +74,7 @@ public class FolderManager {
 		  " JOIN q ON q.id = x.parent_folder) "+ 
 		  " SELECT * FROM q order by level ASC";
 		List list= DBQueryManager.getList("FolderDownline", sqlQuery, null); //new String[]{startId});
-		//System.out.println(Utility.debug(list));
+		//log.debug(Utility.debug(list));
 		return list;
 	}	
 
@@ -82,7 +86,7 @@ public class FolderManager {
 		  " JOIN q ON q.parent_folder = x.id) "+ 
 		  " SELECT * FROM q order by level desc";
 		List list= DBQueryManager.getList("FolderUpline", sqlQuery, null);// new String[]{startId});
-		//System.out.println(Utility.debug(list));
+		//log.debug(Utility.debug(list));
 		return list;
 	}	
 

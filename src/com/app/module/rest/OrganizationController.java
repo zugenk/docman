@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.LoginManager;
-import com.app.module.document.FolderManager;
+import com.app.module.basic.OrganizationManager;
 
 @Controller
 @RequestMapping("/v1")
-public class FolderController {
+public class OrganizationController {
 private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
 
-	@RequestMapping(value = "folder/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "organization/tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
@@ -32,7 +32,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			if (iPass!=null) {
-				response.put("result",FolderManager.getTree(null));
+				response.put("result",OrganizationManager.getTree(null));
 				return new ResponseEntity<Map>(response,HttpStatus.OK);
 			}
 		} catch (Exception e) {
@@ -41,7 +41,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "folder/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "organization/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -50,7 +50,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			if (iPass!=null) {
-				response.put("result",FolderManager.getTree(startId));
+				response.put("result",OrganizationManager.getTree(startId));
 				return new ResponseEntity<Map>(response,HttpStatus.OK);
 			}
 		} catch (Exception e) {
@@ -59,7 +59,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "folder/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "organization/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -69,7 +69,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			if (iPass!=null) {
-				response.put("result",FolderManager.getDownline(startId));
+				response.put("result",OrganizationManager.getDownline(startId));
 				return new ResponseEntity<Map>(response,HttpStatus.OK);
 			}
 		} catch (Exception e) {
@@ -78,7 +78,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "folder/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "organization/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getUpline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -87,7 +87,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			if (iPass!=null) {
-				response.put("result",FolderManager.getUpline(startId));
+				response.put("result",OrganizationManager.getUpline(startId));
 				return new ResponseEntity<Map>(response,HttpStatus.OK);
 			}
 		} catch (Exception e) {
