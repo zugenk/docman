@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionError;
 import org.bson.Document;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import com.app.docmgr.model.LoginHistory;
 import com.app.docmgr.model.Status;
@@ -144,6 +146,24 @@ public class LoginManager {
 			}
 		}
 		return iPass;
+	}
+
+	public static ResponseEntity<Map> preFilter(Map map,String ipassport, String basicAuth, String uri) {
+		try {
+			Document iPass=authenticate(ipassport,basicAuth); 
+			if(iPass==null)	{
+				log.debug("["+ipassport+"] - Login Failed");
+				map.put("errorMessage", "error.authentication.failed");
+				return new ResponseEntity<Map>(map,HttpStatus.UNAUTHORIZED);  
+			} else {
+				log.debug("["+ipassport+"] - Login Success");
+				return new ResponseEntity<Map>((Map)iPass,HttpStatus.OK);  
+			}
+		} catch (Exception e) {
+			log.debug("["+ipassport+"] - Login Failed");
+			map.put("errorMessage", "error.authentication.failed");
+			return new ResponseEntity<Map>(map,HttpStatus.BAD_GATEWAY);  
+		}
 	}
 	
 	public static void main(String[] args) {

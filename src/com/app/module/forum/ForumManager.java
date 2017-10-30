@@ -1,11 +1,15 @@
 package com.app.module.forum;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.app.docmgr.model.Forum;
+import com.app.docmgr.model.Lookup;
 import com.app.docmgr.service.ForumService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
@@ -91,5 +95,68 @@ public class ForumManager {
 		//log.debug(Utility.debug(list));
 		return list;
 	}	
+	
+	public static Boolean addForum(String code,String icon,String name, Lookup forumType, String address,Forum parentForum,String createdBy) {
+		Forum forum=new Forum();
+		try {
+			forum.setCode(code);
+			forum.setIcon(icon);
+			forum.setName(name);
+			forum.setForumType(forumType);
+			forum.setAddress(address);
+			forum.setParentForum(parentForum);
+			forum.setCreatedBy(createdBy);
+			forum.setCreatedDate(new Date());
+			
+			ForumService.getInstance().add(forum);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	//generate unique code
+		public static String generateReferralCode(String prefix, String name) {
+			String result ="";
+			Long currentTimeMillis = System.currentTimeMillis();
+			if (prefix == null || "".equals(prefix)) prefix = "DCM";
+			if (name != null && !"".equals(name) && name.length() >= 3){
+				name = name.substring(0, 3);
+			}else{
+				name = getRandomText();
+				if (name != null && !"".equals(name) && name.length() >= 3){
+					name = name.substring(0, 3);
+				}else{
+					name = "Docman";
+				}
+			}
+			String randomText = getRandomText();
+			if (randomText != null && !"".equals(randomText) && randomText.length() >= 4){
+				randomText = randomText.substring(0, 4);
+			}
+			
+			result = prefix+"_"+name+randomText;
+			result = result.toUpperCase();
+			
+			return result;
+		}
+		
+
+		 public static String getRandomText() {
+			    int MAXIMUM_BIT_LENGTH = 100;
+			    int RADIX = 32;
+		        // cryptographically strong random number generator
+		        SecureRandom random = new SecureRandom();
+		 
+		        // randomly generated BigInteger
+		        BigInteger bigInteger = new BigInteger(MAXIMUM_BIT_LENGTH, random);
+		 
+		        // String representation of this BigInteger in the given radix.
+		        String randomText = bigInteger.toString(RADIX);
+		         
+		        return randomText;
+		 }
+
+
 
 }
