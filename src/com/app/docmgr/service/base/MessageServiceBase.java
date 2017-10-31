@@ -60,8 +60,10 @@ public class MessageServiceBase {
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
 			message = (Message) session.get(Message.class, id);
-			Hibernate.initialize(message.getPostType());			
-			Hibernate.initialize(message.getTopic());			
+			if (message != null){
+				Hibernate.initialize(message.getPostType());			
+				Hibernate.initialize(message.getTopic());			
+			}
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -328,7 +330,13 @@ public class MessageServiceBase {
 			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT message FROM com.app.docmgr.model.Message message "+filter+" ");
-			result = query.list();
+			result = query.list();		
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+				com.app.docmgr.model.Message message = (com.app.docmgr.model.Message)itr.next();
+				Hibernate.initialize(message.getPostType());			
+				Hibernate.initialize(message.getTopic());			
+			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);
