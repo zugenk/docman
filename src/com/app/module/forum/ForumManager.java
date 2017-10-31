@@ -10,7 +10,10 @@ import org.apache.log4j.Logger;
 
 import com.app.docmgr.model.Forum;
 import com.app.docmgr.model.Lookup;
+import com.app.docmgr.model.Message;
+import com.app.docmgr.model.Topic;
 import com.app.docmgr.service.ForumService;
+import com.app.docmgr.service.MessageService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.module.basic.LoginManager;
@@ -115,6 +118,25 @@ public class ForumManager {
 		}
 		return true;
 	}
+	
+	public static Boolean postMessage(String content,Lookup postType,Topic topic,String createdBy, String filterCode) {
+		Message message=new Message();
+		try {
+			message.setContent(content);
+			message.setPostType(postType);
+			message.setTopic(topic);
+			message.setFilterCode(filterCode);
+			message.setCreatedBy(createdBy);
+			message.setCreatedDate(new Date());
+			
+			MessageService.getInstance().add(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	//generate unique code
 		public static String generateReferralCode(String prefix, String name) {
 			String result ="";

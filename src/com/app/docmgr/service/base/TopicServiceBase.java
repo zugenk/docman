@@ -60,8 +60,10 @@ public class TopicServiceBase {
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
 			topic = (Topic) session.get(Topic.class, id);
-			Hibernate.initialize(topic.getSubscribers());			
-			Hibernate.initialize(topic.getParentForum());			
+			if (topic != null){
+				Hibernate.initialize(topic.getSubscribers());			
+				Hibernate.initialize(topic.getParentForum());		
+			}
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());

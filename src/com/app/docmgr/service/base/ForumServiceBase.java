@@ -331,6 +331,12 @@ public class ForumServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT forum FROM com.app.docmgr.model.Forum forum "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+				com.app.docmgr.model.Forum forum = (com.app.docmgr.model.Forum)itr.next();
+				Hibernate.initialize(forum.getForumType());			
+				Hibernate.initialize(forum.getParentForum());			
+			}	
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);

@@ -256,6 +256,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		}
 		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
 	}
+	
 	@RequestMapping(value = "action/del-forum/{ID}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> delForum(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,

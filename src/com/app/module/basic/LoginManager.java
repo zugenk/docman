@@ -150,6 +150,7 @@ public class LoginManager {
 
 	public static ResponseEntity<Map> preFilter(Map map,String ipassport, String basicAuth, String uri) {
 		try {
+			log.debug("["+ipassport+"] - payload : "+map);
 			Document iPass=authenticate(ipassport,basicAuth); 
 			if(iPass==null)	{
 				log.debug("["+ipassport+"] - Login Failed");

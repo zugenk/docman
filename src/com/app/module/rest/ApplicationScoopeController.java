@@ -51,6 +51,23 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 				forumCatListNew.add(forumCatData);
 			}
 			resp.put("forumCategoryList", forumCatListNew);
+			
+
+			List contentTypeList = new LinkedList();
+			contentTypeList = LookupService.getInstance().findbyType("content");
+			log.debug("[app-config] - contentTypeList: " +contentTypeList);
+			List contentTypeListNew = new LinkedList();
+			for (int i=0; i< contentTypeList.size(); i++){
+				Map contentTypeData = new HashMap();
+				Lookup contentObj = (Lookup)contentTypeList.get(i);
+				contentTypeData.put("id", contentObj.getId());
+				contentTypeData.put("type", contentObj.getType());
+				contentTypeData.put("code", contentObj.getCode());
+				contentTypeData.put("name", contentObj.getName());
+				contentTypeData.put("description", contentObj.getDescription());
+				contentTypeListNew.add(contentTypeData);
+			}
+			resp.put("contentTypeList", contentTypeListNew);
 			/*
 			List forumList = new LinkedList();
 			forumList = ForumService.getInstance().getListAll("", "id asc");
