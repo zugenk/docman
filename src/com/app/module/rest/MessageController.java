@@ -158,7 +158,11 @@ public class MessageController {
 						postTypeData.put("code", messageObj.getPostType().getCode());
 						postTypeData.put("name", messageObj.getPostType().getName());
 					messageData.put("postType",postTypeData); 
-					messageData.put("parentForumId", messageObj.getTopic().getId());
+					if (messageObj.getTopic() != null){
+						messageData.put("parentTopicId", messageObj.getTopic().getId());
+					}else{
+						messageData.put("parentTopicId", null);
+					}
 					
 					messageListNew.add(messageData);
 				}
@@ -182,7 +186,11 @@ public class MessageController {
 					postTypeData.put("code", messageObj.getPostType().getCode());
 					postTypeData.put("name", messageObj.getPostType().getName());
 					messageDetail.put("postType",postTypeData); 
-				messageDetail.put("parentForumId", messageObj.getTopic().getId());
+				if (messageObj.getTopic() != null){
+					messageDetail.put("parentTopicId", messageObj.getTopic().getId());
+				}else{
+					messageDetail.put("parentTopicId", null);
+				}
 				
 				resp.put("messageDetail", messageDetail);
 			}
@@ -233,7 +241,7 @@ public class MessageController {
 					return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
 				}
 			}
-			
+			 
 			Map messageDetail = new HashMap();
 			Map postTypeData = new HashMap();
 			messageDetail.put("id", messageObj.getId());
@@ -243,7 +251,12 @@ public class MessageController {
 				postTypeData.put("code", messageObj.getPostType().getCode());
 				postTypeData.put("name", messageObj.getPostType().getName());
 				messageDetail.put("postType",postTypeData); 
-			messageDetail.put("parentForumId", messageObj.getTopic().getId());
+			if (messageObj.getTopic() != null){
+				messageDetail.put("parentTopicId", messageObj.getTopic().getId());
+			}else{
+				messageDetail.put("parentTopicId", null);
+			}
+			
 			resp.put("messageDetail", messageDetail);
 			
 			MessageService.getInstance().delete(messageObj);

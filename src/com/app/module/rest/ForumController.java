@@ -216,7 +216,11 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 					forumData.put("id", forumObj.getId());
 					forumData.put("code", forumObj.getCode());
 					forumData.put("name", forumObj.getName());
-					forumData.put("parentForum", forumObj.getParentForum());
+					if (forumObj.getParentForum() != null){
+						forumData.put("parentForumId", forumObj.getParentForum().getId());
+					}else{
+						forumData.put("parentForumId", null);
+					}
 					
 					forumListNew.add(forumData);
 				}
@@ -242,7 +246,11 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 				forumDetail.put("id", forumObj.getId());
 				forumDetail.put("code", forumObj.getCode());
 				forumDetail.put("name", forumObj.getName());
-				forumDetail.put("parentForum", forumObj.getParentForum());
+				if (forumObj.getParentForum() != null){
+					forumDetail.put("parentForumId", forumObj.getParentForum().getId());
+				}else{
+					forumDetail.put("parentForumId", null);
+				}
 				resp.put("forumDetail", forumDetail);
 			}
 			
@@ -292,7 +300,12 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			forumDetail.put("id", forumObj.getId());
 			forumDetail.put("code", forumObj.getCode());
 			forumDetail.put("name", forumObj.getName());
-			forumDetail.put("parentForum", forumObj.getParentForum());
+			if (forumObj.getParentForum() != null){
+				forumDetail.put("parentForumId", forumObj.getParentForum().getId());
+			}else{
+				forumDetail.put("parentForumId", null);
+			} 
+		
 			resp.put("forumDetail", forumDetail);
 			
 			ForumService.getInstance().delete(forumObj);
@@ -309,3 +322,4 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 
 
 }
+

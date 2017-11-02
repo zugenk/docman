@@ -60,9 +60,8 @@ public class LookupServiceBase {
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
 			lookup = (Lookup) session.get(Lookup.class, id);
-			if(lookup!=null) {
-				Hibernate.initialize(lookup.getStatus());			
-			}
+			Hibernate.initialize(lookup.getStatus());			
+
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
 			onfe.printStackTrace();

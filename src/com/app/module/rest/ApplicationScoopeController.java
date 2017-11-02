@@ -35,7 +35,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 	public @ResponseBody ResponseEntity<Map> appConfig(){
 		Map resp=new HashMap();
 		try {
-			
+			 
 			List forumCatList = new LinkedList();
 			forumCatList = LookupService.getInstance().findbyType("forum");
 			log.debug("[app-config] - forumCatList: " +forumCatList);
