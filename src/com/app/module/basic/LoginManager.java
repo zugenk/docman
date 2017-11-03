@@ -24,9 +24,9 @@ import com.simas.webservice.Utility;
 
 public class LoginManager {
 	private static Logger log = Logger.getLogger(LoginManager.class.getName());
+	final static int MAX_WRONG_PASSWD_ATTEMPT=3;
 	
 	public static Document login(String loginName,String passwd) throws Exception{
-		final int MAX_WRONG_PASSWD_ATTEMPT=3;
 		
 		// TODO Auto-generated method stub
 		UserService userService = UserService.getInstance();
@@ -58,8 +58,8 @@ public class LoginManager {
 	}
 	
 	public static Document loginWithBasicAuth(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
-    	//String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
-		String plain=new String(org.springframework.security.crypto.codec.Base64.decode(basicAuth.substring(6).getBytes()));
+    	String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
+		//String plain=new String(org.springframework.security.crypto.codec.Base64.decode(basicAuth.substring(6).getBytes()));
     	int idx=plain.indexOf(':');
     	String loginName=plain.substring(0,idx);
     	String passwd=plain.substring(idx+1);

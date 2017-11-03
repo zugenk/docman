@@ -1,0 +1,30 @@
+postgres-docman: 
+  image: postgres:9.5
+  ports: 
+    - "5432:5432"
+  volumes:  
+    - ./postgres-Data:/var/lib/postgresql/data
+  environment:
+    - POSTGRES_ROOT_PASSWORD=admin
+    - POSTGRES_USER=docman
+    - POSTGRES_PASSWORD=docman
+    - POSTGRES_DB=docmanDB
+    - POSTGRES_INITDB_ARGS="--encoding=UTF8"
+
+mongo-docman:
+  image: mongo 
+  ports:
+    - "27017:27017"
+  volumes:
+    - ./mongo/data:/data/db
+
+tomcat-docman:
+  image: tomcat:8.0-jre8
+  ports:
+    - "8080:8080"
+  volumes:
+    - ./tomcat/logs:/usr/local/tomcat/logs
+    - ./tomcat/DocumentManager:/usr/local/tomcat/webapps/DocumentManager
+  links:
+    - mongo-docman
+    - postgres-docman

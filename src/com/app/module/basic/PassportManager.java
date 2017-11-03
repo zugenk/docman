@@ -16,6 +16,7 @@ import com.simas.db.MongoManager;
 public class PassportManager {
 static String IPASSPORT_COLLECTION="IPassportData";
 static String DB_CFG="DEFAULT|mongo-docman|27017|DOCMAN";
+//static String DB_CFG="DEFAULT|localhost|27017|DOCMAN";
 static boolean inited=false;
 
 static int TIMEOUT_PERIOD=600000; //10 Mins
@@ -63,8 +64,8 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 	private static void init() {
 		if(inited) return;
 		MongoManager.init(DB_CFG);
-	    MongoManager.getCollection("DOCMAN",IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
-	    MongoManager.getCollection("DOCMAN",IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
+	    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
+	    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
 	    inited=true;
 	}
 	
