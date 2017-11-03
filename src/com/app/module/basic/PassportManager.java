@@ -34,6 +34,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			iPass=new Document();// HashMap<String, Object>();
 			iPass.put("ipassport", genPassId());
 			iPass.put("userId", user.getId());
+			iPass.put("loginName", user.getLoginName());
 			iPass.put("fullName", user.getFullName());
 			iPass.put("mobileNumber", user.getMobileNumber());
 			iPass.put("phoneNumber", user.getHomePhoneNumber());

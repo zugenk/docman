@@ -18,3 +18,6 @@ values('content','maincontent', 'Main Content',null,'Main Content','main',(selec
 
 insert into lookup(type,code,name,priority,description,shortname,status,filter)
 values('content','subcontent', 'Sub Content',null,'Sub Content','sub',(select id from status where type='Lookup' and code='active'),null);
+
+insert into lookup(type,code,name,priority,description,shortname,status,filter)
+values('message','subscriber', 'Sub Content',null,'Sub Content','sub',(select id from status where type='Lookup' and code='active'),null);

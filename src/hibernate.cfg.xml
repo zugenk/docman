@@ -16,9 +16,9 @@
 
 		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.username">postgres</property>
-        <property name="hibernate.connection.password">admin</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://postgres-docman:5432/postgres</property>
+        <property name="hibernate.connection.username">docman</property>
+        <property name="hibernate.connection.password">docman</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://postgres-docman:5432/docmanDB</property>
 
 
 		<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>

@@ -11,9 +11,12 @@ import org.apache.log4j.Logger;
 import com.app.docmgr.model.Forum;
 import com.app.docmgr.model.Lookup;
 import com.app.docmgr.model.Message;
+import com.app.docmgr.model.Notification;
 import com.app.docmgr.model.Topic;
+import com.app.docmgr.model.User;
 import com.app.docmgr.service.ForumService;
 import com.app.docmgr.service.MessageService;
+import com.app.docmgr.service.NotificationService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.module.basic.LoginManager;
@@ -130,6 +133,23 @@ public class ForumManager {
 			message.setCreatedDate(new Date());
 			
 			MessageService.getInstance().add(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+
+	public static Boolean subscribe(Lookup notificationType,Message postMessage,User subscriber, String flag) {
+		Notification notification=new Notification();
+		try {
+			notification.setNotificationType(notificationType);
+			notification.setPostMessage(postMessage);
+			notification.setSubscriber(subscriber);
+			notification.setFlag(flag);
+			
+			NotificationService.getInstance().add(notification);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
