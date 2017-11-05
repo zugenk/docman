@@ -15,10 +15,13 @@ public class Bookmark  implements java.io.Serializable {
      private Long id;
      private String url;
      private String name;
+     private String category;
      private String note;
      private Lookup bookmarkType;
      private Date createdDate;
      private String createdBy;
+     private Date lastUpdatedDate;
+     private String lastUpdatedBy;
      private Status status;
      private User owner;
 
@@ -75,6 +78,17 @@ public class Bookmark  implements java.io.Serializable {
     /**
      * 
      */
+    public String getCategory() {
+        return this.category;
+    }
+    
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    /**
+     * 
+     */
     public String getNote() {
         return this.note;
     }
@@ -114,6 +128,28 @@ public class Bookmark  implements java.io.Serializable {
     
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    /**
+     * 
+     */
+    public Date getLastUpdatedDate() {
+        return this.lastUpdatedDate;
+    }
+    
+    public void setLastUpdatedDate(Date lastUpdatedDate) {
+        this.lastUpdatedDate = lastUpdatedDate;
+    }
+
+    /**
+     * 
+     */
+    public String getLastUpdatedBy() {
+        return this.lastUpdatedBy;
+    }
+    
+    public void setLastUpdatedBy(String lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
     }
 
     /**

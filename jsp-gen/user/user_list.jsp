@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -53,6 +53,8 @@
 			document.forms.user.user_language_filter.value="";
 			document.forms.user.user_title_filter.value="";
 			document.forms.user.user_name_filter.value="";
+			document.forms.user.user_alias_filter.value="";
+			document.forms.user.user_picture_filter.value="";
 			document.forms.user.user_email_filter.value="";
 			document.forms.user.user_fullName_filter.value="";
 			document.forms.user.user_homePhoneNumber_filter.value="";
@@ -78,6 +80,7 @@
 			document.forms.user.user_sessionCode_filter.value="";
 			document.forms.user.user_IPassport_filter.value="";
 			document.forms.user.user_userLevel_filter.value="";
+			document.forms.user.user_position_filter.value="";
 			document.forms.user.user_status_filter.value="";
 			document.forms.user.user_organization_filter.value="";
 			document.forms.user.user_securityLevel_filter.value="";
@@ -102,23 +105,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="37" align="right">
+		<td colspan="39" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="37" align="left">
+		<td class="titleHeader" colspan="39" align="left">
 			<bean:message key="page.User.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="37" align="right">
+		<td colspan="39" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="37" align="right">
+		<td colspan="39" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -221,6 +224,34 @@
 			</logic:equal>
 			<logic:notEqual name="user_fieldOrder" value="name">
 				<a href="#" onclick="doOrder('name', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
+			<bean:message key="user.alias.key"/>
+			<logic:equal name="user_fieldOrder" value="alias">
+				<logic:equal name="user_orderType" value="ASC">
+					<a href="#" onclick="doOrder('alias', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="user_orderType" value="DESC">
+					<a href="#" onclick="doOrder('alias', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="user_fieldOrder" value="alias">
+				<a href="#" onclick="doOrder('alias', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
+			<bean:message key="user.picture.key"/>
+			<logic:equal name="user_fieldOrder" value="picture">
+				<logic:equal name="user_orderType" value="ASC">
+					<a href="#" onclick="doOrder('picture', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="user_orderType" value="DESC">
+					<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="user_fieldOrder" value="picture">
+				<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -504,6 +535,7 @@
 			</logic:notEqual>
 		</td>
 		<td><bean:message key="user.userLevel.key"/></td>
+		<td><bean:message key="user.position.key"/></td>
 		<td><bean:message key="user.status.key"/></td>
 		<td><bean:message key="user.organization.key"/></td>
 		<td><bean:message key="user.securityLevel.key"/></td>
@@ -527,6 +559,8 @@
 		<td><bean:write name="element" property="language"/></td>
 		<td><bean:write name="element" property="title"/></td>
 		<td><bean:write name="element" property="name"/></td>
+		<td><bean:write name="element" property="alias"/></td>
+		<td><bean:write name="element" property="picture"/></td>
 		<td><bean:write name="element" property="email"/></td>
 		<td><bean:write name="element" property="fullName"/></td>
 		<td><bean:write name="element" property="homePhoneNumber"/></td>
@@ -550,6 +584,12 @@
 		<td >
 				<logic:notEmpty name="element"	property="userLevel">								
 					<bean:write name="element" property="userLevel.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="position">								
+					<bean:write name="element" property="position.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -580,12 +620,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="37" align="right">
+		<td colspan="39" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="37" align="right">
+		<td colspan="39" align="right">
 		<% if(com.app.docmgr.action.UserAction.allowableAction.contains("create")) { 
 				if (privilegeList.contains("USER_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -633,6 +673,16 @@
 		<td width="150"><bean:message key="user.name.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="user_name_filter" value="<bean:write name="user_name_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="user.alias.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="user_alias_filter" value="<bean:write name="user_alias_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="user.picture.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="user_picture_filter" value="<bean:write name="user_picture_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150"><bean:message key="user.email.key"/></td>
@@ -822,6 +872,30 @@
 							%>
 						>
 						<bean:write name="userLevelElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="user.position.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  user_position_filter_value = (String)request.getSession().getAttribute("user_position_filter");
+					if("".equals(user_position_filter_value)) user_position_filter_value = "0";
+				%>				
+				<select name="user_position_filter">
+					<option value=""></option>
+					<logic:iterate id="positionElement" name="positionList"  type="com.app.docmgr.model.Lookup">
+						
+						<option value="<bean:write name="positionElement" property="id"/>" 
+							<%
+								Long user_position_id = positionElement.getId();							
+								Long user_position_filter_value_c = new Long(user_position_filter_value);
+								if(user_position_filter_value_c.equals(user_position_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="positionElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

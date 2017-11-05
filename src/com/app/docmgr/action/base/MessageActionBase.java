@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -75,6 +75,42 @@ public class MessageActionBase extends Action{
 	    		forward = doDeleteConfirm(mapping, form, request, response);
 	    	}else if("delete_ok".equalsIgnoreCase(action)){
 	    		doDeleteOk(mapping, form, request, response);
+	    	}else if("submit_confirm".equalsIgnoreCase(action)){
+	    		forward = doSubmitConfirm(mapping, form, request, response);
+	    	}else if("submit_ok".equalsIgnoreCase(action)){
+	    		doSubmitOk(mapping, form, request, response);
+	    	}else if("approve_confirm".equalsIgnoreCase(action)){
+	    		forward = doApproveConfirm(mapping, form, request, response);
+	    	}else if("approve_ok".equalsIgnoreCase(action)){
+	    		doApproveOk(mapping, form, request, response);
+	    	}else if("reject_confirm".equalsIgnoreCase(action)){
+	    		forward = doRejectConfirm(mapping, form, request, response);
+	    	}else if("reject_ok".equalsIgnoreCase(action)){
+	    		doRejectOk(mapping, form, request, response);
+	    	}else if("pending_confirm".equalsIgnoreCase(action)){
+	    		forward = doPendingConfirm(mapping, form, request, response);
+	    	}else if("pending_ok".equalsIgnoreCase(action)){
+	    		doPendingOk(mapping, form, request, response);
+	    	}else if("process_confirm".equalsIgnoreCase(action)){
+	    		forward = doProcessConfirm(mapping, form, request, response);
+	    	}else if("process_ok".equalsIgnoreCase(action)){
+	    		doProcessOk(mapping, form, request, response);
+	    	}else if("close_confirm".equalsIgnoreCase(action)){
+	    		forward = doCloseConfirm(mapping, form, request, response);
+	    	}else if("close_ok".equalsIgnoreCase(action)){
+	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
+	    	}else if("remove_confirm".equalsIgnoreCase(action)){
+	    		forward = doRemoveConfirm(mapping, form, request, response);
+	    	}else if("remove_ok".equalsIgnoreCase(action)){
+	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
+	    		forward = doCancelConfirm(mapping, form, request, response);
+	    	}else if("cancel_ok".equalsIgnoreCase(action)){
+	    		doCancelOk(mapping, form, request, response);
 			}
     	}else{
     		forward = mapping.findForward("not_authorized");
@@ -101,9 +137,15 @@ public class MessageActionBase extends Action{
 			com.app.docmgr.service.LookupService postTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List postTypeList = postTypeService.getList("  and lookup.type='postType'  ", null);
 			request.setAttribute("postTypeList", postTypeList);
+			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Message'  ", null);
+			request.setAttribute("statusList", statusList);
 			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
 			List topicList = topicService.getList(null, null);
 			request.setAttribute("topicList", topicList);
+			com.app.docmgr.service.MessageService parentService = com.app.docmgr.service.MessageService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 		}catch(Exception ex){
 		
 		}
@@ -204,6 +246,14 @@ public class MessageActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("message_postType_filter", param_message_postType_filter);
+		String param_message_status_filter = "";
+		if(request.getParameter("message_status_filter")!=null){
+			param_message_status_filter = request.getParameter("message_status_filter");
+			if(param_message_status_filter.length() > 0 ){				
+				message_filterSb.append("  AND message.status = '"+param_message_status_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("message_status_filter", param_message_status_filter);
 		String param_message_topic_filter = "";
 		if(request.getParameter("message_topic_filter")!=null){
 			param_message_topic_filter = request.getParameter("message_topic_filter");
@@ -212,6 +262,14 @@ public class MessageActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("message_topic_filter", param_message_topic_filter);
+		String param_message_parent_filter = "";
+		if(request.getParameter("message_parent_filter")!=null){
+			param_message_parent_filter = request.getParameter("message_parent_filter");
+			if(param_message_parent_filter.length() > 0 ){				
+				message_filterSb.append("  AND message.parent = '"+param_message_parent_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("message_parent_filter", param_message_parent_filter);
 		
 		if(message_fieldOrder!=null && message_orderType != null )message_filterSb.append(" ORDER BY "+message_fieldOrder+" "+message_orderType);
 		
@@ -331,9 +389,15 @@ public class MessageActionBase extends Action{
 			com.app.docmgr.service.LookupService postTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List postTypeList = postTypeService.getList("  and lookup.type='postType'  ", null);
 			request.setAttribute("postTypeList", postTypeList);
-			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
+ /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Message'  ", null);
+			request.setAttribute("statusList", statusList);
+ */ 			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
 			List topicList = topicService.getList(null, null);
 			request.setAttribute("topicList", topicList);
+			com.app.docmgr.service.MessageService parentService = com.app.docmgr.service.MessageService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 
     		request.getSession().setAttribute("message", message);
     		forward = mapping.findForward("create");
@@ -362,9 +426,15 @@ public class MessageActionBase extends Action{
 			com.app.docmgr.service.LookupService postTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List postTypeList = postTypeService.getList("  and lookup.type='postType'  ", null);
 			request.setAttribute("postTypeList", postTypeList);
-			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
+/*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Message'  ", null);
+			request.setAttribute("statusList", statusList);
+*/			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
 			List topicList = topicService.getList(null, null);
 			request.setAttribute("topicList", topicList);
+			com.app.docmgr.service.MessageService parentService = com.app.docmgr.service.MessageService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 	
     		if(errors.isEmpty()){
     			forward = mapping.findForward("create_confirm");
@@ -382,6 +452,7 @@ public class MessageActionBase extends Action{
     public void doCreateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	try{
     		Message message = (Message) request.getSession().getAttribute("message");
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","new"));
 			message.setLastUpdatedDate(new Date());
 			message.setCreatedDate(new Date());
 			message.setLastUpdatedBy(_doneBy);
@@ -415,9 +486,15 @@ public class MessageActionBase extends Action{
 			com.app.docmgr.service.LookupService postTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List postTypeList = postTypeService.getList("  and lookup.type='postType'  ", null);
 			request.setAttribute("postTypeList", postTypeList);
-			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
+/* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Message'  ", null);
+			request.setAttribute("statusList", statusList);
+*/ 			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
 			List topicList = topicService.getList(null, null);
 			request.setAttribute("topicList", topicList);
+			com.app.docmgr.service.MessageService parentService = com.app.docmgr.service.MessageService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 
     		forward = mapping.findForward("edit");
     	}catch(Exception ex){
@@ -442,9 +519,15 @@ public class MessageActionBase extends Action{
 			com.app.docmgr.service.LookupService postTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List postTypeList = postTypeService.getList("  and lookup.type='postType'  ", null);
 			request.setAttribute("postTypeList", postTypeList);
-			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
+ /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Message'  ", null);
+			request.setAttribute("statusList", statusList);
+ */			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
 			List topicList = topicService.getList(null, null);
 			request.setAttribute("topicList", topicList);
+			com.app.docmgr.service.MessageService parentService = com.app.docmgr.service.MessageService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 
     		if(errors.isEmpty()){
     			forward = mapping.findForward("edit_confirm");
@@ -513,8 +596,10 @@ public class MessageActionBase extends Action{
     		if(message == null){
     			response.sendRedirect("message.do?action=delete_confirm");
     		}
-    		MessageService.getInstance().delete(message);
-    		request.getSession().removeAttribute("message");
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","deleted"));
+    		MessageService.getInstance().update(message);
     		response.sendRedirect("message.do?action=list");    		
     	}catch(Exception ex){
     		ex.printStackTrace();
@@ -523,6 +608,429 @@ public class MessageActionBase extends Action{
     		}catch(Exception rex){
     			rex.printStackTrace();
     		}    		
+    	}  
+    }
+
+   	public ActionForward doSubmitConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("submit_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doSubmitOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=submit_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","submitted"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=submit_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doApproveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("approve_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doApproveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=approve_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","approved"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=approve_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doRejectConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("reject_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doRejectOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=reject_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","rejected"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=reject_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doPendingConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("pending_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doPendingOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=pending_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","pending"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=pending_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doProcessConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("process_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doProcessOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=process_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","processed"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=process_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("close_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doCloseOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=close_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","closed"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=close_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=archive_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","archived"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=archive_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doRemoveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("remove_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doRemoveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=remove_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","removed"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=remove_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Message message = (Message) request.getSession().getAttribute("message");
+    		if (message == null){
+	    		message = MessageService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("message", message);
+	    	}
+    		if(message == null){
+    			response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("cancel_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("message.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doCancelOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Message message = (Message) request.getSession().getAttribute("message");
+    		if(message == null){
+    			response.sendRedirect("message.do?action=cancel_confirm");
+    		}
+    		message.setStatus(StatusService.getInstance().getByTypeandCode("Message","cancelled"));
+			message.setLastUpdatedDate(new Date());
+			message.setLastUpdatedBy(_doneBy);
+    		MessageService.getInstance().update(message);
+    		response.sendRedirect("message.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("message.do?action=cancel_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
     	}  
     }
 
@@ -582,7 +1090,22 @@ public class MessageActionBase extends Action{
 			if(postTypeObj==null){
 				errors.add("message.postType", new ActionError("error.message.postType"));
 			}
-			com.app.docmgr.model.Topic  topicObj =null;
+/* 			com.app.docmgr.model.Status  statusObj =null;
+			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			try{
+				String statusStr = request.getParameter("status");
+				
+				if(statusStr == null || statusStr.trim().length() == 0 ){
+					message.setStatus(null);
+				}else{			
+					statusObj = statusService.get(new Long(statusStr));
+					message.setStatus(statusObj);
+				}
+			}catch(Exception ex){}	
+			if(statusObj==null){
+				errors.add("message.status", new ActionError("error.message.status"));
+			}
+*/ 			com.app.docmgr.model.Topic  topicObj =null;
 			com.app.docmgr.service.TopicService topicService = com.app.docmgr.service.TopicService.getInstance();
 			try{
 				String topicStr = request.getParameter("topic");
@@ -597,6 +1120,18 @@ public class MessageActionBase extends Action{
 			if(topicObj==null){
 				errors.add("message.topic", new ActionError("error.message.topic"));
 			}
+			com.app.docmgr.model.Message  parentObj =null;
+			com.app.docmgr.service.MessageService parentService = com.app.docmgr.service.MessageService.getInstance();
+			try{
+				String parentStr = request.getParameter("parent");
+				
+				if(parentStr == null || parentStr.trim().length() == 0 ){
+					message.setParent(null);
+				}else{			
+					parentObj = parentService.get(new Long(parentStr));
+					message.setParent(parentObj);
+				}
+			}catch(Exception ex){}	
 
     	}catch(Exception ex){
     		ex.printStackTrace();

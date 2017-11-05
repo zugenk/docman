@@ -23,7 +23,7 @@ import com.app.docmgr.model.Organization;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 	/**
@@ -62,6 +62,8 @@ public class OrganizationServiceBase {
 			organization = (Organization) session.get(Organization.class, id);
 			Hibernate.initialize(organization.getMembers());			
 			Hibernate.initialize(organization.getParent());			
+			Hibernate.initialize(organization.getOrganizationType());			
+			Hibernate.initialize(organization.getStatus());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -91,13 +93,15 @@ public class OrganizationServiceBase {
 		Organization organization = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE organization.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;					
 			Query query = session.createQuery("SELECT organization FROM com.app.docmgr.model.Organization organization "+filter+" ");
 			organization = (com.app.docmgr.model.Organization) query.uniqueResult();
 			if(organization!=null) {
 				Hibernate.initialize(organization.getMembers());			
 				Hibernate.initialize(organization.getParent());			
+				Hibernate.initialize(organization.getOrganizationType());			
+				Hibernate.initialize(organization.getStatus());			
 			}
 			return organization;
 		} catch (HibernateException e) {
@@ -280,7 +284,7 @@ public class OrganizationServiceBase {
 		PartialList result = new PartialList();
 		Session session = null;
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE organization.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
 			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
@@ -297,6 +301,8 @@ public class OrganizationServiceBase {
 				com.app.docmgr.model.Organization organization = (com.app.docmgr.model.Organization)itr.next();
 				Hibernate.initialize(organization.getMembers());			
 				Hibernate.initialize(organization.getParent());			
+				Hibernate.initialize(organization.getOrganizationType());			
+				Hibernate.initialize(organization.getStatus());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -316,6 +322,8 @@ public class OrganizationServiceBase {
 	}
 
 	public List getList(String filterParam, String orderParam) throws Exception{
+		if(filterParam!=null) filterParam = " and organization.status.state='active' "+filterParam;
+		else filterParam=" and organization.status.state='active' ";
 		return getListAll(filterParam,orderParam);
 	}
 	

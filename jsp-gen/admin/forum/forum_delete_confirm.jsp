@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -62,6 +62,11 @@
 			<td><bean:write name="forum" property="name"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="forum.description.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="forum" property="description"/></td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="forum.address.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="forum" property="address"/></td>
@@ -90,6 +95,15 @@
 			<td width="150"><b><bean:message key="forum.filterCode.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="forum" property="filterCode"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="forum.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="forum"	property="status">			
+					<bean:write name="forum" property="status.name"/>
+				</logic:notEmpty>
+			</td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="forum.forumType.key"/></b></td>

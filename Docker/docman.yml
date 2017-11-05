@@ -1,5 +1,6 @@
 postgres-docman: 
   image: postgres:9.5
+  name: postgres-docman
   ports: 
     - "5432:5432"
   volumes:  
@@ -13,6 +14,7 @@ postgres-docman:
 
 mongo-docman:
   image: mongo 
+  name: mongo-docman
   ports:
     - "27017:27017"
   volumes:
@@ -20,9 +22,11 @@ mongo-docman:
 
 tomcat-docman:
   image: tomcat:8.0-jre8
+  name: tomcat-docman
   ports:
     - "8080:8080"
   volumes:
+    - ./tomcat/conf:/usr/local/tomcat/conf
     - ./tomcat/logs:/usr/local/tomcat/logs
     - ./tomcat/DocumentManager:/usr/local/tomcat/webapps/DocumentManager
   links:

@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -92,6 +92,20 @@
 			</tr>
 		</logic:messagesPresent>
 		<tr>
+			<td width="150"><b><bean:message key="bookmark.category.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="10">:</td>
+			<td>
+				<html:text name="bookmark" property="category"/>
+			</td>
+		</tr>
+		<logic:messagesPresent property="bookmark.category">
+			<tr>
+				<td colspan="2">
+					<font color="red"><html:errors property="bookmark.category"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
+		<tr>
 			<td width="150"><b><bean:message key="bookmark.note.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
 			<td>
@@ -139,6 +153,26 @@
 				</td>
 			</tr>
 		</logic:messagesPresent>
+  <% */ %>   <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="bookmark.lastUpdatedDate.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<input type="text" name="lastUpdatedDate" onclick="calendarToogle('lastUpdatedDate', 'lastUpdatedDate_cal', null);"  onKeyDown="drawCalendar('lastUpdatedDate', 'lastUpdatedDate_cal', null);" value="<bean:write name="bookmark" property="lastUpdatedDate" format="dd/MM/yyyy" />"/>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" />
+			<td>
+				<div id="lastUpdatedDate_cal" style="display: none"></div>
+			</td>
+		</tr>
+  <% */ %>   <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="bookmark.lastUpdatedBy.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<html:text name="bookmark" property="lastUpdatedBy"/>
+			</td>
+		</tr>
   <% */ %> 
 		<tr>
 			<td width="150"><b><bean:message key="bookmark.bookmarkType.key"/> <font color="#FF0000">*</font></b></td>

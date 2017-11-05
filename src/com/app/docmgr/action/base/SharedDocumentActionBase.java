@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -99,6 +99,10 @@ public class SharedDocumentActionBase extends Action{
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
 	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
 	    	}else if("remove_confirm".equalsIgnoreCase(action)){
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
@@ -190,6 +194,42 @@ public class SharedDocumentActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("sharedDocument_createdBy_filter", param_sharedDocument_createdBy_filter);
+		String param_sharedDocument_lastUpdatedDate_filter_start = "";
+		if(request.getParameter("sharedDocument_lastUpdatedDate_filter_start")!=null){
+			param_sharedDocument_lastUpdatedDate_filter_start = request.getParameter("sharedDocument_lastUpdatedDate_filter_start");
+			if(param_sharedDocument_lastUpdatedDate_filter_start.length() > 0 ){
+				try{
+					java.util.Calendar param_sharedDocument_lastUpdatedDate_filter_start_cal = java.util.Calendar.getInstance();				
+					param_sharedDocument_lastUpdatedDate_filter_start_cal.setTime(new java.text.SimpleDateFormat("dd/MM/yyyy").parse(param_sharedDocument_lastUpdatedDate_filter_start));
+					String param_sharedDocument_lastUpdatedDate_filter_start_cal_val = param_sharedDocument_lastUpdatedDate_filter_start_cal.get(Calendar.YEAR)+"-"+(param_sharedDocument_lastUpdatedDate_filter_start_cal.get(Calendar.MONTH)+1)+"-"+param_sharedDocument_lastUpdatedDate_filter_start_cal.get(Calendar.DAY_OF_MONTH);
+					sharedDocument_filterSb.append("  AND sharedDocument.lastUpdatedDate >= '"+param_sharedDocument_lastUpdatedDate_filter_start_cal_val+"' ");
+				}catch(Exception ex){}
+			}
+		}
+		request.getSession().setAttribute("sharedDocument_lastUpdatedDate_filter_start", param_sharedDocument_lastUpdatedDate_filter_start);
+
+		String param_sharedDocument_lastUpdatedDate_filter_end = "";
+		if(request.getParameter("sharedDocument_lastUpdatedDate_filter_end")!=null){
+			param_sharedDocument_lastUpdatedDate_filter_end = request.getParameter("sharedDocument_lastUpdatedDate_filter_end");
+			if(param_sharedDocument_lastUpdatedDate_filter_end.length() > 0 ){
+				try{
+					java.util.Calendar param_sharedDocument_lastUpdatedDate_filter_end_cal = java.util.Calendar.getInstance();				
+					param_sharedDocument_lastUpdatedDate_filter_end_cal.setTime(new java.text.SimpleDateFormat("dd/MM/yyyy").parse(param_sharedDocument_lastUpdatedDate_filter_end));
+					String param_sharedDocument_lastUpdatedDate_filter_end_cal_val = param_sharedDocument_lastUpdatedDate_filter_end_cal.get(Calendar.YEAR)+"-"+(param_sharedDocument_lastUpdatedDate_filter_end_cal.get(Calendar.MONTH)+1)+"-"+param_sharedDocument_lastUpdatedDate_filter_end_cal.get(Calendar.DAY_OF_MONTH);
+					sharedDocument_filterSb.append("  AND sharedDocument.lastUpdatedDate  <= '"+param_sharedDocument_lastUpdatedDate_filter_end_cal_val+"' ");
+				}catch(Exception ex){}
+			}
+		}
+		request.getSession().setAttribute("sharedDocument_lastUpdatedDate_filter_end", param_sharedDocument_lastUpdatedDate_filter_end);
+
+		String param_sharedDocument_lastUpdatedBy_filter = "";
+		if(request.getParameter("sharedDocument_lastUpdatedBy_filter")!=null){
+			param_sharedDocument_lastUpdatedBy_filter = request.getParameter("sharedDocument_lastUpdatedBy_filter");
+			if(param_sharedDocument_lastUpdatedBy_filter.length() > 0 ){				
+				sharedDocument_filterSb.append("  AND sharedDocument.lastUpdatedBy like '%"+param_sharedDocument_lastUpdatedBy_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("sharedDocument_lastUpdatedBy_filter", param_sharedDocument_lastUpdatedBy_filter);
 		String param_sharedDocument_document_filter = "";
 		if(request.getParameter("sharedDocument_document_filter")!=null){
 			param_sharedDocument_document_filter = request.getParameter("sharedDocument_document_filter");
@@ -405,7 +445,9 @@ public class SharedDocumentActionBase extends Action{
     	try{
     		SharedDocument sharedDocument = (SharedDocument) request.getSession().getAttribute("sharedDocument");
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","new"));
+			sharedDocument.setLastUpdatedDate(new Date());
 			sharedDocument.setCreatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
 			sharedDocument.setCreatedBy(_doneBy);
     		SharedDocumentService.getInstance().add(sharedDocument);
     		request.getSession().removeAttribute("sharedDocument");
@@ -499,6 +541,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=edit_confirm");
     		}
     		
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		request.getSession().removeAttribute("sharedDocument");
     		response.sendRedirect("sharedDocument.do?action=list");    		
@@ -544,6 +588,8 @@ public class SharedDocumentActionBase extends Action{
     		if(sharedDocument == null){
     			response.sendRedirect("sharedDocument.do?action=delete_confirm");
     		}
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","deleted"));
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=list");    		
@@ -590,6 +636,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=submit_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","submitted"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
@@ -635,6 +683,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=approve_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","approved"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
@@ -680,6 +730,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=reject_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","rejected"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
@@ -725,6 +777,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=pending_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","pending"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
@@ -770,6 +824,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=process_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","processed"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
@@ -815,11 +871,60 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=close_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","closed"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
     		try{
     			response.sendRedirect("sharedDocument.do?action=close_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		SharedDocument sharedDocument = (SharedDocument) request.getSession().getAttribute("sharedDocument");
+    		if (sharedDocument == null){
+	    		sharedDocument = SharedDocumentService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("sharedDocument", sharedDocument);
+	    	}
+    		if(sharedDocument == null){
+    			response.sendRedirect("sharedDocument.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("sharedDocument.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		SharedDocument sharedDocument = (SharedDocument) request.getSession().getAttribute("sharedDocument");
+    		if(sharedDocument == null){
+    			response.sendRedirect("sharedDocument.do?action=archive_confirm");
+    		}
+    		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","archived"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
+    		SharedDocumentService.getInstance().update(sharedDocument);
+    		response.sendRedirect("sharedDocument.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("sharedDocument.do?action=archive_confirm");
     		}catch(Exception rex){
     			rex.printStackTrace();
     		}
@@ -860,6 +965,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=remove_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","removed"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
@@ -905,6 +1012,8 @@ public class SharedDocumentActionBase extends Action{
     			response.sendRedirect("sharedDocument.do?action=cancel_confirm");
     		}
     		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","cancelled"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
     		SharedDocumentService.getInstance().update(sharedDocument);
     		response.sendRedirect("sharedDocument.do?action=detail");    		
     	}catch(Exception ex){
@@ -940,6 +1049,18 @@ public class SharedDocumentActionBase extends Action{
 			if(createdBy==null || createdBy.trim().length() == 0 ){
 				errors.add("sharedDocument.createdBy", new ActionError("error.sharedDocument.createdBy"));
 			}
+*/ /* 			String lastUpdatedDate = request.getParameter("lastUpdatedDate");
+			if(lastUpdatedDate==null || lastUpdatedDate.trim().length() == 0 ){
+				sharedDocument.setLastUpdatedDate(null);
+			}else{
+				try{
+					java.util.Calendar lastUpdatedDateCalendar = java.util.Calendar.getInstance();
+					lastUpdatedDateCalendar.setTime(new java.text.SimpleDateFormat("dd/MM/yyyy").parse(lastUpdatedDate));			
+					sharedDocument.setLastUpdatedDate(lastUpdatedDateCalendar.getTime());
+				}catch(Exception ex){}
+			}
+*/ /* 			String lastUpdatedBy = request.getParameter("lastUpdatedBy");
+			sharedDocument.setLastUpdatedBy(lastUpdatedBy);
 */ 
 			com.app.docmgr.model.Document  documentObj =null;
 			com.app.docmgr.service.DocumentService documentService = com.app.docmgr.service.DocumentService.getInstance();

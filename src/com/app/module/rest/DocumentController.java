@@ -29,7 +29,7 @@ import com.app.module.document.DocumentManager;
 @Controller
 @RequestMapping("/v1/document")
 public class DocumentController {
-private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
+	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(DocumentController.class);
 
 	@Bean(name = "multipartResolver")
 	public CommonsMultipartResolver multipartResolver() {

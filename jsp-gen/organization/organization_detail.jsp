@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -70,6 +70,11 @@
 			<td><bean:write name="organization" property="address"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="organization.mailingList.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="organization" property="mailingList"/></td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="organization.createdDate.key"/></b></td>
 			<td width="10">:</td>
 			<td ><bean:write name="organization" property="createdDate" format="dd MMM yyyy"/></td>
@@ -104,6 +109,24 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="organization.organizationType.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="organization"	property="organizationType">			
+					<bean:write name="organization" property="organizationType.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="organization.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="organization"	property="status">			
+					<bean:write name="organization" property="status.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"></td>
 			<td width="10"></td>
 			<td>
@@ -121,6 +144,60 @@
 					&nbsp;
 				<% 		}
 					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("submit")) { 
+						if (privilegeList.contains("ORGANIZATION_SUBMIT")) { %>
+				<input type="button" value="<bean:message key="button.submit"/>" onclick="this.form.action.value='submit_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("approve")) { 
+						if (privilegeList.contains("ORGANIZATION_APPROVE")) { %>
+				<input type="button" value="<bean:message key="button.approve"/>" onclick="this.form.action.value='approve_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("reject")) { 
+						if (privilegeList.contains("ORGANIZATION_REJECT")) { %>
+				<input type="button" value="<bean:message key="button.reject"/>" onclick="this.form.action.value='reject_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("pending")) { 
+						if (privilegeList.contains("ORGANIZATION_PENDING")) { %>
+				<input type="button" value="<bean:message key="button.pending"/>" onclick="this.form.action.value='pending_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("process")) { 
+						if (privilegeList.contains("ORGANIZATION_PROCESS")) { %>
+				<input type="button" value="<bean:message key="button.process"/>" onclick="this.form.action.value='process_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("close")) { 
+						if (privilegeList.contains("ORGANIZATION_CLOSE")) { %>
+				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("archive")) { 
+						if (privilegeList.contains("ORGANIZATION_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("remove")) { 
+						if (privilegeList.contains("ORGANIZATION_REMOVE")) { %>
+				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("cancel")) { 
+						if (privilegeList.contains("ORGANIZATION_CANCEL")) { %>
+				<input type="button" value="<bean:message key="button.cancel"/>" onclick="this.form.action.value='cancel_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
 				<input type="button" value="<bean:message key="button.back"/>" onclick="this.form.action.value='list';this.form.submit()" />
 			</td>
 		</tr>
@@ -130,7 +207,7 @@
 	<br>
 	<table border="0" width="98%" align="center">	
 		<tr class="title">
-			<td colspan="28"><bean:message key="organization.members.key"/></td>
+			<td colspan="30"><bean:message key="organization.members.key"/></td>
 		</tr>
 		<tr class="title">
 	<td><bean:message key="user.loginName.key"/></td>
@@ -140,6 +217,8 @@
 	<td><bean:message key="user.language.key"/></td>
 	<td><bean:message key="user.title.key"/></td>
 	<td><bean:message key="user.name.key"/></td>
+	<td><bean:message key="user.alias.key"/></td>
+	<td><bean:message key="user.picture.key"/></td>
 	<td><bean:message key="user.email.key"/></td>
 	<td><bean:message key="user.fullName.key"/></td>
 	<td><bean:message key="user.homePhoneNumber.key"/></td>
@@ -161,6 +240,7 @@
 	<td><bean:message key="user.sessionCode.key"/></td>
 	<td><bean:message key="user.IPassport.key"/></td>
 			<td><bean:message key="user.userLevel.key"/></td>
+			<td><bean:message key="user.position.key"/></td>
    <% /* %> 			<td><bean:message key="user.status.key"/></td>
    <% */ %> 			<td><bean:message key="user.organization.key"/></td>
 			<td><bean:message key="user.securityLevel.key"/></td>
@@ -174,6 +254,8 @@
 			<td><bean:write name="element_user" property="language"/></td>
 			<td><bean:write name="element_user" property="title"/></td>
 			<td><bean:write name="element_user" property="name"/></td>
+			<td><bean:write name="element_user" property="alias"/></td>
+			<td><bean:write name="element_user" property="picture"/></td>
 			<td><bean:write name="element_user" property="email"/></td>
 			<td><bean:write name="element_user" property="fullName"/></td>
 			<td><bean:write name="element_user" property="homePhoneNumber"/></td>
@@ -197,6 +279,11 @@
 			<td>
 				<logic:notEmpty name="element_user" property="userLevel">
 					<bean:write name="element_user" property="userLevel.id"/>
+				</logic:notEmpty>				
+			</td>
+			<td>
+				<logic:notEmpty name="element_user" property="position">
+					<bean:write name="element_user" property="position.id"/>
 				</logic:notEmpty>				
 			</td>
   <% /* %> 			<td>

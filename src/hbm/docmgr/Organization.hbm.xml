@@ -45,6 +45,13 @@
 			length="255"
 		/>
 		<property
+			name="mailingList"
+			column="mailing_list"
+			type="string"
+			not-null="false"
+			length="100"
+		/>
+		<property
 			name="createdDate"
 			column="created_date"
 			type="java.util.Date"
@@ -83,6 +90,21 @@
 			column="parent"
 			class="com.app.docmgr.model.Organization"
 			not-null="false"
+		>
+		</many-to-one>
+		
+		<many-to-one
+			name="organizationType"
+			column="organization_type"
+			class="com.app.docmgr.model.Lookup"
+			not-null="true"
+		>
+		</many-to-one>
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
 		>
 		</many-to-one>
 

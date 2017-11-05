@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -80,6 +80,16 @@
 			<td width="150"><bean:message key="user.name.key"/></td>
 			<td width="10">:</td>
 			<td><bean:write name="user" property="name"/></td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="user.alias.key"/></td>
+			<td width="10">:</td>
+			<td><bean:write name="user" property="alias"/></td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="user.picture.key"/></td>
+			<td width="10">:</td>
+			<td><bean:write name="user" property="picture"/></td>
 		</tr>
 		<tr>
 			<td width="150"><bean:message key="user.email.key"/></td>
@@ -187,6 +197,15 @@
 			<td>				
 				<logic:notEmpty name="user" property="userLevel">			
 					<bean:write name="user" property="userLevel.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="user.position.key"/></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="user" property="position">			
+					<bean:write name="user" property="position.name"/>
 				</logic:notEmpty>
 			</td>
 		</tr>

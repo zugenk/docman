@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -188,7 +188,24 @@
 			</td>
 		</tr>
 
-		<tr>
+  <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="topic.status.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="topic" property="status" style="width:135"  value="${topic.status.id}">
+					<option value=""></option>
+					<html:options collection="statusList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
+		<logic:messagesPresent property="topic.status">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="topic.status"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
+  <% */ %> 		<tr>
 			<td width="150"><b><bean:message key="topic.parentForum.key"/></b></td>
 			<td width="10">:</td>
 			<td>				

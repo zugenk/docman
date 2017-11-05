@@ -16,6 +16,8 @@ public class Forum  implements java.io.Serializable {
      private String code;
      private String icon;
      private String name;
+     private String description;
+     private Status status;
      private Lookup forumType;
      private String address;
      private Date createdDate;
@@ -84,6 +86,28 @@ public class Forum  implements java.io.Serializable {
     
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * 
+     */
+    public String getDescription() {
+        return this.description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * 
+     */
+    public Status getStatus() {
+        return this.status;
+    }
+    
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     /**

@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -141,6 +141,20 @@
 				</td>
 			</tr>
 		</logic:messagesPresent>
+		<tr>
+			<td width="150"><b><bean:message key="user.alias.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<html:text name="user" property="alias"/>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="user.picture.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<html:text name="user" property="picture"/>
+			</td>
+		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="user.email.key"/></b></td>
 			<td width="10">:</td>
@@ -345,6 +359,16 @@
 				</td>
 			</tr>
 		</logic:messagesPresent>
+		<tr>
+			<td width="150"><b><bean:message key="user.position.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="user" property="position" style="width:135"  value="${user.position.id}">
+					<option value=""></option>
+					<html:options collection="positionList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
   <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="user.status.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>

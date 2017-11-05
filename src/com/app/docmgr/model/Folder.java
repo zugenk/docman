@@ -15,11 +15,13 @@ public class Folder  implements java.io.Serializable {
      private Long id;
      private String code;
      private String name;
+     private String folderRepoId;
      private Lookup folderType;
      private Date createdDate;
      private String createdBy;
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
+     private Status status;
      private Folder parentFolder;
 
 
@@ -75,6 +77,17 @@ public class Folder  implements java.io.Serializable {
     /**
      * 
      */
+    public String getFolderRepoId() {
+        return this.folderRepoId;
+    }
+    
+    public void setFolderRepoId(String folderRepoId) {
+        this.folderRepoId = folderRepoId;
+    }
+
+    /**
+     * 
+     */
     public Lookup getFolderType() {
         return this.folderType;
     }
@@ -125,6 +138,17 @@ public class Folder  implements java.io.Serializable {
     
     public void setLastUpdatedBy(String lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    /**
+     * 
+     */
+    public Status getStatus() {
+        return this.status;
+    }
+    
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     /**

@@ -1,97 +1,50 @@
 package com.app.module.document;
 
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.app.docmgr.model.Document;
+import com.app.docmgr.model.Folder;
+import com.app.docmgr.model.Lookup;
+import com.app.docmgr.model.Organization;
+import com.app.docmgr.model.User;
 import com.app.docmgr.service.DocumentService;
+import com.app.docmgr.service.FolderService;
+import com.app.docmgr.service.LookupService;
+import com.app.docmgr.service.OrganizationService;
+import com.app.docmgr.service.StatusService;
+import com.app.docmgr.service.UserService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
+import com.app.module.basic.UserManager;
+import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
+
+import org.apache.log4j.Logger;
 
 
 public class DocumentManager {
-	public static int itemPerPage=20;
+	private static Logger log = Logger.getLogger(DocumentManager.class);
 
 	public static PartialList getDocumentList(int start){
 		PartialList resultList=null;
 		try {
 			String filterParam=null; 
 			String orderParam=" ORDER BY document.id ASC ";
-			resultList= DocumentService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+			resultList= DocumentService.getInstance().getPartialList(filterParam, orderParam, 0, BaseUtil.itemPerPage);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {
 //			e.printStackTrace();
 		}
 		return resultList;
 	}
-	
-	
-    @RequestMapping(value="/singleUpload")
-    public String singleUpload(){
-        return "singleUpload";
-    }
-    @RequestMapping(value="/singleSave", method=RequestMethod.POST )
-    public @ResponseBody String singleSave(@RequestParam("file") MultipartFile file, @RequestParam("desc") String desc ){
-        System.out.println("File Description:"+desc);
-        String fileName = null;
-        if (!file.isEmpty()) {
-            try {
-                fileName = file.getOriginalFilename();
-                byte[] bytes = file.getBytes();
-                BufferedOutputStream buffStream = 
-                        new BufferedOutputStream(new FileOutputStream(new File("F:/cp/" + fileName)));
-                buffStream.write(bytes);
-                buffStream.close();
-                return "You have successfully uploaded " + fileName;
-            } catch (Exception e) {
-                return "You failed to upload " + fileName + ": " + e.getMessage();
-            }
-        } else {
-            return "Unable to upload. File is empty.";
-        }
-    }
-    
-    
-    @RequestMapping(value="/multipleUpload")
-    public String multiUpload(){
-        return "multipleUpload";
-    }
-    @RequestMapping(value="/multipleSave", method=RequestMethod.POST )
-    public @ResponseBody String multipleSave(@RequestParam("file") MultipartFile[] files){
-        String fileName = null;
-        String msg = "";
-        if (files != null && files.length >0) {
-            for(int i =0 ;i< files.length; i++){
-                try {
-                    fileName = files[i].getOriginalFilename();
-                    byte[] bytes = files[i].getBytes();
-                    BufferedOutputStream buffStream = 
-                            new BufferedOutputStream(new FileOutputStream(new File("F:/cp/" + fileName)));
-                    buffStream.write(bytes);
-                    buffStream.close();
-                    msg += "You have successfully uploaded " + fileName +"<br/>";
-                } catch (Exception e) {
-                    return "You failed to upload " + fileName + ": " + e.getMessage() +"<br/>";
-                }
-            }
-            return msg;
-        } else {
-            return "Unable to upload. File is empty.";
-        }
-    }
-	
-	
-	
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
@@ -133,5 +86,162 @@ public class DocumentManager {
 	}	
 
 	
+	public static org.bson.Document create(org.bson.Document passport,Map<String, Object> data) throws Exception {
+		//log.debug("Create Document :/n/r"+Utility.debug(data));
+		List<String> errors=new LinkedList<String>();
+		Document obj= new Document();
+		updateFromMap(obj, data,errors);
+		obj.setCreatedBy(passport.getString("loginName"));
+		obj.setCreatedDate(new Date());
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
+		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
+		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		DocumentService.getInstance().add(obj);
+		return toDocument(obj);
+	}
+	
+	public static org.bson.Document update(org.bson.Document passport,Map data,String objId) throws Exception{
+		//log.debug("Create Document :/n/r"+Utility.debug(data));
+		List<String> errors=new LinkedList<String>();
+		long uid=Long.parseLong(objId);
+		Document obj= DocumentService.getInstance().get(uid);
+		if (obj==null) throw new Exception("error.object.notfound");
+		updateFromMap(obj,data,errors) ;
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
+		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
+		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		DocumentService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	public static void delete(org.bson.Document passport,String objId) throws Exception {
+		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
+		long usrId= Long.parseLong(objId);
+		Document obj=DocumentService.getInstance().get(usrId);
+		if (obj==null) throw new Exception("error.object.notfound");
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "deleted"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		DocumentService.getInstance().update(obj);
+	}
+
+	public static org.bson.Document read(org.bson.Document passport,String objId) throws Exception {
+		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
+		long usrId= Long.parseLong(objId);
+		Document obj=DocumentService.getInstance().get(usrId);
+		if (obj==null) throw new Exception("error.object.notfound");
+		return toDocument(obj);
+	}
+	
+	public static PartialList list(org.bson.Document passport,Map data) throws Exception{
+		String filterParam=null;
+		String orderParam=null;
+		int start=0;
+		if(data!=null && !data.isEmpty()) {
+			try {
+				start= Integer.parseInt((String) data.get("start"));
+			} catch (Exception e) {
+				start=0;
+			}
+			
+			Map filterMap= (Map) data.get("filter");
+			if (filterMap!=null && !filterMap.isEmpty()) {
+				StringBuffer filterBuff=new StringBuffer("");
+				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+					String key = (String) iterator.next();
+					filterBuff.append(" AND obj."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+				}
+				filterParam=filterBuff.toString();
+			}
+			
+			Map orderMap= (Map) data.get("orderBy");
+			if (orderMap!=null && !orderMap.isEmpty()) {
+				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
+					String key = (String) iterator.next();
+					orderParam+=(orderParam!=null?", ":"")+" obj."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+				}
+			}
+		}
+		PartialList result=DocumentService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		toDocList(result);
+		return result;
+	}
+	
+	private static void updateFromMap(Document obj, Map data,List<String> errors) {
+		obj.setContentType((String) data.get("contentType"));
+		obj.setDescription((String) data.get("description"));
+		obj.setDocumentNumber((String) data.get("documentNumber"));
+		obj.setDocumentVersion((String) data.get("documentVersion"));
+		obj.setName((String) data.get("name"));
+		obj.setRepositoryId((String) data.get("repositoryId"));
+		
+		
+//		obj.set((String) data.get(""));
+		try {
+			long docId=(Long)data.get("parentDocumentId");
+			Document parentDocument= DocumentService.getInstance().get(docId);
+			if(parentDocument!=null)obj.setParentDocument(parentDocument);;
+		} catch (Exception e) {
+			errors.add("error.invalid.parentDocument");
+		}
+		try {
+			long folderId=(Long)data.get("parentFolderId");
+			Folder parentFolder= FolderService.getInstance().get(folderId);
+			if(parentFolder!=null)obj.setParentFolder(parentFolder);
+		} catch (Exception e) {
+			errors.add("error.invalid.parentFolder");
+		}
+		
+		try {
+			Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
+			if(securityLevel!=null) obj.setSecurityLevel(securityLevel);
+		} catch (Exception e) {
+			errors.add("error.invalid.securityLevel");
+		}
+	}
+	
+	public static org.bson.Document toDocument(Document obj) {
+		org.bson.Document doc=new org.bson.Document();
+		//doc.append("", obj.get);
+		doc.append("contentType", obj.getContentType());
+		doc.append("description", obj.getDescription());
+		doc.append("documentNumber", obj.getDocumentNumber());
+		doc.append("documentType", obj.getDocumentType());
+		doc.append("documentVersion", obj.getDocumentVersion());
+		doc.append("repositoryId", obj.getRepositoryId());
+		doc.append("id", obj.getId());
+		doc.append("name", obj.getName());
+		if(obj.getOwner()!=null) {
+			doc.append("owner", obj.getOwner().getLoginName());
+			doc.append("ownerId", obj.getOwner().getId());
+		}
+		if(obj.getParentDocument()!=null) {
+			doc.append("parentDocument", obj.getParentDocument().getName());
+			doc.append("parentDocumentId", obj.getParentDocument().getId());
+		}
+		if(obj.getParentFolder()!=null) {
+			doc.append("parentFolder", obj.getParentFolder().getName());
+			doc.append("parentFolderId", obj.getParentFolder().getId());
+		}
+		if(obj.getSecurityLevel()!=null){
+			doc.append("securityLevel", obj.getSecurityLevel().getName());
+			doc.append("securityLevelId", obj.getSecurityLevel().getId());
+		}
+		if(obj.getStatus()!=null){
+			doc.append("status", obj.getStatus().getName());
+			doc.append("statusId", obj.getStatus().getId());
+		}
+		return doc;
+	}
+	
+	public static void toDocList(List list){
+		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+		if(list.isEmpty()) return;
+		for (int i = 0; i < list.size(); i++) {
+			Document obj = (Document) list.get(i);
+			list.set(i, toDocument(obj));
+		}
+	}
 	
 }

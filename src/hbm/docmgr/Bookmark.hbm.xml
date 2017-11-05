@@ -20,11 +20,18 @@
 			column="url"
 			type="string"
 			not-null="true"
-			length="255"
+			length="1000"
 		/>
 		<property
 			name="name"
 			column="name"
+			type="string"
+			not-null="true"
+			length="100"
+		/>
+		<property
+			name="category"
+			column="category"
 			type="string"
 			not-null="true"
 			length="100"
@@ -55,6 +62,19 @@
 			column="created_by"
 			type="string"
 			not-null="true"
+			length="30"
+		/>
+		<property
+			name="lastUpdatedDate"
+			column="last_updated_date"
+			type="java.util.Date"
+			not-null="false"
+		/>
+		<property
+			name="lastUpdatedBy"
+			column="last_updated_by"
+			type="string"
+			not-null="false"
 			length="30"
 		/>
 		<many-to-one

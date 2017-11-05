@@ -1,56 +1,60 @@
 package com.app.module.document;
 
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.docmgr.model.Folder;
+import com.app.docmgr.model.Lookup;
+import com.app.docmgr.model.Organization;
+import com.app.docmgr.model.Status;
+import com.app.docmgr.model.User;
 import com.app.docmgr.service.FolderService;
+import com.app.docmgr.service.LookupService;
+import com.app.docmgr.service.OrganizationService;
+import com.app.docmgr.service.StatusService;
+import com.app.docmgr.service.UserService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.module.basic.LoginManager;
+import com.app.module.basic.UserManager;
+import com.app.module.document.FolderManager;
+import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
 public class FolderManager {
-	private static Logger log = Logger.getLogger(FolderManager.class.getName());
-	public static int itemPerPage=20;
+	private static Logger log = Logger.getLogger(FolderManager.class);
 	
+/*
 	public static PartialList getFolderList(int start){
 		PartialList resultList=null;
 		try {
 			String filterParam=null; 
 			String orderParam=" ORDER BY folder.id ASC ";
-			resultList= FolderService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+			resultList= FolderService.getInstance().getPartialList(filterParam, orderParam, 0, BaseUtil.itemPerPage);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {
 //			e.printStackTrace();
 		}
 		return resultList;
 	}
-	
-	private List<Folder> getFolders() throws Exception {
-		// TODO Auto-generated method stub
-		return FolderService.getInstance().getListAll(null, null);
-	}
-	
-	private void createFolder() {
-		// TODO Auto-generated method stub
-
-	}
-	
-	private void updateFolder() {
-		// TODO Auto-generated method stub
-
-	}
-	
-	private void addTopic() {
-		// TODO Auto-generated method stub
-
-	}
+*/
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
@@ -91,9 +95,10 @@ public class FolderManager {
 		return list;
 	}	
 
+	/*
 	private void create(Map data, Document passportData) {
 		// TODO Auto-generated method stub
-	/*	Folder folder= new Folder();
+		Folder folder= new Folder();
 		folder.setCode(data.get("code"));
 		folder.setCreatedBy(passportData.getString(""));
 		folder.setCreatedDate(createdDate);
@@ -102,20 +107,148 @@ public class FolderManager {
 		folder.setName(data.get("name"));
 		folder.setParentFolder(data.get("parentFolder");
 		FolderService.getInstance().add(folder);
-	*/	
+		
+	}
+	*/
+	
+	public static Document create(Document passport,Map<String, Object> data) throws Exception {
+		//log.debug("Create Folder :/n/r"+Utility.debug(data));
+		List<String> errors=new LinkedList<String>();
+		Folder obj= new Folder();
+		updateFromMap(obj, data,errors);
+		obj.setCreatedBy(passport.getString("loginName"));
+		obj.setCreatedDate(new Date());
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "new"));
+		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		FolderService.getInstance().add(obj);
+		return toDocument(obj);
 	}
 	
-	private void delete() {
-		// TODO Auto-generated method stub
+	public static Document update(Document passport,Map data,String objId) throws Exception{
+		//log.debug("Create Folder :/n/r"+Utility.debug(data));
+		List<String> errors=new LinkedList<String>();
+		long uid=Long.parseLong(objId);
+		Folder obj= FolderService.getInstance().get(uid);
+		if (obj==null) throw new Exception("error.object.notfound");
+		updateFromMap(obj,data,errors) ;
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
+		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "new"));
+		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		FolderService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	public static void delete(Document passport,String objId) throws Exception {
+		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
+		long usrId= Long.parseLong(objId);
+		Folder obj=FolderService.getInstance().get(usrId);
+		if (obj==null) throw new Exception("error.object.notfound");
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "deleted"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		FolderService.getInstance().update(obj);
+	}
+
+	public static Document read(Document passport,String objId) throws Exception {
+		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
+		long usrId= Long.parseLong(objId);
+		Folder obj=FolderService.getInstance().get(usrId);
+		if (obj==null) throw new Exception("error.object.notfound");
+		return toDocument(obj);
+	}
+	
+	public static PartialList list(Document passport,Map data) throws Exception{
+		String filterParam=null;
+		String orderParam=null;
+		int start=0;
+		if(data!=null && !data.isEmpty()) {
+			try {
+				start= Integer.parseInt((String) data.get("start"));
+			} catch (Exception e) {
+				start=0;
+			}
+			
+			Map filterMap= (Map) data.get("filter");
+			if (filterMap!=null && !filterMap.isEmpty()) {
+				StringBuffer filterBuff=new StringBuffer("");
+				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+					String key = (String) iterator.next();
+					filterBuff.append(" AND user."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+				}
+				filterParam=filterBuff.toString();
+			}
+			
+			Map orderMap= (Map) data.get("orderBy");
+			if (orderMap!=null && !orderMap.isEmpty()) {
+				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
+					String key = (String) iterator.next();
+					orderParam+=(orderParam!=null?", ":"")+" user."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+				}
+			}
+		}
+		PartialList result=FolderService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		toDocList(result);
+		return result;
+	}
+	
+	private static void updateFromMap(Folder obj, Map data,List<String> errors) {
+		obj.setCode((String)data.get("code"));
+		obj.setFolderRepoId((String)data.get("folderRepoId"));
+		obj.setName((String)data.get("name"));
+		try {
+			long parentId=(Long)data.get("parentFolderId");
+			Folder parentFolder= FolderService.getInstance().get(parentId);
+			if(parentFolder!=null)obj.setParentFolder(parentFolder);
+		} catch (Exception e) {
+			errors.add("error.invalid.parentFolder");
+		}
+		try {
+			long typeId=Long.parseLong((String)data.get("folderTypeId"));
+			Lookup folderType= LookupService.getInstance().get(typeId);
+			if(folderType!=null) obj.setFolderType(folderType);
+		} catch (Exception e) {
+			errors.add("error.invalid.folderType");
+		}
+		try {
+			long statusId=Long.parseLong((String)data.get("statusId"));
+			Status status= StatusService.getInstance().get(statusId);
+			if(status!=null) obj.setStatus(status);
+		} catch (Exception e) {
+			errors.add("error.invalid.status");
+		}
 
 	}
 	
-	private void rename() {
-		// TODO Auto-generated method stub
-
+	public static Document toDocument(Folder obj) {
+		Document doc=new Document();
+		doc.append("code", obj.getCode());
+		doc.append("folderRepoId", obj.getFolderRepoId());
+		doc.append("id", obj.getId());
+		doc.append("name", obj.getName());
+		if(obj.getFolderType()!=null) {
+			doc.append("folderType", obj.getFolderType().getName());
+			doc.append("folderTypeIds", obj.getFolderType().getId());
+		}
+		if(obj.getParentFolder()!=null){
+			doc.append("parentFolder", obj.getParentFolder().getName());
+			doc.append("parentFolderId", obj.getParentFolder().getId());
+		}
+		if(obj.getStatus()!=null){
+			doc.append("status", obj.getStatus().getName());
+			doc.append("statusId",obj.getStatus().getId());
+		}
+		return doc;
 	}
 	
-	
-	
+	public static void toDocList(List list){
+		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+		if(list.isEmpty()) return;
+		for (int i = 0; i < list.size(); i++) {
+			Folder obj = (Folder) list.get(i);
+			list.set(i, toDocument(obj));
+		}
+	}
+
 }
 

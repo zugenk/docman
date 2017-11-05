@@ -20,6 +20,8 @@ public class SharedDocument  implements java.io.Serializable {
      private Status status;
      private Date createdDate;
      private String createdBy;
+     private Date lastUpdatedDate;
+     private String lastUpdatedBy;
 
 
     // Constructors
@@ -124,6 +126,28 @@ public class SharedDocument  implements java.io.Serializable {
     
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    /**
+     * 
+     */
+    public Date getLastUpdatedDate() {
+        return this.lastUpdatedDate;
+    }
+    
+    public void setLastUpdatedDate(Date lastUpdatedDate) {
+        this.lastUpdatedDate = lastUpdatedDate;
+    }
+
+    /**
+     * 
+     */
+    public String getLastUpdatedBy() {
+        return this.lastUpdatedBy;
+    }
+    
+    public void setLastUpdatedBy(String lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
     }
 
 

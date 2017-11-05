@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -75,6 +75,42 @@ public class OrganizationActionBase extends Action{
 	    		forward = doDeleteConfirm(mapping, form, request, response);
 	    	}else if("delete_ok".equalsIgnoreCase(action)){
 	    		doDeleteOk(mapping, form, request, response);
+	    	}else if("submit_confirm".equalsIgnoreCase(action)){
+	    		forward = doSubmitConfirm(mapping, form, request, response);
+	    	}else if("submit_ok".equalsIgnoreCase(action)){
+	    		doSubmitOk(mapping, form, request, response);
+	    	}else if("approve_confirm".equalsIgnoreCase(action)){
+	    		forward = doApproveConfirm(mapping, form, request, response);
+	    	}else if("approve_ok".equalsIgnoreCase(action)){
+	    		doApproveOk(mapping, form, request, response);
+	    	}else if("reject_confirm".equalsIgnoreCase(action)){
+	    		forward = doRejectConfirm(mapping, form, request, response);
+	    	}else if("reject_ok".equalsIgnoreCase(action)){
+	    		doRejectOk(mapping, form, request, response);
+	    	}else if("pending_confirm".equalsIgnoreCase(action)){
+	    		forward = doPendingConfirm(mapping, form, request, response);
+	    	}else if("pending_ok".equalsIgnoreCase(action)){
+	    		doPendingOk(mapping, form, request, response);
+	    	}else if("process_confirm".equalsIgnoreCase(action)){
+	    		forward = doProcessConfirm(mapping, form, request, response);
+	    	}else if("process_ok".equalsIgnoreCase(action)){
+	    		doProcessOk(mapping, form, request, response);
+	    	}else if("close_confirm".equalsIgnoreCase(action)){
+	    		forward = doCloseConfirm(mapping, form, request, response);
+	    	}else if("close_ok".equalsIgnoreCase(action)){
+	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
+	    	}else if("remove_confirm".equalsIgnoreCase(action)){
+	    		forward = doRemoveConfirm(mapping, form, request, response);
+	    	}else if("remove_ok".equalsIgnoreCase(action)){
+	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
+	    		forward = doCancelConfirm(mapping, form, request, response);
+	    	}else if("cancel_ok".equalsIgnoreCase(action)){
+	    		doCancelOk(mapping, form, request, response);
 			}
 		}else if("add_User".equalsIgnoreCase(action)){
 			forward = doAddUser(mapping, form, request, response);
@@ -107,6 +143,12 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.OrganizationService parentService = com.app.docmgr.service.OrganizationService.getInstance();
 			List parentList = parentService.getList(null, null);
 			request.setAttribute("parentList", parentList);
+			com.app.docmgr.service.LookupService organizationTypeService = com.app.docmgr.service.LookupService.getInstance();
+			List organizationTypeList = organizationTypeService.getList("  and lookup.type='organizationType'  ", null);
+			request.setAttribute("organizationTypeList", organizationTypeList);
+			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Organization'  ", null);
+			request.setAttribute("statusList", statusList);
 		}catch(Exception ex){
 		
 		}
@@ -143,6 +185,14 @@ public class OrganizationActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("organization_address_filter", param_organization_address_filter);
+		String param_organization_mailingList_filter = "";
+		if(request.getParameter("organization_mailingList_filter")!=null){
+			param_organization_mailingList_filter = request.getParameter("organization_mailingList_filter");
+			if(param_organization_mailingList_filter.length() > 0 ){				
+				organization_filterSb.append("  AND organization.mailingList like '%"+param_organization_mailingList_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("organization_mailingList_filter", param_organization_mailingList_filter);
 		String param_organization_createdDate_filter_start = "";
 		if(request.getParameter("organization_createdDate_filter_start")!=null){
 			param_organization_createdDate_filter_start = request.getParameter("organization_createdDate_filter_start");
@@ -231,6 +281,22 @@ public class OrganizationActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("organization_parent_filter", param_organization_parent_filter);
+		String param_organization_organizationType_filter = "";
+		if(request.getParameter("organization_organizationType_filter")!=null){
+			param_organization_organizationType_filter = request.getParameter("organization_organizationType_filter");
+			if(param_organization_organizationType_filter.length() > 0 ){				
+				organization_filterSb.append("  AND organization.organizationType = '"+param_organization_organizationType_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("organization_organizationType_filter", param_organization_organizationType_filter);
+		String param_organization_status_filter = "";
+		if(request.getParameter("organization_status_filter")!=null){
+			param_organization_status_filter = request.getParameter("organization_status_filter");
+			if(param_organization_status_filter.length() > 0 ){				
+				organization_filterSb.append("  AND organization.status = '"+param_organization_status_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("organization_status_filter", param_organization_status_filter);
 		
 		if(organization_fieldOrder!=null && organization_orderType != null )organization_filterSb.append(" ORDER BY "+organization_fieldOrder+" "+organization_orderType);
 		
@@ -356,7 +422,13 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.OrganizationService parentService = com.app.docmgr.service.OrganizationService.getInstance();
 			List parentList = parentService.getList(null, null);
 			request.setAttribute("parentList", parentList);
-
+			com.app.docmgr.service.LookupService organizationTypeService = com.app.docmgr.service.LookupService.getInstance();
+			List organizationTypeList = organizationTypeService.getList("  and lookup.type='organizationType'  ", null);
+			request.setAttribute("organizationTypeList", organizationTypeList);
+ /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Organization'  ", null);
+			request.setAttribute("statusList", statusList);
+ */ 
 			Set userSet = organization.getMembers();
 			if(userSet == null)userSet = new HashSet();
 			request.setAttribute("userSet", userSet);
@@ -367,6 +439,9 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService_user = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList_user = userLevelService_user.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList_user", userLevelList_user);
+			com.app.docmgr.service.LookupService positionService_user = com.app.docmgr.service.LookupService.getInstance();
+			List positionList_user = positionService_user.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList_user", positionList_user);
 /*			com.app.docmgr.service.StatusService statusService_user = com.app.docmgr.service.StatusService.getInstance();
 			List statusList_user = statusService_user.getList("  and status.type='User'  ", null);
 			request.setAttribute("statusList_user", statusList_user);
@@ -408,6 +483,9 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService_user = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList_user = userLevelService_user.getList(null, null);
 			request.setAttribute("userLevelList_user", userLevelList_user);
+			com.app.docmgr.service.LookupService positionService_user = com.app.docmgr.service.LookupService.getInstance();
+			List positionList_user = positionService_user.getList(null, null);
+			request.setAttribute("positionList_user", positionList_user);
  /*			com.app.docmgr.service.StatusService statusService_user = com.app.docmgr.service.StatusService.getInstance();
 			List statusList_user = statusService_user.getList(null, null);
 			request.setAttribute("statusList_user", statusList_user);
@@ -423,7 +501,13 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.OrganizationService parentService = com.app.docmgr.service.OrganizationService.getInstance();
 			List parentList = parentService.getList(null, null);
 			request.setAttribute("parentList", parentList);
-	
+			com.app.docmgr.service.LookupService organizationTypeService = com.app.docmgr.service.LookupService.getInstance();
+			List organizationTypeList = organizationTypeService.getList("  and lookup.type='organizationType'  ", null);
+			request.setAttribute("organizationTypeList", organizationTypeList);
+/*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Organization'  ", null);
+			request.setAttribute("statusList", statusList);
+*/	
     		if(errors.isEmpty()){
     			forward = mapping.findForward("create_confirm");
     		}else{	
@@ -440,6 +524,7 @@ public class OrganizationActionBase extends Action{
     public void doCreateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	try{
     		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","new"));
 			organization.setLastUpdatedDate(new Date());
 			organization.setCreatedDate(new Date());
 			organization.setLastUpdatedBy(_doneBy);
@@ -473,7 +558,13 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.OrganizationService parentService = com.app.docmgr.service.OrganizationService.getInstance();
 			List parentList = parentService.getList(null, null);
 			request.setAttribute("parentList", parentList);
-
+			com.app.docmgr.service.LookupService organizationTypeService = com.app.docmgr.service.LookupService.getInstance();
+			List organizationTypeList = organizationTypeService.getList("  and lookup.type='organizationType'  ", null);
+			request.setAttribute("organizationTypeList", organizationTypeList);
+/* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Organization'  ", null);
+			request.setAttribute("statusList", statusList);
+*/ 
 			Set userSet = organization.getMembers();
 			if(userSet == null)userSet = new HashSet();
 			request.setAttribute("userSet", userSet);
@@ -485,6 +576,9 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService_user = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList_user = userLevelService_user.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList_user", userLevelList_user);
+			com.app.docmgr.service.LookupService positionService_user = com.app.docmgr.service.LookupService.getInstance();
+			List positionList_user = positionService_user.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList_user", positionList_user);
 /*			com.app.docmgr.service.StatusService statusService_user = com.app.docmgr.service.StatusService.getInstance();
 			List statusList_user = statusService_user.getList("  and status.type='User'  ", null);
 			request.setAttribute("statusList_user", statusList_user);
@@ -523,6 +617,9 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService_user = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList_user = userLevelService_user.getList(null, null);
 			request.setAttribute("userLevelList_user", userLevelList_user);
+			com.app.docmgr.service.LookupService positionService_user = com.app.docmgr.service.LookupService.getInstance();
+			List positionList_user = positionService_user.getList(null, null);
+			request.setAttribute("positionList_user", positionList_user);
 /*			com.app.docmgr.service.StatusService statusService_user = com.app.docmgr.service.StatusService.getInstance();
 			List statusList_user = statusService_user.getList(null, null);
 			request.setAttribute("statusList_user", statusList_user);
@@ -537,7 +634,13 @@ public class OrganizationActionBase extends Action{
 			com.app.docmgr.service.OrganizationService parentService = com.app.docmgr.service.OrganizationService.getInstance();
 			List parentList = parentService.getList(null, null);
 			request.setAttribute("parentList", parentList);
-
+			com.app.docmgr.service.LookupService organizationTypeService = com.app.docmgr.service.LookupService.getInstance();
+			List organizationTypeList = organizationTypeService.getList("  and lookup.type='organizationType'  ", null);
+			request.setAttribute("organizationTypeList", organizationTypeList);
+ /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Organization'  ", null);
+			request.setAttribute("statusList", statusList);
+ */
     		if(errors.isEmpty()){
     			forward = mapping.findForward("edit_confirm");
     		}else{	
@@ -608,8 +711,10 @@ public class OrganizationActionBase extends Action{
     		if(organization == null){
     			response.sendRedirect("organization.do?action=delete_confirm");
     		}
-    		OrganizationService.getInstance().delete(organization);
-    		request.getSession().removeAttribute("organization");
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","deleted"));
+    		OrganizationService.getInstance().update(organization);
     		response.sendRedirect("organization.do?action=list");    		
     	}catch(Exception ex){
     		ex.printStackTrace();
@@ -618,6 +723,456 @@ public class OrganizationActionBase extends Action{
     		}catch(Exception rex){
     			rex.printStackTrace();
     		}    		
+    	}  
+    }
+
+   	public ActionForward doSubmitConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("submit_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doSubmitOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=submit_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","submitted"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=submit_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doApproveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("approve_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doApproveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=approve_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","approved"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=approve_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doRejectConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("reject_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doRejectOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=reject_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","rejected"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=reject_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doPendingConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("pending_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doPendingOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=pending_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","pending"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=pending_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doProcessConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("process_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doProcessOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=process_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","processed"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=process_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("close_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doCloseOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=close_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","closed"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=close_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=archive_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","archived"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=archive_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doRemoveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("remove_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doRemoveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=remove_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","removed"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=remove_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if (organization == null){
+	    		organization = OrganizationService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("organization", organization);
+	    	}
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+			Set userSet = organization.getMembers();
+			if(userSet == null)userSet = new HashSet();
+			request.setAttribute("userSet", userSet);
+    		forward = mapping.findForward("cancel_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("organization.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doCancelOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Organization organization = (Organization) request.getSession().getAttribute("organization");
+    		if(organization == null){
+    			response.sendRedirect("organization.do?action=cancel_confirm");
+    		}
+    		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization","cancelled"));
+			organization.setLastUpdatedDate(new Date());
+			organization.setLastUpdatedBy(_doneBy);
+    		OrganizationService.getInstance().update(organization);
+    		response.sendRedirect("organization.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("organization.do?action=cancel_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
     	}  
     }
 
@@ -641,6 +1196,8 @@ public class OrganizationActionBase extends Action{
 			}
 			String address = request.getParameter("address");
 			organization.setAddress(address);
+			String mailingList = request.getParameter("mailingList");
+			organization.setMailingList(mailingList);
 /* 			String createdDate = request.getParameter("createdDate");
 			if(createdDate==null || createdDate.trim().length() == 0 ){
 				organization.setCreatedDate(null);
@@ -686,7 +1243,37 @@ public class OrganizationActionBase extends Action{
 					organization.setParent(parentObj);
 				}
 			}catch(Exception ex){}	
-
+			com.app.docmgr.model.Lookup  organizationTypeObj =null;
+			com.app.docmgr.service.LookupService organizationTypeService = com.app.docmgr.service.LookupService.getInstance();
+			try{
+				String organizationTypeStr = request.getParameter("organizationType");
+				
+				if(organizationTypeStr == null || organizationTypeStr.trim().length() == 0 ){
+					organization.setOrganizationType(null);
+				}else{			
+					organizationTypeObj = organizationTypeService.get(new Long(organizationTypeStr));
+					organization.setOrganizationType(organizationTypeObj);
+				}
+			}catch(Exception ex){}	
+			if(organizationTypeObj==null){
+				errors.add("organization.organizationType", new ActionError("error.organization.organizationType"));
+			}
+/* 			com.app.docmgr.model.Status  statusObj =null;
+			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			try{
+				String statusStr = request.getParameter("status");
+				
+				if(statusStr == null || statusStr.trim().length() == 0 ){
+					organization.setStatus(null);
+				}else{			
+					statusObj = statusService.get(new Long(statusStr));
+					organization.setStatus(statusObj);
+				}
+			}catch(Exception ex){}	
+			if(statusObj==null){
+				errors.add("organization.status", new ActionError("error.organization.status"));
+			}
+*/ 
     	}catch(Exception ex){
     		ex.printStackTrace();
     	}
@@ -866,6 +1453,12 @@ public class OrganizationActionBase extends Action{
 			if(name==null || name.trim().length() == 0 ){
 				errorsUser.add("user.name", new ActionError("error.user.name"));
 			}
+			String alias = request.getParameter("alias_item");
+			user.setAlias(alias);		
+
+			String picture = request.getParameter("picture_item");
+			user.setPicture(picture);		
+
 			String email = request.getParameter("email_item");
 			user.setEmail(email);		
 
@@ -981,6 +1574,17 @@ public class OrganizationActionBase extends Action{
 			if(userLevelObj==null){
 				errorsUser.add("user.userLevel", new ActionError("error.user.userLevel"));
 			}
+			com.app.docmgr.model.Lookup  positionObj =null;
+			try{
+				com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+				String positionStr = request.getParameter("position");
+				if(positionStr == null || positionStr.trim().length() == 0 ){
+					user.setPosition(null);
+				}else{			
+					positionObj = positionService.get(new Long(positionStr));
+					user.setPosition(positionObj);
+				}
+			}catch(Exception ex){}				
  /* 			com.app.docmgr.model.Status  statusObj =null;
 			try{
 				com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();

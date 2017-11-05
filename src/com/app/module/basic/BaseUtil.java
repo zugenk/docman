@@ -12,6 +12,10 @@ import org.w3c.tools.codec.Base64Decoder;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 
 public class BaseUtil {
+	public static String ADMIN_ROLE="ADMIN";
+	public static int itemPerPage=20;
+	
+	
 	public static boolean nvl(String s) {
 		if(s==null || s.trim().length() == 0 ){
 			return true;
@@ -49,6 +53,15 @@ public class BaseUtil {
 		}
 		
 		return treeList;
+	}
+	
+	
+	public static String listToString(List<String> list) {
+		StringBuffer result=new StringBuffer("");
+		for (Iterator<String> iterator = list.iterator(); iterator.hasNext();) {
+			result.append(iterator.next()+"|");
+		}
+		return result.toString();
 	}
 	
 	public static void main(String[] args) {

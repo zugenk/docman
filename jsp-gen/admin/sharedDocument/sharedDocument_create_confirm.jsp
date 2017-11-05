@@ -19,7 +19,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -60,6 +60,16 @@
 			<td width="150"><b><bean:message key="sharedDocument.createdBy.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="sharedDocument" property="createdBy"/></td>
+		</tr>
+ <% */ %>  <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="sharedDocument.lastUpdatedDate.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="sharedDocument" property="lastUpdatedDate" format="dd/MM/yyyy"/></td>
+		</tr>
+ <% */ %>  <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="sharedDocument.lastUpdatedBy.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="sharedDocument" property="lastUpdatedBy"/></td>
 		</tr>
  <% */ %> 
 		<tr>

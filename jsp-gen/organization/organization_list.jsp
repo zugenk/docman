@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -50,6 +50,7 @@
 			document.forms.organization.organization_mnemonic_filter.value="";
 			document.forms.organization.organization_name_filter.value="";
 			document.forms.organization.organization_address_filter.value="";
+			document.forms.organization.organization_mailingList_filter.value="";
 			document.forms.organization.organization_createdDate_filter_start.value="";
 			document.forms.organization.organization_createdDate_filter_end.value="";
 			document.forms.organization.organization_createdBy_filter.value="";
@@ -58,6 +59,8 @@
 			document.forms.organization.organization_lastUpdatedBy_filter.value="";
 			document.forms.organization.organization_filterCode_filter.value="";
 			document.forms.organization.organization_parent_filter.value="";
+			document.forms.organization.organization_organizationType_filter.value="";
+			document.forms.organization.organization_status_filter.value="";
 			document.forms.organization.submit();
 		}
 
@@ -79,23 +82,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="19" align="right">
+		<td colspan="20" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="19" align="left">
+		<td class="titleHeader" colspan="20" align="left">
 			<bean:message key="page.Organization.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="19" align="right">
+		<td colspan="20" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="19" align="right">
+		<td colspan="20" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -156,6 +159,20 @@
 			</logic:equal>
 			<logic:notEqual name="organization_fieldOrder" value="address">
 				<a href="#" onclick="doOrder('address', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
+			<bean:message key="organization.mailingList.key"/>
+			<logic:equal name="organization_fieldOrder" value="mailing_list">
+				<logic:equal name="organization_orderType" value="ASC">
+					<a href="#" onclick="doOrder('mailing_list', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="organization_orderType" value="DESC">
+					<a href="#" onclick="doOrder('mailing_list', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="organization_fieldOrder" value="mailing_list">
+				<a href="#" onclick="doOrder('mailing_list', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -229,6 +246,8 @@
 			</logic:notEqual>
 		</td>
 		<td><bean:message key="organization.parent.key"/></td>
+		<td><bean:message key="organization.organizationType.key"/></td>
+		<td><bean:message key="organization.status.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -246,6 +265,7 @@
 		<td><bean:write name="element" property="mnemonic"/></td>
 		<td><bean:write name="element" property="name"/></td>
 		<td><bean:write name="element" property="address"/></td>
+		<td><bean:write name="element" property="mailingList"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="createdBy"/></td>
 		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
@@ -254,6 +274,18 @@
 		<td >
 				<logic:notEmpty name="element"	property="parent">								
 					<bean:write name="element" property="parent.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="organizationType">								
+					<bean:write name="element" property="organizationType.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="status">								
+					<bean:write name="element" property="status.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -266,12 +298,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="19" align="right">
+		<td colspan="20" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="19" align="right">
+		<td colspan="20" align="right">
 		<% if(com.app.docmgr.action.OrganizationAction.allowableAction.contains("create")) { 
 				if (privilegeList.contains("ORGANIZATION_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -304,6 +336,11 @@
 		<td width="150"><bean:message key="organization.address.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="organization_address_filter" value="<bean:write name="organization_address_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="organization.mailingList.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="organization_mailingList_filter" value="<bean:write name="organization_mailingList_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150" valign="top"><bean:message key="organization.createdDate.key"/></td>
@@ -376,6 +413,54 @@
 							%>
 						>
 						<bean:write name="parentElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="organization.organizationType.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  organization_organizationType_filter_value = (String)request.getSession().getAttribute("organization_organizationType_filter");
+					if("".equals(organization_organizationType_filter_value)) organization_organizationType_filter_value = "0";
+				%>				
+				<select name="organization_organizationType_filter">
+					<option value=""></option>
+					<logic:iterate id="organizationTypeElement" name="organizationTypeList"  type="com.app.docmgr.model.Lookup">
+						
+						<option value="<bean:write name="organizationTypeElement" property="id"/>" 
+							<%
+								Long organization_organizationType_id = organizationTypeElement.getId();							
+								Long organization_organizationType_filter_value_c = new Long(organization_organizationType_filter_value);
+								if(organization_organizationType_filter_value_c.equals(organization_organizationType_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="organizationTypeElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="organization.status.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  organization_status_filter_value = (String)request.getSession().getAttribute("organization_status_filter");
+					if("".equals(organization_status_filter_value)) organization_status_filter_value = "0";
+				%>				
+				<select name="organization_status_filter">
+					<option value=""></option>
+					<logic:iterate id="statusElement" name="statusList"  type="com.app.docmgr.model.Status">
+						
+						<option value="<bean:write name="statusElement" property="id"/>" 
+							<%
+								Long organization_status_id = statusElement.getId();							
+								Long organization_status_filter_value_c = new Long(organization_status_filter_value);
+								if(organization_status_filter_value_c.equals(organization_status_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="statusElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

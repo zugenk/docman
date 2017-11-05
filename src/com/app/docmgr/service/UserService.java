@@ -4,10 +4,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.bson.Document;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Session;
+
+import com.app.connection.ConnectionFactory;
 import com.app.docmgr.model.Role;
 import com.app.docmgr.model.Topic;
 import com.app.docmgr.model.User;
 import com.app.docmgr.service.base.UserServiceBase;
+import com.app.shared.PartialList;
 
 /**
  * @author Martin - Digibox - WebCode Generator 1.5
@@ -43,4 +51,38 @@ public class UserService extends com.app.docmgr.service.base.UserServiceBase{
 		}
 		return favTopicIds;
 	}
+	
+
+	public User get(Long id) throws Exception{
+		User user = null;
+		Session session = ConnectionFactory.getInstance().getSession();
+		try {
+			user = (User) session.get(User.class, id);
+			if (user != null){
+				Hibernate.initialize(user.getRoles());			
+				Hibernate.initialize(user.getFavoriteTopics());			
+				Hibernate.initialize(user.getUserLevel());			
+				Hibernate.initialize(user.getStatus());			
+				Hibernate.initialize(user.getOrganization());			
+				Hibernate.initialize(user.getSecurityLevel());			
+			}
+		} catch (ObjectNotFoundException onfe) {
+			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
+			onfe.printStackTrace();
+		} catch (HibernateException e) {
+			System.err.println("Hibernate Exception" + e.getMessage());
+			throw new Exception(e);
+		} finally {
+			if (session != null){
+				try {
+					session.close();
+				} catch (HibernateException he) {
+					System.err.println("Hibernate Exception" + he.getMessage());
+					throw new Exception(he);
+				}
+			}
+		}
+		return user;
+	}
+	
 }

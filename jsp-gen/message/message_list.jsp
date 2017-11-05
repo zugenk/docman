@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -55,7 +55,9 @@
 			document.forms.message.message_lastUpdatedBy_filter.value="";
 			document.forms.message.message_filterCode_filter.value="";
 			document.forms.message.message_postType_filter.value="";
+			document.forms.message.message_status_filter.value="";
 			document.forms.message.message_topic_filter.value="";
+			document.forms.message.message_parent_filter.value="";
 			document.forms.message.submit();
 		}
 
@@ -185,7 +187,9 @@
 			</logic:notEqual>
 		</td>
 		<td><bean:message key="message.postType.key"/></td>
+		<td><bean:message key="message.status.key"/></td>
 		<td><bean:message key="message.topic.key"/></td>
+		<td><bean:message key="message.parent.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -212,8 +216,20 @@
 			
 		</td>
 		<td >
+				<logic:notEmpty name="element"	property="status">								
+					<bean:write name="element" property="status.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
 				<logic:notEmpty name="element"	property="topic">								
 					<bean:write name="element" property="topic.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="parent">								
+					<bean:write name="element" property="parent.content"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -326,6 +342,30 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><bean:message key="message.status.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  message_status_filter_value = (String)request.getSession().getAttribute("message_status_filter");
+					if("".equals(message_status_filter_value)) message_status_filter_value = "0";
+				%>				
+				<select name="message_status_filter">
+					<option value=""></option>
+					<logic:iterate id="statusElement" name="statusList"  type="com.app.docmgr.model.Status">
+						
+						<option value="<bean:write name="statusElement" property="id"/>" 
+							<%
+								Long message_status_id = statusElement.getId();							
+								Long message_status_filter_value_c = new Long(message_status_filter_value);
+								if(message_status_filter_value_c.equals(message_status_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="statusElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><bean:message key="message.topic.key"/></td>
 			<td width="10">:</td>
 			<td>
@@ -345,6 +385,30 @@
 							%>
 						>
 						<bean:write name="topicElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="message.parent.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  message_parent_filter_value = (String)request.getSession().getAttribute("message_parent_filter");
+					if("".equals(message_parent_filter_value)) message_parent_filter_value = "0";
+				%>				
+				<select name="message_parent_filter">
+					<option value=""></option>
+					<logic:iterate id="parentElement" name="parentList"  type="com.app.docmgr.model.Message">
+						
+						<option value="<bean:write name="parentElement" property="id"/>" 
+							<%
+								Long message_parent_id = parentElement.getId();							
+								Long message_parent_filter_value_c = new Long(message_parent_filter_value);
+								if(message_parent_filter_value_c.equals(message_parent_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="parentElement" property="content"/></option>
 					</logic:iterate>
 				</select>
 			</td>

@@ -13,7 +13,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -57,6 +57,11 @@
 			<td><bean:write name="bookmark" property="name"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="bookmark.category.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="bookmark" property="category"/></td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="bookmark.note.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="bookmark" property="note"/></td>
@@ -70,6 +75,16 @@
 			<td width="150"><b><bean:message key="bookmark.createdBy.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="bookmark" property="createdBy"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="bookmark.lastUpdatedDate.key"/></b></td>
+			<td width="10">:</td>
+			<td ><bean:write name="bookmark" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="bookmark.lastUpdatedBy.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="bookmark" property="lastUpdatedBy"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="bookmark.bookmarkType.key"/></b></td>

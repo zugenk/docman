@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -99,6 +99,10 @@ public class UserActionBase extends Action{
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
 	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
 	    	}else if("remove_confirm".equalsIgnoreCase(action)){
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
@@ -133,6 +137,9 @@ public class UserActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='User'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -202,6 +209,22 @@ public class UserActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("user_name_filter", param_user_name_filter);
+		String param_user_alias_filter = "";
+		if(request.getParameter("user_alias_filter")!=null){
+			param_user_alias_filter = request.getParameter("user_alias_filter");
+			if(param_user_alias_filter.length() > 0 ){				
+				user_filterSb.append("  AND user.alias like '%"+param_user_alias_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("user_alias_filter", param_user_alias_filter);
+		String param_user_picture_filter = "";
+		if(request.getParameter("user_picture_filter")!=null){
+			param_user_picture_filter = request.getParameter("user_picture_filter");
+			if(param_user_picture_filter.length() > 0 ){				
+				user_filterSb.append("  AND user.picture like '%"+param_user_picture_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("user_picture_filter", param_user_picture_filter);
 		String param_user_email_filter = "";
 		if(request.getParameter("user_email_filter")!=null){
 			param_user_email_filter = request.getParameter("user_email_filter");
@@ -474,6 +497,14 @@ public class UserActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("user_userLevel_filter", param_user_userLevel_filter);
+		String param_user_position_filter = "";
+		if(request.getParameter("user_position_filter")!=null){
+			param_user_position_filter = request.getParameter("user_position_filter");
+			if(param_user_position_filter.length() > 0 ){				
+				user_filterSb.append("  AND user.position = '"+param_user_position_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("user_position_filter", param_user_position_filter);
 		String param_user_status_filter = "";
 		if(request.getParameter("user_status_filter")!=null){
 			param_user_status_filter = request.getParameter("user_status_filter");
@@ -629,6 +660,9 @@ public class UserActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='User'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -680,6 +714,9 @@ public class UserActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='User'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -754,6 +791,9 @@ public class UserActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='User'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -799,6 +839,9 @@ public class UserActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='User'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -1227,6 +1270,59 @@ public class UserActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		User user = (User) request.getSession().getAttribute("user");
+    		if (user == null){
+	    		user = UserService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("user", user);
+	    	}
+    		if(user == null){
+    			response.sendRedirect("user.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set roleSet = user.getRoles();			
+			if(roleSet == null) roleSet = new HashSet();
+			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
+
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("user.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		User user = (User) request.getSession().getAttribute("user");
+    		if(user == null){
+    			response.sendRedirect("user.do?action=archive_confirm");
+    		}
+    		user.setStatus(StatusService.getInstance().getByTypeandCode("User","archived"));
+			user.setLastUpdatedDate(new Date());
+			user.setLastUpdatedBy(_doneBy);
+    		UserService.getInstance().update(user);
+    		response.sendRedirect("user.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("user.do?action=archive_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doRemoveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1359,6 +1455,10 @@ public class UserActionBase extends Action{
 			if(name==null || name.trim().length() == 0 ){
 				errors.add("user.name", new ActionError("error.user.name"));
 			}
+			String alias = request.getParameter("alias");
+			user.setAlias(alias);
+			String picture = request.getParameter("picture");
+			user.setPicture(picture);
 			String email = request.getParameter("email");
 			user.setEmail(email);
 			String fullName = request.getParameter("fullName");
@@ -1473,6 +1573,18 @@ public class UserActionBase extends Action{
 			if(userLevelObj==null){
 				errors.add("user.userLevel", new ActionError("error.user.userLevel"));
 			}
+			com.app.docmgr.model.Lookup  positionObj =null;
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			try{
+				String positionStr = request.getParameter("position");
+				
+				if(positionStr == null || positionStr.trim().length() == 0 ){
+					user.setPosition(null);
+				}else{			
+					positionObj = positionService.get(new Long(positionStr));
+					user.setPosition(positionObj);
+				}
+			}catch(Exception ex){}	
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

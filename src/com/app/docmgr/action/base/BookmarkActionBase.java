@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -99,6 +99,10 @@ public class BookmarkActionBase extends Action{
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
 	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
 	    	}else if("remove_confirm".equalsIgnoreCase(action)){
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
@@ -159,6 +163,14 @@ public class BookmarkActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("bookmark_name_filter", param_bookmark_name_filter);
+		String param_bookmark_category_filter = "";
+		if(request.getParameter("bookmark_category_filter")!=null){
+			param_bookmark_category_filter = request.getParameter("bookmark_category_filter");
+			if(param_bookmark_category_filter.length() > 0 ){				
+				bookmark_filterSb.append("  AND bookmark.category like '%"+param_bookmark_category_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("bookmark_category_filter", param_bookmark_category_filter);
 		String param_bookmark_note_filter = "";
 		if(request.getParameter("bookmark_note_filter")!=null){
 			param_bookmark_note_filter = request.getParameter("bookmark_note_filter");
@@ -203,6 +215,42 @@ public class BookmarkActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("bookmark_createdBy_filter", param_bookmark_createdBy_filter);
+		String param_bookmark_lastUpdatedDate_filter_start = "";
+		if(request.getParameter("bookmark_lastUpdatedDate_filter_start")!=null){
+			param_bookmark_lastUpdatedDate_filter_start = request.getParameter("bookmark_lastUpdatedDate_filter_start");
+			if(param_bookmark_lastUpdatedDate_filter_start.length() > 0 ){
+				try{
+					java.util.Calendar param_bookmark_lastUpdatedDate_filter_start_cal = java.util.Calendar.getInstance();				
+					param_bookmark_lastUpdatedDate_filter_start_cal.setTime(new java.text.SimpleDateFormat("dd/MM/yyyy").parse(param_bookmark_lastUpdatedDate_filter_start));
+					String param_bookmark_lastUpdatedDate_filter_start_cal_val = param_bookmark_lastUpdatedDate_filter_start_cal.get(Calendar.YEAR)+"-"+(param_bookmark_lastUpdatedDate_filter_start_cal.get(Calendar.MONTH)+1)+"-"+param_bookmark_lastUpdatedDate_filter_start_cal.get(Calendar.DAY_OF_MONTH);
+					bookmark_filterSb.append("  AND bookmark.lastUpdatedDate >= '"+param_bookmark_lastUpdatedDate_filter_start_cal_val+"' ");
+				}catch(Exception ex){}
+			}
+		}
+		request.getSession().setAttribute("bookmark_lastUpdatedDate_filter_start", param_bookmark_lastUpdatedDate_filter_start);
+
+		String param_bookmark_lastUpdatedDate_filter_end = "";
+		if(request.getParameter("bookmark_lastUpdatedDate_filter_end")!=null){
+			param_bookmark_lastUpdatedDate_filter_end = request.getParameter("bookmark_lastUpdatedDate_filter_end");
+			if(param_bookmark_lastUpdatedDate_filter_end.length() > 0 ){
+				try{
+					java.util.Calendar param_bookmark_lastUpdatedDate_filter_end_cal = java.util.Calendar.getInstance();				
+					param_bookmark_lastUpdatedDate_filter_end_cal.setTime(new java.text.SimpleDateFormat("dd/MM/yyyy").parse(param_bookmark_lastUpdatedDate_filter_end));
+					String param_bookmark_lastUpdatedDate_filter_end_cal_val = param_bookmark_lastUpdatedDate_filter_end_cal.get(Calendar.YEAR)+"-"+(param_bookmark_lastUpdatedDate_filter_end_cal.get(Calendar.MONTH)+1)+"-"+param_bookmark_lastUpdatedDate_filter_end_cal.get(Calendar.DAY_OF_MONTH);
+					bookmark_filterSb.append("  AND bookmark.lastUpdatedDate  <= '"+param_bookmark_lastUpdatedDate_filter_end_cal_val+"' ");
+				}catch(Exception ex){}
+			}
+		}
+		request.getSession().setAttribute("bookmark_lastUpdatedDate_filter_end", param_bookmark_lastUpdatedDate_filter_end);
+
+		String param_bookmark_lastUpdatedBy_filter = "";
+		if(request.getParameter("bookmark_lastUpdatedBy_filter")!=null){
+			param_bookmark_lastUpdatedBy_filter = request.getParameter("bookmark_lastUpdatedBy_filter");
+			if(param_bookmark_lastUpdatedBy_filter.length() > 0 ){				
+				bookmark_filterSb.append("  AND bookmark.lastUpdatedBy like '%"+param_bookmark_lastUpdatedBy_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("bookmark_lastUpdatedBy_filter", param_bookmark_lastUpdatedBy_filter);
 		String param_bookmark_bookmarkType_filter = "";
 		if(request.getParameter("bookmark_bookmarkType_filter")!=null){
 			param_bookmark_bookmarkType_filter = request.getParameter("bookmark_bookmarkType_filter");
@@ -404,7 +452,9 @@ public class BookmarkActionBase extends Action{
     	try{
     		Bookmark bookmark = (Bookmark) request.getSession().getAttribute("bookmark");
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","new"));
+			bookmark.setLastUpdatedDate(new Date());
 			bookmark.setCreatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
 			bookmark.setCreatedBy(_doneBy);
     		BookmarkService.getInstance().add(bookmark);
     		request.getSession().removeAttribute("bookmark");
@@ -492,6 +542,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=edit_confirm");
     		}
     		
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		request.getSession().removeAttribute("bookmark");
     		response.sendRedirect("bookmark.do?action=list");    		
@@ -537,6 +589,8 @@ public class BookmarkActionBase extends Action{
     		if(bookmark == null){
     			response.sendRedirect("bookmark.do?action=delete_confirm");
     		}
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","deleted"));
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=list");    		
@@ -583,6 +637,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=submit_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","submitted"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
@@ -628,6 +684,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=approve_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","approved"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
@@ -673,6 +731,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=reject_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","rejected"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
@@ -718,6 +778,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=pending_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","pending"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
@@ -763,6 +825,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=process_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","processed"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
@@ -808,11 +872,60 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=close_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","closed"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
     		try{
     			response.sendRedirect("bookmark.do?action=close_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Bookmark bookmark = (Bookmark) request.getSession().getAttribute("bookmark");
+    		if (bookmark == null){
+	    		bookmark = BookmarkService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("bookmark", bookmark);
+	    	}
+    		if(bookmark == null){
+    			response.sendRedirect("bookmark.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("bookmark.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Bookmark bookmark = (Bookmark) request.getSession().getAttribute("bookmark");
+    		if(bookmark == null){
+    			response.sendRedirect("bookmark.do?action=archive_confirm");
+    		}
+    		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","archived"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
+    		BookmarkService.getInstance().update(bookmark);
+    		response.sendRedirect("bookmark.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("bookmark.do?action=archive_confirm");
     		}catch(Exception rex){
     			rex.printStackTrace();
     		}
@@ -853,6 +966,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=remove_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","removed"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
@@ -898,6 +1013,8 @@ public class BookmarkActionBase extends Action{
     			response.sendRedirect("bookmark.do?action=cancel_confirm");
     		}
     		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","cancelled"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
     		BookmarkService.getInstance().update(bookmark);
     		response.sendRedirect("bookmark.do?action=detail");    		
     	}catch(Exception ex){
@@ -923,6 +1040,11 @@ public class BookmarkActionBase extends Action{
 			if(name==null || name.trim().length() == 0 ){
 				errors.add("bookmark.name", new ActionError("error.bookmark.name"));
 			}
+			String category = request.getParameter("category");
+			bookmark.setCategory(category);
+			if(category==null || category.trim().length() == 0 ){
+				errors.add("bookmark.category", new ActionError("error.bookmark.category"));
+			}
 			String note = request.getParameter("note");
 			bookmark.setNote(note);
 			if(note==null || note.trim().length() == 0 ){
@@ -946,6 +1068,18 @@ public class BookmarkActionBase extends Action{
 			if(createdBy==null || createdBy.trim().length() == 0 ){
 				errors.add("bookmark.createdBy", new ActionError("error.bookmark.createdBy"));
 			}
+*/ /* 			String lastUpdatedDate = request.getParameter("lastUpdatedDate");
+			if(lastUpdatedDate==null || lastUpdatedDate.trim().length() == 0 ){
+				bookmark.setLastUpdatedDate(null);
+			}else{
+				try{
+					java.util.Calendar lastUpdatedDateCalendar = java.util.Calendar.getInstance();
+					lastUpdatedDateCalendar.setTime(new java.text.SimpleDateFormat("dd/MM/yyyy").parse(lastUpdatedDate));			
+					bookmark.setLastUpdatedDate(lastUpdatedDateCalendar.getTime());
+				}catch(Exception ex){}
+			}
+*/ /* 			String lastUpdatedBy = request.getParameter("lastUpdatedBy");
+			bookmark.setLastUpdatedBy(lastUpdatedBy);
 */ 
 			com.app.docmgr.model.Lookup  bookmarkTypeObj =null;
 			com.app.docmgr.service.LookupService bookmarkTypeService = com.app.docmgr.service.LookupService.getInstance();

@@ -17,12 +17,15 @@ public class Organization  implements java.io.Serializable {
      private String mnemonic;
      private String name;
      private String address;
+     private String mailingList;
      private Date createdDate;
      private String createdBy;
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
      private String filterCode;
      private Organization parent;
+     private Lookup organizationType;
+     private Status status;
      private Set members;
 
 
@@ -100,6 +103,17 @@ public class Organization  implements java.io.Serializable {
     /**
      * 
      */
+    public String getMailingList() {
+        return this.mailingList;
+    }
+    
+    public void setMailingList(String mailingList) {
+        this.mailingList = mailingList;
+    }
+
+    /**
+     * 
+     */
     public Date getCreatedDate() {
         return this.createdDate;
     }
@@ -161,6 +175,28 @@ public class Organization  implements java.io.Serializable {
     
     public void setParent(Organization parent) {
         this.parent = parent;
+    }
+
+    /**
+     * 
+     */
+    public Lookup getOrganizationType() {
+        return this.organizationType;
+    }
+    
+    public void setOrganizationType(Lookup organizationType) {
+        this.organizationType = organizationType;
+    }
+
+    /**
+     * 
+     */
+    public Status getStatus() {
+        return this.status;
+    }
+    
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     /**

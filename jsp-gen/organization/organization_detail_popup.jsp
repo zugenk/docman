@@ -13,7 +13,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -67,6 +67,11 @@
 			<td><bean:write name="organization" property="address"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="organization.mailingList.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="organization" property="mailingList"/></td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="organization.createdDate.key"/></b></td>
 			<td width="10">:</td>
 			<td ><bean:write name="organization" property="createdDate" format="dd MMM yyyy"/></td>
@@ -101,6 +106,24 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="organization.organizationType.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="organization"	property="organizationType">			
+					<bean:write name="organization" property="organizationType.id"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="organization.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="organization"	property="status">			
+					<bean:write name="organization" property="status.id"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"></td>
 			<td width="10"></td>
 			<td>
@@ -112,7 +135,7 @@
 	<br>
 	<table border="0" width="98%" align="center">	
 		<tr class="title">
-			<td colspan="28"><bean:message key="organization.members.key"/></td>
+			<td colspan="30"><bean:message key="organization.members.key"/></td>
 		</tr>
 
 		<tr class="title">
@@ -123,6 +146,8 @@
 			<td><bean:message key="user.language.key"/></td>
 			<td><bean:message key="user.title.key"/></td>
 			<td><bean:message key="user.name.key"/></td>
+			<td><bean:message key="user.alias.key"/></td>
+			<td><bean:message key="user.picture.key"/></td>
 			<td><bean:message key="user.email.key"/></td>
 			<td><bean:message key="user.fullName.key"/></td>
 			<td><bean:message key="user.homePhoneNumber.key"/></td>
@@ -144,6 +169,7 @@
 			<td><bean:message key="user.sessionCode.key"/></td>
 			<td><bean:message key="user.IPassport.key"/></td>
 			<td><bean:message key="user.userLevel.key"/></td>
+			<td><bean:message key="user.position.key"/></td>
   <% /* %> 			<td><bean:message key="user.status.key"/></td>
   <% */ %> 			<td><bean:message key="user.organization.key"/></td>
 			<td><bean:message key="user.securityLevel.key"/></td>
@@ -157,6 +183,8 @@
 			<td><bean:write name="element_user" property="language"/></td>
 			<td><bean:write name="element_user" property="title"/></td>
 			<td><bean:write name="element_user" property="name"/></td>
+			<td><bean:write name="element_user" property="alias"/></td>
+			<td><bean:write name="element_user" property="picture"/></td>
 			<td><bean:write name="element_user" property="email"/></td>
 			<td><bean:write name="element_user" property="fullName"/></td>
 			<td><bean:write name="element_user" property="homePhoneNumber"/></td>
@@ -180,6 +208,11 @@
 			<td>
 				<logic:notEmpty name="element_user" property="userLevel">
 					<bean:write name="element_user" property="userLevel.id"/>
+				</logic:notEmpty>				
+			</td>
+			<td>
+				<logic:notEmpty name="element_user" property="position">
+					<bean:write name="element_user" property="position.id"/>
 				</logic:notEmpty>				
 			</td>
   <% /* %> 			<td>

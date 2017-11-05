@@ -16,7 +16,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -49,7 +49,7 @@
 
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td class="titleHeader" colspan="15" align="left">
+		<td class="titleHeader" colspan="18" align="left">
 			<bean:message key="page.Bookmark.ListPopup"/>
 		</td>
 	</tr>
@@ -66,9 +66,12 @@
 		<tr bgcolor="<% out.print(bgcolor); %>">
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="url"/>');"><bean:write name="element" property="url"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="name"/>');"><bean:write name="element" property="name"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="category"/>');"><bean:write name="element" property="category"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="note"/>');"><bean:write name="element" property="note"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="createdDate"/>');"><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="createdBy"/>');"><bean:write name="element" property="createdBy"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="lastUpdatedDate"/>');"><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="lastUpdatedBy"/>');"><bean:write name="element" property="lastUpdatedBy"/></a></td>
 		</tr>		
 	</logic:iterate> 
 </TABLE>

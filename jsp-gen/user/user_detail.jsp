@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -83,6 +83,16 @@
 			<td width="150"><b><bean:message key="user.name.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="user" property="name"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="user.alias.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="user" property="alias"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="user.picture.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="user" property="picture"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="user.email.key"/></b></td>
@@ -194,6 +204,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="user.position.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="user"	property="position">			
+					<bean:write name="user" property="position.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="user.status.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
@@ -271,6 +290,12 @@
 				<% if(com.app.docmgr.action.UserAction.allowableAction.contains("close")) { 
 						if (privilegeList.contains("USER_CLOSE")) { %>
 				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.UserAction.allowableAction.contains("archive")) { 
+						if (privilegeList.contains("USER_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
 				&nbsp;
 				<% 		}
 					} %>

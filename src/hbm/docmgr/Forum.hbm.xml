@@ -36,6 +36,20 @@
 			not-null="true"
 			length="150"
 		/>
+		<property
+			name="description"
+			column="description"
+			type="string"
+			not-null="true"
+			length="500"
+		/>
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
 		<many-to-one
 			name="forumType"
 			column="forum_type"

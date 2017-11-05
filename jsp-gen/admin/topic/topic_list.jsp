@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -57,6 +57,7 @@
 			document.forms.topic.topic_lastUpdatedDate_filter_end.value="";
 			document.forms.topic.topic_lastUpdatedBy_filter.value="";
 			document.forms.topic.topic_filterCode_filter.value="";
+			document.forms.topic.topic_status_filter.value="";
 			document.forms.topic.topic_parentForum_filter.value="";
 			document.forms.topic.submit();
 		}
@@ -256,6 +257,7 @@
 				<a href="#" onclick="doOrder('filter_code', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
+		<td><bean:message key="topic.status.key"/></td>
 		<td><bean:message key="topic.parentForum.key"/></td>
 
 		<td></td>
@@ -281,6 +283,12 @@
 		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="lastUpdatedBy"/></td>
 		<td><bean:write name="element" property="filterCode"/></td>
+		<td >
+				<logic:notEmpty name="element"	property="status">								
+					<bean:write name="element" property="status.name"/>
+				</logic:notEmpty>	
+			
+		</td>
 		<td >
 				<logic:notEmpty name="element"	property="parentForum">								
 					<bean:write name="element" property="parentForum.name"/>
@@ -386,6 +394,30 @@
 		<td width="10">:</td>
 		<td><input type="text" name="topic_filterCode_filter" value="<bean:write name="topic_filterCode_filter"/>"></td>
 	</tr>
+		<tr>
+			<td width="150"><bean:message key="topic.status.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  topic_status_filter_value = (String)request.getSession().getAttribute("topic_status_filter");
+					if("".equals(topic_status_filter_value)) topic_status_filter_value = "0";
+				%>				
+				<select name="topic_status_filter">
+					<option value=""></option>
+					<logic:iterate id="statusElement" name="statusList"  type="com.app.docmgr.model.Status">
+						
+						<option value="<bean:write name="statusElement" property="id"/>" 
+							<%
+								Long topic_status_id = statusElement.getId();							
+								Long topic_status_filter_value_c = new Long(topic_status_filter_value);
+								if(topic_status_filter_value_c.equals(topic_status_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="statusElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
 		<tr>
 			<td width="150"><bean:message key="topic.parentForum.key"/></td>
 			<td width="10">:</td>

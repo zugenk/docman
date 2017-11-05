@@ -23,7 +23,7 @@ import com.app.docmgr.model.Topic;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 	/**
@@ -61,6 +61,7 @@ public class TopicServiceBase {
 		try {
 			topic = (Topic) session.get(Topic.class, id);
 			Hibernate.initialize(topic.getSubscribers());			
+			Hibernate.initialize(topic.getStatus());			
 			Hibernate.initialize(topic.getParentForum());			
 
 		} catch (ObjectNotFoundException onfe) {
@@ -91,12 +92,13 @@ public class TopicServiceBase {
 		Topic topic = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE topic.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;					
 			Query query = session.createQuery("SELECT topic FROM com.app.docmgr.model.Topic topic "+filter+" ");
 			topic = (com.app.docmgr.model.Topic) query.uniqueResult();
 			if(topic!=null) {
 				Hibernate.initialize(topic.getSubscribers());			
+				Hibernate.initialize(topic.getStatus());			
 				Hibernate.initialize(topic.getParentForum());			
 			}
 			return topic;
@@ -280,7 +282,7 @@ public class TopicServiceBase {
 		PartialList result = new PartialList();
 		Session session = null;
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE topic.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
 			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
@@ -296,6 +298,7 @@ public class TopicServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.Topic topic = (com.app.docmgr.model.Topic)itr.next();
 				Hibernate.initialize(topic.getSubscribers());			
+				Hibernate.initialize(topic.getStatus());			
 				Hibernate.initialize(topic.getParentForum());			
 			}			
 		} catch(HibernateException he) {
@@ -316,6 +319,8 @@ public class TopicServiceBase {
 	}
 
 	public List getList(String filterParam, String orderParam) throws Exception{
+		if(filterParam!=null) filterParam = " and topic.status.state='active' "+filterParam;
+		else filterParam=" and topic.status.state='active' ";
 		return getListAll(filterParam,orderParam);
 	}
 	

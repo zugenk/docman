@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -50,6 +50,9 @@
 			document.forms.sharedDocument.sharedDocument_createdDate_filter_start.value="";
 			document.forms.sharedDocument.sharedDocument_createdDate_filter_end.value="";
 			document.forms.sharedDocument.sharedDocument_createdBy_filter.value="";
+			document.forms.sharedDocument.sharedDocument_lastUpdatedDate_filter_start.value="";
+			document.forms.sharedDocument.sharedDocument_lastUpdatedDate_filter_end.value="";
+			document.forms.sharedDocument.sharedDocument_lastUpdatedBy_filter.value="";
 			document.forms.sharedDocument.sharedDocument_document_filter.value="";
 			document.forms.sharedDocument.sharedDocument_targetUser_filter.value="";
 			document.forms.sharedDocument.sharedDocument_targetOrganization_filter.value="";
@@ -75,23 +78,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="13" align="right">
+		<td colspan="15" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="13" align="left">
+		<td class="titleHeader" colspan="15" align="left">
 			<bean:message key="page.SharedDocument.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="13" align="right">
+		<td colspan="15" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="13" align="right">
+		<td colspan="15" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -140,6 +143,34 @@
 				<a href="#" onclick="doOrder('created_by', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
+		<td>			
+			<bean:message key="sharedDocument.lastUpdatedDate.key"/>
+			<logic:equal name="sharedDocument_fieldOrder" value="last_updated_date">
+				<logic:equal name="sharedDocument_orderType" value="ASC">
+					<a href="#" onclick="doOrder('last_updated_date', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="sharedDocument_orderType" value="DESC">
+					<a href="#" onclick="doOrder('last_updated_date', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="sharedDocument_fieldOrder" value="last_updated_date">
+				<a href="#" onclick="doOrder('last_updated_date', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
+			<bean:message key="sharedDocument.lastUpdatedBy.key"/>
+			<logic:equal name="sharedDocument_fieldOrder" value="last_updated_by">
+				<logic:equal name="sharedDocument_orderType" value="ASC">
+					<a href="#" onclick="doOrder('last_updated_by', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="sharedDocument_orderType" value="DESC">
+					<a href="#" onclick="doOrder('last_updated_by', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="sharedDocument_fieldOrder" value="last_updated_by">
+				<a href="#" onclick="doOrder('last_updated_by', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
 		<td><bean:message key="sharedDocument.document.key"/></td>
 		<td><bean:message key="sharedDocument.targetUser.key"/></td>
 		<td><bean:message key="sharedDocument.targetOrganization.key"/></td>
@@ -160,6 +191,8 @@
 		<td><bean:write name="element" property="grantAction"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="createdBy"/></td>
+		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
+		<td><bean:write name="element" property="lastUpdatedBy"/></td>
 		<td >
 				<logic:notEmpty name="element"	property="document">								
 					<bean:write name="element" property="document.name"/>
@@ -193,12 +226,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="13" align="right">
+		<td colspan="15" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="13" align="right">
+		<td colspan="15" align="right">
 		<% if(com.app.docmgr.action.SharedDocumentAction.allowableAction.contains("create")) { 
 				if (privilegeList.contains("SHARED_DOCUMENT_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -239,6 +272,29 @@
 		<td width="150"><bean:message key="sharedDocument.createdBy.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="sharedDocument_createdBy_filter" value="<bean:write name="sharedDocument_createdBy_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150" valign="top"><bean:message key="sharedDocument.lastUpdatedDate.key"/></td>
+		<td width="10" valign="top">:</td>
+		<td>
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="top"><input type="text" onclick="calendarToogle('sharedDocument_lastUpdatedDate_filter_start', 'sharedDocument_lastUpdatedDate_filter_start_cal', null);"  onKeyDown="drawCalendar('sharedDocument_lastUpdatedDate_filter_start', 'sharedDocument_lastUpdatedDate_filter_start_cal', null);" name="sharedDocument_lastUpdatedDate_filter_start" value="<bean:write name="sharedDocument_lastUpdatedDate_filter_start"/>"></td>
+					<td width="20" align="center" valign="top">To</td>
+					<td valign="top"><input type="text" onclick="calendarToogle('sharedDocument_lastUpdatedDate_filter_end', 'sharedDocument_lastUpdatedDate_filter_end_cal', null);"  onKeyDown="drawCalendar('sharedDocument_lastUpdatedDate_filter_end', 'sharedDocument_lastUpdatedDate_filter_end_cal', null);" name="sharedDocument_lastUpdatedDate_filter_end" value="<bean:write name="sharedDocument_lastUpdatedDate_filter_end"/>"></td>
+				</tr>
+				<tr>
+					<td><div id="sharedDocument_lastUpdatedDate_filter_start_cal" style="display: none"></div></td>
+					<td>&nbsp;</td>
+					<td><div id="sharedDocument_lastUpdatedDate_filter_end_cal" style="display: none"></div></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="sharedDocument.lastUpdatedBy.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="sharedDocument_lastUpdatedBy_filter" value="<bean:write name="sharedDocument_lastUpdatedBy_filter"/>"></td>
 	</tr>
 		<tr>
 			<td width="150"><bean:message key="sharedDocument.document.key"/></td>

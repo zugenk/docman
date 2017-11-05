@@ -25,6 +25,9 @@ public class UserHistory  implements java.io.Serializable {
      private String language;
      private String title;
      private String name;
+     private String alias;
+     private Lookup position;
+     private String picture;
      private String email;
      private String fullName;
      private String homePhoneNumber;
@@ -209,6 +212,39 @@ public class UserHistory  implements java.io.Serializable {
     
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * 
+     */
+    public String getAlias() {
+        return this.alias;
+    }
+    
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    /**
+     * 
+     */
+    public Lookup getPosition() {
+        return this.position;
+    }
+    
+    public void setPosition(Lookup position) {
+        this.position = position;
+    }
+
+    /**
+     * 
+     */
+    public String getPicture() {
+        return this.picture;
+    }
+    
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     /**

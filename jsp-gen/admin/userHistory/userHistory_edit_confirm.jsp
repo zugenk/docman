@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -98,6 +98,16 @@
 			<td width="150"><b><bean:message key="userHistory.name.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="userHistory" property="name"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="userHistory.alias.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="userHistory" property="alias"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="userHistory.picture.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="userHistory" property="picture"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="userHistory.email.key"/></b></td>
@@ -206,6 +216,15 @@
 			<td>
 				<logic:notEmpty name="userHistory"	property="userLevel">								
 					<bean:write name="userHistory" property="userLevel.name"/>
+				</logic:notEmpty>	
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="userHistory.position.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<logic:notEmpty name="userHistory"	property="position">								
+					<bean:write name="userHistory" property="position.name"/>
 				</logic:notEmpty>	
 			</td>
 		</tr>

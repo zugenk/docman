@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -99,6 +99,10 @@ public class SystemParameterActionBase extends Action{
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
 	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
 	    	}else if("remove_confirm".equalsIgnoreCase(action)){
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
@@ -852,6 +856,53 @@ public class SystemParameterActionBase extends Action{
     	}catch(Exception ex){
     		try{
     			response.sendRedirect("systemParameter.do?action=close_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		SystemParameter systemParameter = (SystemParameter) request.getSession().getAttribute("systemParameter");
+    		if (systemParameter == null){
+	    		systemParameter = SystemParameterService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("systemParameter", systemParameter);
+	    	}
+    		if(systemParameter == null){
+    			response.sendRedirect("systemParameter.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("systemParameter.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		SystemParameter systemParameter = (SystemParameter) request.getSession().getAttribute("systemParameter");
+    		if(systemParameter == null){
+    			response.sendRedirect("systemParameter.do?action=archive_confirm");
+    		}
+    		systemParameter.setStatus(StatusService.getInstance().getByTypeandCode("SystemParameter","archived"));
+			systemParameter.setLastUpdatedDate(new Date());
+			systemParameter.setLastUpdatedBy(_doneBy);
+    		SystemParameterService.getInstance().update(systemParameter);
+    		response.sendRedirect("systemParameter.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("systemParameter.do?action=archive_confirm");
     		}catch(Exception rex){
     			rex.printStackTrace();
     		}

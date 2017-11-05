@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -48,6 +48,7 @@
 		function doReset(){
 			document.forms.folder.folder_code_filter.value="";
 			document.forms.folder.folder_name_filter.value="";
+			document.forms.folder.folder_folderRepoId_filter.value="";
 			document.forms.folder.folder_createdDate_filter_start.value="";
 			document.forms.folder.folder_createdDate_filter_end.value="";
 			document.forms.folder.folder_createdBy_filter.value="";
@@ -55,6 +56,7 @@
 			document.forms.folder.folder_lastUpdatedDate_filter_end.value="";
 			document.forms.folder.folder_lastUpdatedBy_filter.value="";
 			document.forms.folder.folder_folderType_filter.value="";
+			document.forms.folder.folder_status_filter.value="";
 			document.forms.folder.folder_parentFolder_filter.value="";
 			document.forms.folder.submit();
 		}
@@ -77,23 +79,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="16" align="right">
+		<td colspan="17" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="16" align="left">
+		<td class="titleHeader" colspan="17" align="left">
 			<bean:message key="page.Folder.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="16" align="right">
+		<td colspan="17" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="16" align="right">
+		<td colspan="17" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -126,6 +128,20 @@
 			</logic:equal>
 			<logic:notEqual name="folder_fieldOrder" value="name">
 				<a href="#" onclick="doOrder('name', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
+			<bean:message key="folder.folderRepoId.key"/>
+			<logic:equal name="folder_fieldOrder" value="folder_repo_id">
+				<logic:equal name="folder_orderType" value="ASC">
+					<a href="#" onclick="doOrder('folder_repo_id', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="folder_orderType" value="DESC">
+					<a href="#" onclick="doOrder('folder_repo_id', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="folder_fieldOrder" value="folder_repo_id">
+				<a href="#" onclick="doOrder('folder_repo_id', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -185,6 +201,7 @@
 			</logic:notEqual>
 		</td>
 		<td><bean:message key="folder.folderType.key"/></td>
+		<td><bean:message key="folder.status.key"/></td>
 		<td><bean:message key="folder.parentFolder.key"/></td>
 
 		<td></td>
@@ -201,6 +218,7 @@
 		<tr bgcolor="<% out.print(bgcolor); %>">
 		<td><bean:write name="element" property="code"/></td>
 		<td><bean:write name="element" property="name"/></td>
+		<td><bean:write name="element" property="folderRepoId"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="createdBy"/></td>
 		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
@@ -208,6 +226,12 @@
 		<td >
 				<logic:notEmpty name="element"	property="folderType">								
 					<bean:write name="element" property="folderType.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="status">								
+					<bean:write name="element" property="status.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -226,12 +250,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="16" align="right">
+		<td colspan="17" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="16" align="right">
+		<td colspan="17" align="right">
 		<% if(com.app.docmgr.admin.action.FolderAction.allowableAction.contains("create")) { 
 				if (UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FOLDER_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -254,6 +278,11 @@
 		<td width="150"><bean:message key="folder.name.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="folder_name_filter" value="<bean:write name="folder_name_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="folder.folderRepoId.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="folder_folderRepoId_filter" value="<bean:write name="folder_folderRepoId_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150" valign="top"><bean:message key="folder.createdDate.key"/></td>
@@ -321,6 +350,30 @@
 							%>
 						>
 						<bean:write name="folderTypeElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="folder.status.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  folder_status_filter_value = (String)request.getSession().getAttribute("folder_status_filter");
+					if("".equals(folder_status_filter_value)) folder_status_filter_value = "0";
+				%>				
+				<select name="folder_status_filter">
+					<option value=""></option>
+					<logic:iterate id="statusElement" name="statusList"  type="com.app.docmgr.model.Status">
+						
+						<option value="<bean:write name="statusElement" property="id"/>" 
+							<%
+								Long folder_status_id = statusElement.getId();							
+								Long folder_status_filter_value_c = new Long(folder_status_filter_value);
+								if(folder_status_filter_value_c.equals(folder_status_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="statusElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

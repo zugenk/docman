@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -84,12 +84,30 @@
 				</logic:notEmpty>	
 			</td>
 		</tr>
-		<tr>
+  <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="message.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<logic:notEmpty name="message"	property="status">								
+					<bean:write name="message" property="status.name"/>
+				</logic:notEmpty>	
+			</td>
+		</tr>
+  <% */ %> 		<tr>
 			<td width="150"><b><bean:message key="message.topic.key"/></b></td>
 			<td width="10">:</td>
 			<td>
 				<logic:notEmpty name="message"	property="topic">								
 					<bean:write name="message" property="topic.name"/>
+				</logic:notEmpty>	
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="message.parent.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<logic:notEmpty name="message"	property="parent">								
+					<bean:write name="message" property="parent.content"/>
 				</logic:notEmpty>	
 			</td>
 		</tr>

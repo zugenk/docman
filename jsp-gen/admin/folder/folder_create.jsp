@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -85,6 +85,21 @@
 			<tr>
 				<td colspan="3">
 					<font color="red"><html:errors property="folder.name"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
+
+		<tr>
+			<td width="150"><b><bean:message key="folder.folderRepoId.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="10">:</td>			
+			<td>
+				<html:text name="folder" property="folderRepoId"/>
+			</td>
+		</tr>
+		<logic:messagesPresent property="folder.folderRepoId">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="folder.folderRepoId"/></font>
 				</td>
 			</tr>
 		</logic:messagesPresent>
@@ -157,7 +172,24 @@
 				</td>
 			</tr>
 		</logic:messagesPresent>
-		<tr>
+<% /* %> 		<tr>
+			<td width="150"><b><bean:message key="folder.status.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="folder" property="status" style="width:135"  value="${folder.status.id}">
+					<option value=""></option>
+					<html:options collection="statusList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
+		<logic:messagesPresent property="folder.status">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="folder.status"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
+<% */ %> 		<tr>
 			<td width="150"><b><bean:message key="folder.parentFolder.key"/></b></td>
 			<td width="10">:</td>
 			<td>				

@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -128,6 +128,14 @@
 			</td>
 		</tr>
 
+		<tr>
+			<td width="150"><b><bean:message key="organization.mailingList.key"/></b></td>
+			<td width="10">:</td>			
+			<td>
+				<html:text name="organization" property="mailingList"/>
+			</td>
+		</tr>
+
  <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="organization.createdDate.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>			
@@ -198,6 +206,40 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="organization.organizationType.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="organization" property="organizationType" style="width:135"  value="${organization.organizationType.id}">
+					<option value=""></option>
+					<html:options collection="organizationTypeList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
+		<logic:messagesPresent property="organization.organizationType">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="organization.organizationType"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
+<% /* %> 		<tr>
+			<td width="150"><b><bean:message key="organization.status.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="organization" property="status" style="width:135"  value="${organization.status.id}">
+					<option value=""></option>
+					<html:options collection="statusList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
+		<logic:messagesPresent property="organization.status">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="organization.status"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
+<% */ %> 		<tr>
 			<td width="150"></td>
 			<td width="10"></td>
 			<td >
@@ -214,7 +256,7 @@
 	<br>
 	<table border="0" width="98%" align="center">	
 		<tr class="title">
-			<td colspan="28"><bean:message key="organization.members.key"/></td>
+			<td colspan="30"><bean:message key="organization.members.key"/></td>
 		</tr>
 		<tr class="title">
  	<td><b><bean:message key="user.loginName.key"/> <font color="#FF0000">*</font></b></td>
@@ -224,6 +266,8 @@
  	<td><b><bean:message key="user.language.key"/></b></td>
  	<td><b><bean:message key="user.title.key"/></b></td>
  	<td><b><bean:message key="user.name.key"/> <font color="#FF0000">*</font></b></td>
+ 	<td><b><bean:message key="user.alias.key"/></b></td>
+ 	<td><b><bean:message key="user.picture.key"/></b></td>
  	<td><b><bean:message key="user.email.key"/></b></td>
  	<td><b><bean:message key="user.fullName.key"/></b></td>
  	<td><b><bean:message key="user.homePhoneNumber.key"/></b></td>
@@ -246,6 +290,7 @@
  	<td><b><bean:message key="user.IPassport.key"/></b></td>
 
 			<td><b><bean:message key="user.userLevel.key"/> <font color="#FF0000">*</font></b></td>
+			<td><b><bean:message key="user.position.key"/></b></td>
  <% /* %> 			<td><b><bean:message key="user.status.key"/> <font color="#FF0000">*</font></b></td>
  <% */ %> 			<td><b><bean:message key="user.organization.key"/></b></td>
 			<td><b><bean:message key="user.securityLevel.key"/></b></td>
@@ -277,6 +322,12 @@
 			</td>
 			<td>
 				<bean:write name="element_user" property="name"/>
+			</td>
+			<td>
+				<bean:write name="element_user" property="alias"/>
+			</td>
+			<td>
+				<bean:write name="element_user" property="picture"/>
 			</td>
 			<td>
 				<bean:write name="element_user" property="email"/>
@@ -343,6 +394,11 @@
 					<bean:write name="element_user" property="userLevel.id"/>
 				</logic:notEmpty>	
 			</td>
+			<td>
+				<logic:notEmpty name="element_user" property="position">
+					<bean:write name="element_user" property="position.id"/>
+				</logic:notEmpty>	
+			</td>
  <% /* %> 			<td>
 				<logic:notEmpty name="element_user" property="status">
 					<bean:write name="element_user" property="status.id"/>
@@ -363,7 +419,7 @@
 	</logic:iterate>
 		
 		<tr>
-			<td colspan="28">
+			<td colspan="30">
 				<logic:messagesPresent property="user.loginName">
 					<html:errors property="user.loginName"/>
 				</logic:messagesPresent>			
@@ -384,6 +440,12 @@
 				</logic:messagesPresent>			
 				<logic:messagesPresent property="user.name">
 					<html:errors property="user.name"/>
+				</logic:messagesPresent>			
+				<logic:messagesPresent property="user.alias">
+					<html:errors property="user.alias"/>
+				</logic:messagesPresent>			
+				<logic:messagesPresent property="user.picture">
+					<html:errors property="user.picture"/>
 				</logic:messagesPresent>			
 				<logic:messagesPresent property="user.email">
 					<html:errors property="user.email"/>
@@ -448,6 +510,9 @@
 				<logic:messagesPresent property="user.userLevel">
 					<html:errors property="user.userLevel"/>
 				</logic:messagesPresent>			
+				<logic:messagesPresent property="user.position">
+					<html:errors property="user.position"/>
+				</logic:messagesPresent>			
   <% /* %> 				<logic:messagesPresent property="user.status">
 					<html:errors property="user.status"/>
 				</logic:messagesPresent>			
@@ -480,6 +545,12 @@
 			</td>
 			<td>
 				<input type="text" name="name_item" value="<bean:write name="user" property="name"/>"/>
+			</td>
+			<td>
+				<input type="text" name="alias_item" value="<bean:write name="user" property="alias"/>"/>
+			</td>
+			<td>
+				<input type="text" name="picture_item" value="<bean:write name="user" property="picture"/>"/>
 			</td>
 			<td>
 				<input type="text" name="email_item" value="<bean:write name="user" property="email"/>"/>
@@ -546,6 +617,12 @@
 				<html-el:select  name="element_user" property="userLevel" style="width:135"  value="${user.userLevel.id}">
 					<option value=""></option>
 					<html:options collection="userLevelList_user" property="id" labelProperty="name"/>
+				</html-el:select>																		
+			</td>
+			<td>
+				<html-el:select  name="element_user" property="position" style="width:135"  value="${user.position.id}">
+					<option value=""></option>
+					<html:options collection="positionList_user" property="id" labelProperty="name"/>
 				</html-el:select>																		
 			</td>
   <% /* %> 			<td>

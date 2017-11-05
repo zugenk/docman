@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -154,6 +154,12 @@
 				<% if(com.app.docmgr.admin.action.EmailLogAction.allowableAction.contains("close")) { 
 						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:EMAIL_LOG_CLOSE")) { %>
 				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.EmailLogAction.allowableAction.contains("archive")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:EMAIL_LOG_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
 				&nbsp;
 				<% 		}
 					} %>

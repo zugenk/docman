@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -54,6 +54,11 @@
 			<td width="10">:</td>
 			<td><bean:write name="folder" property="name"/></td>
 		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="folder.folderRepoId.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="folder" property="folderRepoId"/></td>
+		</tr>
   <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="folder.createdDate.key"/></b></td>
 			<td width="10">:</td>
@@ -84,7 +89,16 @@
 				</logic:notEmpty>	
 			</td>
 		</tr>
-		<tr>
+  <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="folder.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>
+				<logic:notEmpty name="folder"	property="status">								
+					<bean:write name="folder" property="status.name"/>
+				</logic:notEmpty>	
+			</td>
+		</tr>
+  <% */ %> 		<tr>
 			<td width="150"><b><bean:message key="folder.parentFolder.key"/></b></td>
 			<td width="10">:</td>
 			<td>

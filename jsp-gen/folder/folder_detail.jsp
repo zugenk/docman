@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -60,6 +60,11 @@
 			<td><bean:write name="folder" property="name"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="folder.folderRepoId.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="folder" property="folderRepoId"/></td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="folder.createdDate.key"/></b></td>
 			<td width="10">:</td>
 			<td ><bean:write name="folder" property="createdDate" format="dd MMM yyyy"/></td>
@@ -89,6 +94,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="folder.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="folder"	property="status">			
+					<bean:write name="folder" property="status.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="folder.parentFolder.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
@@ -113,6 +127,60 @@
 						if (privilegeList.contains("FOLDER_DELETE")) { %>
 					<input type="button" value="<bean:message key="button.delete"/>" onclick="this.form.action.value='delete_confirm';this.form.submit()" />
 					&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("submit")) { 
+						if (privilegeList.contains("FOLDER_SUBMIT")) { %>
+				<input type="button" value="<bean:message key="button.submit"/>" onclick="this.form.action.value='submit_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("approve")) { 
+						if (privilegeList.contains("FOLDER_APPROVE")) { %>
+				<input type="button" value="<bean:message key="button.approve"/>" onclick="this.form.action.value='approve_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("reject")) { 
+						if (privilegeList.contains("FOLDER_REJECT")) { %>
+				<input type="button" value="<bean:message key="button.reject"/>" onclick="this.form.action.value='reject_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("pending")) { 
+						if (privilegeList.contains("FOLDER_PENDING")) { %>
+				<input type="button" value="<bean:message key="button.pending"/>" onclick="this.form.action.value='pending_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("process")) { 
+						if (privilegeList.contains("FOLDER_PROCESS")) { %>
+				<input type="button" value="<bean:message key="button.process"/>" onclick="this.form.action.value='process_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("close")) { 
+						if (privilegeList.contains("FOLDER_CLOSE")) { %>
+				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("archive")) { 
+						if (privilegeList.contains("FOLDER_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("remove")) { 
+						if (privilegeList.contains("FOLDER_REMOVE")) { %>
+				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.FolderAction.allowableAction.contains("cancel")) { 
+						if (privilegeList.contains("FOLDER_CANCEL")) { %>
+				<input type="button" value="<bean:message key="button.cancel"/>" onclick="this.form.action.value='cancel_confirm';this.form.submit()" />
+				&nbsp;
 				<% 		}
 					} %>
 				<input type="button" value="<bean:message key="button.back"/>" onclick="this.form.action.value='list';this.form.submit()" />

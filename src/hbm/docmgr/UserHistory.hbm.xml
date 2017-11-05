@@ -102,6 +102,28 @@
 			length="100"
 		/>
 		<property
+			name="alias"
+			column="alias"
+			type="string"
+			not-null="false"
+			length="50"
+		/>
+		<many-to-one
+			name="position"
+			column="position"
+			class="com.app.docmgr.model.Lookup"
+			not-null="false"
+		>
+		</many-to-one>
+		<property
+			name="picture"
+			column="picture"
+			type="string"
+			not-null="false"
+			length="4000"
+		/>
+		
+		<property
 			name="email"
 			column="email"
 			type="string"

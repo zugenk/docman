@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -98,6 +98,24 @@
 				</td>
 			</tr>
 		</logic:messagesPresent>
+
+ <% */ %>  <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="sharedDocument.lastUpdatedDate.key"/></b></td>
+			<td width="10">:</td>			
+			<td><input type="text" name="lastUpdatedDate" onclick="calendarToogle('lastUpdatedDate', 'lastUpdatedDate_cal', null);"  onKeyDown="drawCalendar('lastUpdatedDate', 'lastUpdatedDate_cal', null);" value="<bean:write name='sharedDocument' property='lastUpdatedDate' format='dd/MM/yyyy' />"/></td>
+		</tr>
+		<tr>
+			<td colspan="2" />
+			<td><div id="lastUpdatedDate_cal" style="display: none"></div></td>
+		</tr>
+
+ <% */ %>  <% /* %> 		<tr>
+			<td width="150"><b><bean:message key="sharedDocument.lastUpdatedBy.key"/></b></td>
+			<td width="10">:</td>			
+			<td>
+				<html:text name="sharedDocument" property="lastUpdatedBy"/>
+			</td>
+		</tr>
 
  <% */ %> 
 		<tr>

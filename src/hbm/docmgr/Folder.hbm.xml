@@ -29,6 +29,13 @@
 			not-null="true"
 			length="150"
 		/>
+		<property
+			name="folderRepoId"
+			column="folder_repo_id"
+			type="string"
+			not-null="true"
+			length="100"
+		/>
 		<many-to-one
 			name="folderType"
 			column="folder_type"
@@ -62,7 +69,13 @@
 			not-null="false"
 			length="30"
 		/>
-
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
 		<many-to-one
 			name="parentFolder"
 			column="parent_folder"

@@ -23,7 +23,7 @@ import com.app.docmgr.model.Folder;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 	/**
@@ -61,6 +61,7 @@ public class FolderServiceBase {
 		try {
 			folder = (Folder) session.get(Folder.class, id);
 			Hibernate.initialize(folder.getFolderType());			
+			Hibernate.initialize(folder.getStatus());			
 			Hibernate.initialize(folder.getParentFolder());			
 
 		} catch (ObjectNotFoundException onfe) {
@@ -91,12 +92,13 @@ public class FolderServiceBase {
 		Folder folder = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE folder.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;					
 			Query query = session.createQuery("SELECT folder FROM com.app.docmgr.model.Folder folder "+filter+" ");
 			folder = (com.app.docmgr.model.Folder) query.uniqueResult();
 			if(folder!=null) {
 				Hibernate.initialize(folder.getFolderType());			
+				Hibernate.initialize(folder.getStatus());			
 				Hibernate.initialize(folder.getParentFolder());			
 			}
 			return folder;
@@ -280,7 +282,7 @@ public class FolderServiceBase {
 		PartialList result = new PartialList();
 		Session session = null;
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE folder.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
 			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
@@ -296,6 +298,7 @@ public class FolderServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.Folder folder = (com.app.docmgr.model.Folder)itr.next();
 				Hibernate.initialize(folder.getFolderType());			
+				Hibernate.initialize(folder.getStatus());			
 				Hibernate.initialize(folder.getParentFolder());			
 			}			
 		} catch(HibernateException he) {
@@ -316,6 +319,8 @@ public class FolderServiceBase {
 	}
 
 	public List getList(String filterParam, String orderParam) throws Exception{
+		if(filterParam!=null) filterParam = " and folder.status.state='active' "+filterParam;
+		else filterParam=" and folder.status.state='active' ";
 		return getListAll(filterParam,orderParam);
 	}
 	

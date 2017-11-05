@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -99,6 +99,10 @@ public class UserHistoryActionBase extends Action{
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
 	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
 	    	}else if("remove_confirm".equalsIgnoreCase(action)){
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
@@ -133,6 +137,9 @@ public class UserHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='UserHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -238,6 +245,22 @@ public class UserHistoryActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("userHistory_name_filter", param_userHistory_name_filter);
+		String param_userHistory_alias_filter = "";
+		if(request.getParameter("userHistory_alias_filter")!=null){
+			param_userHistory_alias_filter = request.getParameter("userHistory_alias_filter");
+			if(param_userHistory_alias_filter.length() > 0 ){				
+				userHistory_filterSb.append("  AND userHistory.alias like '%"+param_userHistory_alias_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("userHistory_alias_filter", param_userHistory_alias_filter);
+		String param_userHistory_picture_filter = "";
+		if(request.getParameter("userHistory_picture_filter")!=null){
+			param_userHistory_picture_filter = request.getParameter("userHistory_picture_filter");
+			if(param_userHistory_picture_filter.length() > 0 ){				
+				userHistory_filterSb.append("  AND userHistory.picture like '%"+param_userHistory_picture_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("userHistory_picture_filter", param_userHistory_picture_filter);
 		String param_userHistory_email_filter = "";
 		if(request.getParameter("userHistory_email_filter")!=null){
 			param_userHistory_email_filter = request.getParameter("userHistory_email_filter");
@@ -510,6 +533,14 @@ public class UserHistoryActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("userHistory_userLevel_filter", param_userHistory_userLevel_filter);
+		String param_userHistory_position_filter = "";
+		if(request.getParameter("userHistory_position_filter")!=null){
+			param_userHistory_position_filter = request.getParameter("userHistory_position_filter");
+			if(param_userHistory_position_filter.length() > 0 ){				
+				userHistory_filterSb.append("  AND userHistory.position = '"+param_userHistory_position_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("userHistory_position_filter", param_userHistory_position_filter);
 		String param_userHistory_status_filter = "";
 		if(request.getParameter("userHistory_status_filter")!=null){
 			param_userHistory_status_filter = request.getParameter("userHistory_status_filter");
@@ -665,6 +696,9 @@ public class UserHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='UserHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -716,6 +750,9 @@ public class UserHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='UserHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -790,6 +827,9 @@ public class UserHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='UserHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -835,6 +875,9 @@ public class UserHistoryActionBase extends Action{
 			com.app.docmgr.service.LookupService userLevelService = com.app.docmgr.service.LookupService.getInstance();
 			List userLevelList = userLevelService.getList("  and lookup.type='userLevel'  ", null);
 			request.setAttribute("userLevelList", userLevelList);
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			List positionList = positionService.getList("  and lookup.type='position'  ", null);
+			request.setAttribute("positionList", positionList);
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='UserHistory'  ", null);
 			request.setAttribute("statusList", statusList);
@@ -1263,6 +1306,59 @@ public class UserHistoryActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		UserHistory userHistory = (UserHistory) request.getSession().getAttribute("userHistory");
+    		if (userHistory == null){
+	    		userHistory = UserHistoryService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("userHistory", userHistory);
+	    	}
+    		if(userHistory == null){
+    			response.sendRedirect("userHistory.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set roleSet = userHistory.getRoles();			
+			if(roleSet == null) roleSet = new HashSet();
+			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = userHistory.getFavoriteTopic();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
+
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("userHistory.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		UserHistory userHistory = (UserHistory) request.getSession().getAttribute("userHistory");
+    		if(userHistory == null){
+    			response.sendRedirect("userHistory.do?action=archive_confirm");
+    		}
+    		userHistory.setStatus(StatusService.getInstance().getByTypeandCode("UserHistory","archived"));
+			userHistory.setLastUpdatedDate(new Date());
+			userHistory.setLastUpdatedBy(_doneBy);
+    		UserHistoryService.getInstance().update(userHistory);
+    		response.sendRedirect("userHistory.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("userHistory.do?action=archive_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doRemoveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1427,6 +1523,10 @@ public class UserHistoryActionBase extends Action{
 			if(name==null || name.trim().length() == 0 ){
 				errors.add("userHistory.name", new ActionError("error.userHistory.name"));
 			}
+			String alias = request.getParameter("alias");
+			userHistory.setAlias(alias);
+			String picture = request.getParameter("picture");
+			userHistory.setPicture(picture);
 			String email = request.getParameter("email");
 			userHistory.setEmail(email);
 			String fullName = request.getParameter("fullName");
@@ -1541,6 +1641,18 @@ public class UserHistoryActionBase extends Action{
 			if(userLevelObj==null){
 				errors.add("userHistory.userLevel", new ActionError("error.userHistory.userLevel"));
 			}
+			com.app.docmgr.model.Lookup  positionObj =null;
+			com.app.docmgr.service.LookupService positionService = com.app.docmgr.service.LookupService.getInstance();
+			try{
+				String positionStr = request.getParameter("position");
+				
+				if(positionStr == null || positionStr.trim().length() == 0 ){
+					userHistory.setPosition(null);
+				}else{			
+					positionObj = positionService.get(new Long(positionStr));
+					userHistory.setPosition(positionObj);
+				}
+			}catch(Exception ex){}	
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

@@ -42,7 +42,7 @@
 			column="description"
 			type="string"
 			not-null="false"
-			length="255"
+			length="2000"
 		/>
 		<property
 			name="numberOfLike"
@@ -57,7 +57,13 @@
 			type="java.lang.Integer"
 			not-null="false"
 		/>
-
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
 		<property
 			name="createdDate"
 			column="created_date"

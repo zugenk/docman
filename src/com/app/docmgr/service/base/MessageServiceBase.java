@@ -23,7 +23,7 @@ import com.app.docmgr.model.Message;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 	/**
@@ -61,7 +61,9 @@ public class MessageServiceBase {
 		try {
 			message = (Message) session.get(Message.class, id);
 			Hibernate.initialize(message.getPostType());			
+			Hibernate.initialize(message.getStatus());			
 			Hibernate.initialize(message.getTopic());			
+			Hibernate.initialize(message.getParent());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -91,13 +93,15 @@ public class MessageServiceBase {
 		Message message = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE message.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;					
 			Query query = session.createQuery("SELECT message FROM com.app.docmgr.model.Message message "+filter+" ");
 			message = (com.app.docmgr.model.Message) query.uniqueResult();
 			if(message!=null) {
 				Hibernate.initialize(message.getPostType());			
+				Hibernate.initialize(message.getStatus());			
 				Hibernate.initialize(message.getTopic());			
+				Hibernate.initialize(message.getParent());			
 			}
 			return message;
 		} catch (HibernateException e) {
@@ -280,7 +284,7 @@ public class MessageServiceBase {
 		PartialList result = new PartialList();
 		Session session = null;
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE message.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
 			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
@@ -296,7 +300,9 @@ public class MessageServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.Message message = (com.app.docmgr.model.Message)itr.next();
 				Hibernate.initialize(message.getPostType());			
+				Hibernate.initialize(message.getStatus());			
 				Hibernate.initialize(message.getTopic());			
+				Hibernate.initialize(message.getParent());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -316,6 +322,8 @@ public class MessageServiceBase {
 	}
 
 	public List getList(String filterParam, String orderParam) throws Exception{
+		if(filterParam!=null) filterParam = " and message.status.state='active' "+filterParam;
+		else filterParam=" and message.status.state='active' ";
 		return getListAll(filterParam,orderParam);
 	}
 	

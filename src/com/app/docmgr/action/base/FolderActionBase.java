@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 
 
@@ -75,6 +75,42 @@ public class FolderActionBase extends Action{
 	    		forward = doDeleteConfirm(mapping, form, request, response);
 	    	}else if("delete_ok".equalsIgnoreCase(action)){
 	    		doDeleteOk(mapping, form, request, response);
+	    	}else if("submit_confirm".equalsIgnoreCase(action)){
+	    		forward = doSubmitConfirm(mapping, form, request, response);
+	    	}else if("submit_ok".equalsIgnoreCase(action)){
+	    		doSubmitOk(mapping, form, request, response);
+	    	}else if("approve_confirm".equalsIgnoreCase(action)){
+	    		forward = doApproveConfirm(mapping, form, request, response);
+	    	}else if("approve_ok".equalsIgnoreCase(action)){
+	    		doApproveOk(mapping, form, request, response);
+	    	}else if("reject_confirm".equalsIgnoreCase(action)){
+	    		forward = doRejectConfirm(mapping, form, request, response);
+	    	}else if("reject_ok".equalsIgnoreCase(action)){
+	    		doRejectOk(mapping, form, request, response);
+	    	}else if("pending_confirm".equalsIgnoreCase(action)){
+	    		forward = doPendingConfirm(mapping, form, request, response);
+	    	}else if("pending_ok".equalsIgnoreCase(action)){
+	    		doPendingOk(mapping, form, request, response);
+	    	}else if("process_confirm".equalsIgnoreCase(action)){
+	    		forward = doProcessConfirm(mapping, form, request, response);
+	    	}else if("process_ok".equalsIgnoreCase(action)){
+	    		doProcessOk(mapping, form, request, response);
+	    	}else if("close_confirm".equalsIgnoreCase(action)){
+	    		forward = doCloseConfirm(mapping, form, request, response);
+	    	}else if("close_ok".equalsIgnoreCase(action)){
+	    		doCloseOk(mapping, form, request, response);
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		forward = doArchiveConfirm(mapping, form, request, response);
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		doArchiveOk(mapping, form, request, response);
+	    	}else if("remove_confirm".equalsIgnoreCase(action)){
+	    		forward = doRemoveConfirm(mapping, form, request, response);
+	    	}else if("remove_ok".equalsIgnoreCase(action)){
+	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
+	    		forward = doCancelConfirm(mapping, form, request, response);
+	    	}else if("cancel_ok".equalsIgnoreCase(action)){
+	    		doCancelOk(mapping, form, request, response);
 			}
     	}else{
     		forward = mapping.findForward("not_authorized");
@@ -101,6 +137,9 @@ public class FolderActionBase extends Action{
 			com.app.docmgr.service.LookupService folderTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List folderTypeList = folderTypeService.getList("  and lookup.type='folderType'  ", null);
 			request.setAttribute("folderTypeList", folderTypeList);
+			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Folder'  ", null);
+			request.setAttribute("statusList", statusList);
 			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
 			List parentFolderList = parentFolderService.getList(null, null);
 			request.setAttribute("parentFolderList", parentFolderList);
@@ -124,6 +163,14 @@ public class FolderActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("folder_name_filter", param_folder_name_filter);
+		String param_folder_folderRepoId_filter = "";
+		if(request.getParameter("folder_folderRepoId_filter")!=null){
+			param_folder_folderRepoId_filter = request.getParameter("folder_folderRepoId_filter");
+			if(param_folder_folderRepoId_filter.length() > 0 ){				
+				folder_filterSb.append("  AND folder.folderRepoId like '%"+param_folder_folderRepoId_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("folder_folderRepoId_filter", param_folder_folderRepoId_filter);
 		String param_folder_createdDate_filter_start = "";
 		if(request.getParameter("folder_createdDate_filter_start")!=null){
 			param_folder_createdDate_filter_start = request.getParameter("folder_createdDate_filter_start");
@@ -204,6 +251,14 @@ public class FolderActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("folder_folderType_filter", param_folder_folderType_filter);
+		String param_folder_status_filter = "";
+		if(request.getParameter("folder_status_filter")!=null){
+			param_folder_status_filter = request.getParameter("folder_status_filter");
+			if(param_folder_status_filter.length() > 0 ){				
+				folder_filterSb.append("  AND folder.status = '"+param_folder_status_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("folder_status_filter", param_folder_status_filter);
 		String param_folder_parentFolder_filter = "";
 		if(request.getParameter("folder_parentFolder_filter")!=null){
 			param_folder_parentFolder_filter = request.getParameter("folder_parentFolder_filter");
@@ -331,7 +386,10 @@ public class FolderActionBase extends Action{
 			com.app.docmgr.service.LookupService folderTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List folderTypeList = folderTypeService.getList("  and lookup.type='folderType'  ", null);
 			request.setAttribute("folderTypeList", folderTypeList);
-			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
+ /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Folder'  ", null);
+			request.setAttribute("statusList", statusList);
+ */ 			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
 			List parentFolderList = parentFolderService.getList(null, null);
 			request.setAttribute("parentFolderList", parentFolderList);
 
@@ -362,7 +420,10 @@ public class FolderActionBase extends Action{
 			com.app.docmgr.service.LookupService folderTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List folderTypeList = folderTypeService.getList("  and lookup.type='folderType'  ", null);
 			request.setAttribute("folderTypeList", folderTypeList);
-			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
+/*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Folder'  ", null);
+			request.setAttribute("statusList", statusList);
+*/			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
 			List parentFolderList = parentFolderService.getList(null, null);
 			request.setAttribute("parentFolderList", parentFolderList);
 	
@@ -382,6 +443,7 @@ public class FolderActionBase extends Action{
     public void doCreateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	try{
     		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","new"));
 			folder.setLastUpdatedDate(new Date());
 			folder.setCreatedDate(new Date());
 			folder.setLastUpdatedBy(_doneBy);
@@ -415,7 +477,10 @@ public class FolderActionBase extends Action{
 			com.app.docmgr.service.LookupService folderTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List folderTypeList = folderTypeService.getList("  and lookup.type='folderType'  ", null);
 			request.setAttribute("folderTypeList", folderTypeList);
-			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
+/* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Folder'  ", null);
+			request.setAttribute("statusList", statusList);
+*/ 			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
 			List parentFolderList = parentFolderService.getList(null, null);
 			request.setAttribute("parentFolderList", parentFolderList);
 
@@ -442,7 +507,10 @@ public class FolderActionBase extends Action{
 			com.app.docmgr.service.LookupService folderTypeService = com.app.docmgr.service.LookupService.getInstance();
 			List folderTypeList = folderTypeService.getList("  and lookup.type='folderType'  ", null);
 			request.setAttribute("folderTypeList", folderTypeList);
-			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
+ /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			List statusList = statusService.getList("  and status.type='Folder'  ", null);
+			request.setAttribute("statusList", statusList);
+ */			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
 			List parentFolderList = parentFolderService.getList(null, null);
 			request.setAttribute("parentFolderList", parentFolderList);
 
@@ -513,8 +581,10 @@ public class FolderActionBase extends Action{
     		if(folder == null){
     			response.sendRedirect("folder.do?action=delete_confirm");
     		}
-    		FolderService.getInstance().delete(folder);
-    		request.getSession().removeAttribute("folder");
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","deleted"));
+    		FolderService.getInstance().update(folder);
     		response.sendRedirect("folder.do?action=list");    		
     	}catch(Exception ex){
     		ex.printStackTrace();
@@ -523,6 +593,429 @@ public class FolderActionBase extends Action{
     		}catch(Exception rex){
     			rex.printStackTrace();
     		}    		
+    	}  
+    }
+
+   	public ActionForward doSubmitConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("submit_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doSubmitOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=submit_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","submitted"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=submit_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doApproveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("approve_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doApproveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=approve_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","approved"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=approve_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doRejectConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("reject_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doRejectOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=reject_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","rejected"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=reject_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doPendingConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("pending_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doPendingOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=pending_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","pending"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=pending_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doProcessConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("process_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doProcessOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=process_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","processed"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=process_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("close_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doCloseOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=close_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","closed"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=close_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doArchiveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("archive_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doArchiveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=archive_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","archived"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=archive_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doRemoveConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("remove_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doRemoveOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=remove_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","removed"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=remove_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if (folder == null){
+	    		folder = FolderService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("folder", folder);
+	    	}
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("cancel_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("folder.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doCancelOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Folder folder = (Folder) request.getSession().getAttribute("folder");
+    		if(folder == null){
+    			response.sendRedirect("folder.do?action=cancel_confirm");
+    		}
+    		folder.setStatus(StatusService.getInstance().getByTypeandCode("Folder","cancelled"));
+			folder.setLastUpdatedDate(new Date());
+			folder.setLastUpdatedBy(_doneBy);
+    		FolderService.getInstance().update(folder);
+    		response.sendRedirect("folder.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("folder.do?action=cancel_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
     	}  
     }
 
@@ -538,6 +1031,11 @@ public class FolderActionBase extends Action{
 			folder.setName(name);
 			if(name==null || name.trim().length() == 0 ){
 				errors.add("folder.name", new ActionError("error.folder.name"));
+			}
+			String folderRepoId = request.getParameter("folderRepoId");
+			folder.setFolderRepoId(folderRepoId);
+			if(folderRepoId==null || folderRepoId.trim().length() == 0 ){
+				errors.add("folder.folderRepoId", new ActionError("error.folder.folderRepoId"));
 			}
 /* 			String createdDate = request.getParameter("createdDate");
 			if(createdDate==null || createdDate.trim().length() == 0 ){
@@ -585,7 +1083,22 @@ public class FolderActionBase extends Action{
 			if(folderTypeObj==null){
 				errors.add("folder.folderType", new ActionError("error.folder.folderType"));
 			}
-			com.app.docmgr.model.Folder  parentFolderObj =null;
+/* 			com.app.docmgr.model.Status  statusObj =null;
+			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
+			try{
+				String statusStr = request.getParameter("status");
+				
+				if(statusStr == null || statusStr.trim().length() == 0 ){
+					folder.setStatus(null);
+				}else{			
+					statusObj = statusService.get(new Long(statusStr));
+					folder.setStatus(statusObj);
+				}
+			}catch(Exception ex){}	
+			if(statusObj==null){
+				errors.add("folder.status", new ActionError("error.folder.status"));
+			}
+*/ 			com.app.docmgr.model.Folder  parentFolderObj =null;
 			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
 			try{
 				String parentFolderStr = request.getParameter("parentFolder");

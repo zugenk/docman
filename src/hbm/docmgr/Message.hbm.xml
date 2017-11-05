@@ -20,7 +20,7 @@
 			column="content"
 			type="string"
 			not-null="true"
-			length="255"
+			length="4000"
 		/>
 		<many-to-one
 			name="postType"
@@ -29,7 +29,13 @@
 			not-null="true"
 		>
 		</many-to-one>
-
+		<many-to-one
+			name="status"
+			column="status"
+			class="com.app.docmgr.model.Status"
+			not-null="true"
+		>
+		</many-to-one>
 		<property
 			name="createdDate"
 			column="created_date"
@@ -71,7 +77,7 @@
 			not-null="true"
 		>
 		</many-to-one>
-		<!--
+		
 		<many-to-one
 			name="parent"
 			column="parent"
@@ -79,6 +85,5 @@
 			not-null="false"
 		>
 		</many-to-one>
-		 -->
 	</class>
 </hibernate-mapping>

@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -103,6 +103,16 @@
 			<td width="150"><b><bean:message key="userHistory.name.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="userHistory" property="name"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="userHistory.alias.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="userHistory" property="alias"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="userHistory.picture.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="userHistory" property="picture"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="userHistory.email.key"/></b></td>
@@ -214,6 +224,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="userHistory.position.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="userHistory"	property="position">			
+					<bean:write name="userHistory" property="position.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="userHistory.status.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
@@ -291,6 +310,12 @@
 				<% if(com.app.docmgr.admin.action.UserHistoryAction.allowableAction.contains("close")) { 
 						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:USER_HISTORY_CLOSE")) { %>
 				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.UserHistoryAction.allowableAction.contains("archive")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:USER_HISTORY_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
 				&nbsp;
 				<% 		}
 					} %>

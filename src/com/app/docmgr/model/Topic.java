@@ -19,6 +19,7 @@ public class Topic  implements java.io.Serializable {
      private String description;
      private Integer numberOfLike;
      private Integer numberOfPost;
+     private Status status;
      private Date createdDate;
      private String createdBy;
      private Date lastUpdatedDate;
@@ -119,6 +120,17 @@ public class Topic  implements java.io.Serializable {
     
     public void setNumberOfPost(Integer numberOfPost) {
         this.numberOfPost = numberOfPost;
+    }
+
+    /**
+     * 
+     */
+    public Status getStatus() {
+        return this.status;
+    }
+    
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     /**

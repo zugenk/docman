@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -65,6 +65,11 @@
 			<td><bean:write name="forum" property="name"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="forum.description.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="forum" property="description"/></td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="forum.address.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="forum" property="address"/></td>
@@ -93,6 +98,15 @@
 			<td width="150"><b><bean:message key="forum.filterCode.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="forum" property="filterCode"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="forum.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="forum"	property="status">			
+					<bean:write name="forum" property="status.name"/>
+				</logic:notEmpty>
+			</td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="forum.forumType.key"/></b></td>
@@ -128,6 +142,60 @@
 						if (UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_DELETE")) { %>
 					<input type="button" value="<bean:message key="button.delete"/>" onclick="this.form.action.value='delete_confirm';this.form.submit()" />
 					&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("submit")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_SUBMIT")) { %>
+				<input type="button" value="<bean:message key="button.submit"/>" onclick="this.form.action.value='submit_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("approve")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_APPROVE")) { %>
+				<input type="button" value="<bean:message key="button.approve"/>" onclick="this.form.action.value='approve_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("reject")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_REJECT")) { %>
+				<input type="button" value="<bean:message key="button.reject"/>" onclick="this.form.action.value='reject_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("pending")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_PENDING")) { %>
+				<input type="button" value="<bean:message key="button.pending"/>" onclick="this.form.action.value='pending_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("process")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_PROCESS")) { %>
+				<input type="button" value="<bean:message key="button.process"/>" onclick="this.form.action.value='process_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("close")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_CLOSE")) { %>
+				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("archive")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("remove")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_REMOVE")) { %>
+				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.ForumAction.allowableAction.contains("cancel")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:FORUM_CANCEL")) { %>
+				<input type="button" value="<bean:message key="button.cancel"/>" onclick="this.form.action.value='cancel_confirm';this.form.submit()" />
+				&nbsp;
 				<% 		}
 					} %>
 				<input type="button" value="<bean:message key="button.back"/>" onclick="this.form.action.value='list';this.form.submit()" />

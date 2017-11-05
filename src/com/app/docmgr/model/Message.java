@@ -15,12 +15,14 @@ public class Message  implements java.io.Serializable {
      private Long id;
      private String content;
      private Lookup postType;
+     private Status status;
      private Date createdDate;
      private String createdBy;
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
      private String filterCode;
      private Topic topic;
+     private Message parent;
 
 
     // Constructors
@@ -70,6 +72,17 @@ public class Message  implements java.io.Serializable {
     
     public void setPostType(Lookup postType) {
         this.postType = postType;
+    }
+
+    /**
+     * 
+     */
+    public Status getStatus() {
+        return this.status;
+    }
+    
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     /**
@@ -136,6 +149,17 @@ public class Message  implements java.io.Serializable {
     
     public void setTopic(Topic topic) {
         this.topic = topic;
+    }
+
+    /**
+     * 
+     */
+    public Message getParent() {
+        return this.parent;
+    }
+    
+    public void setParent(Message parent) {
+        this.parent = parent;
     }
 
 

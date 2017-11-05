@@ -16,7 +16,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -49,7 +49,7 @@
 
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td class="titleHeader" colspan="41" align="left">
+		<td class="titleHeader" colspan="43" align="left">
 			<bean:message key="page.UserHistory.ListPopup"/>
 		</td>
 	</tr>
@@ -75,6 +75,8 @@
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="language"/>');"><bean:write name="element" property="language"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="title"/>');"><bean:write name="element" property="title"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="name"/>');"><bean:write name="element" property="name"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="alias"/>');"><bean:write name="element" property="alias"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="picture"/>');"><bean:write name="element" property="picture"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="email"/>');"><bean:write name="element" property="email"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="fullName"/>');"><bean:write name="element" property="fullName"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="homePhoneNumber"/>');"><bean:write name="element" property="homePhoneNumber"/></a></td>

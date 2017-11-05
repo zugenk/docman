@@ -20,11 +20,11 @@ import com.app.module.basic.LoginManager;
 import com.app.module.document.FolderManager;
 
 @Controller
-@RequestMapping("/v1")
+@RequestMapping("/v1/folder")
 public class FolderController {
 private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
 
-	@RequestMapping(value = "folder/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "/tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
@@ -41,7 +41,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "folder/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -59,7 +59,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "folder/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -78,7 +78,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "folder/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getUpline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,

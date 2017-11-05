@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -105,6 +105,15 @@
 			<td><bean:write name="topic" property="filterCode"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="topic.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="topic"	property="status">			
+					<bean:write name="topic" property="status.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="topic.parentForum.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
@@ -129,6 +138,60 @@
 						if (privilegeList.contains("TOPIC_DELETE")) { %>
 					<input type="button" value="<bean:message key="button.delete"/>" onclick="this.form.action.value='delete_confirm';this.form.submit()" />
 					&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("submit")) { 
+						if (privilegeList.contains("TOPIC_SUBMIT")) { %>
+				<input type="button" value="<bean:message key="button.submit"/>" onclick="this.form.action.value='submit_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("approve")) { 
+						if (privilegeList.contains("TOPIC_APPROVE")) { %>
+				<input type="button" value="<bean:message key="button.approve"/>" onclick="this.form.action.value='approve_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("reject")) { 
+						if (privilegeList.contains("TOPIC_REJECT")) { %>
+				<input type="button" value="<bean:message key="button.reject"/>" onclick="this.form.action.value='reject_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("pending")) { 
+						if (privilegeList.contains("TOPIC_PENDING")) { %>
+				<input type="button" value="<bean:message key="button.pending"/>" onclick="this.form.action.value='pending_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("process")) { 
+						if (privilegeList.contains("TOPIC_PROCESS")) { %>
+				<input type="button" value="<bean:message key="button.process"/>" onclick="this.form.action.value='process_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("close")) { 
+						if (privilegeList.contains("TOPIC_CLOSE")) { %>
+				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("archive")) { 
+						if (privilegeList.contains("TOPIC_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("remove")) { 
+						if (privilegeList.contains("TOPIC_REMOVE")) { %>
+				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.TopicAction.allowableAction.contains("cancel")) { 
+						if (privilegeList.contains("TOPIC_CANCEL")) { %>
+				<input type="button" value="<bean:message key="button.cancel"/>" onclick="this.form.action.value='cancel_confirm';this.form.submit()" />
+				&nbsp;
 				<% 		}
 					} %>
 				<input type="button" value="<bean:message key="button.back"/>" onclick="this.form.action.value='list';this.form.submit()" />

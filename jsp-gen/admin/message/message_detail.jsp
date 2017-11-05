@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 07-10-2017 06:18:15
+ * @createDate 05-11-2017 15:05:21
  */
 -->
 </HEAD>
@@ -89,11 +89,29 @@
 			</td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="message.status.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="message"	property="status">			
+					<bean:write name="message" property="status.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="message.topic.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
 				<logic:notEmpty name="message"	property="topic">			
 					<bean:write name="message" property="topic.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="message.parent.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="message"	property="parent">			
+					<bean:write name="message" property="parent.content"/>
 				</logic:notEmpty>
 			</td>
 		</tr>
@@ -113,6 +131,60 @@
 						if (UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_DELETE")) { %>
 					<input type="button" value="<bean:message key="button.delete"/>" onclick="this.form.action.value='delete_confirm';this.form.submit()" />
 					&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("submit")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_SUBMIT")) { %>
+				<input type="button" value="<bean:message key="button.submit"/>" onclick="this.form.action.value='submit_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("approve")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_APPROVE")) { %>
+				<input type="button" value="<bean:message key="button.approve"/>" onclick="this.form.action.value='approve_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("reject")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_REJECT")) { %>
+				<input type="button" value="<bean:message key="button.reject"/>" onclick="this.form.action.value='reject_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("pending")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_PENDING")) { %>
+				<input type="button" value="<bean:message key="button.pending"/>" onclick="this.form.action.value='pending_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("process")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_PROCESS")) { %>
+				<input type="button" value="<bean:message key="button.process"/>" onclick="this.form.action.value='process_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("close")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_CLOSE")) { %>
+				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("archive")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_ARCHIVE")) { %>
+				<input type="button" value="<bean:message key="button.archive"/>" onclick="this.form.action.value='archive_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("remove")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_REMOVE")) { %>
+				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.MessageAction.allowableAction.contains("cancel")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:MESSAGE_CANCEL")) { %>
+				<input type="button" value="<bean:message key="button.cancel"/>" onclick="this.form.action.value='cancel_confirm';this.form.submit()" />
+				&nbsp;
 				<% 		}
 					} %>
 				<input type="button" value="<bean:message key="button.back"/>" onclick="this.form.action.value='list';this.form.submit()" />
