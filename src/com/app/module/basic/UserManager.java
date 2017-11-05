@@ -22,24 +22,34 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
-public class UserManager {
+public class UserManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(UserManager.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
-		//log.debug("Create User :/n/r"+Utility.debug(data));
+		log.debug("Creating User : "+Utility.debug(data)+" by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		User obj= new User();
+		
 		updateFromMap(obj, data,errors);
+//		System.out.println("================================updateFromMap========================================");
+//		System.out.println(Utility.debug(obj));
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		obj.setLoginName((String) data.get("loginName"));
+		obj.setLoginPassword(ApplicationFactory.encrypt((String) data.get("loginPassword")));
+//		System.out.println("================================CreatedBy filled========================================");
+//		
+//		System.out.println(Utility.debug(obj));
+//		System.out.println("========================================================================");
+		
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		UserService.getInstance().add(obj);
 		return toDocument(obj);
 	}
 	
 	public static Document update(Document passport,Map data,String objId) throws Exception{
-		//log.debug("Create User :/n/r"+Utility.debug(data));
+		log.debug("Create User :/n/r"+Utility.debug(data)+" by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		long uid=Long.parseLong(objId);
 		User obj= UserService.getInstance().get(uid);
@@ -48,7 +58,7 @@ public class UserManager {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		UserService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -97,68 +107,82 @@ public class UserManager {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" user."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" user."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", user."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
-		PartialList result=UserService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=UserService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
 	
 	private static void updateFromMap(User obj, Map data,List<String> errors) {
-		obj.setEmail((String) data.get("email"));
-		obj.setEmployeeNumber((String) data.get("employeeNumber"));
-		//obj.setFavoriteTopics(favoriteTopics);
-		obj.setFullName((String) data.get("fullName"));
-		obj.setHomePhoneNumber((String) data.get("homePhoneNumber"));
-		obj.setLoginName((String) data.get("loginName"));
-		obj.setMobileNumber((String) data.get("mobileNumber"));
-		obj.setMobilePhoneNumber((String) data.get("mobilePhoneNumber"));
-		obj.setName((String) data.get("name"));
-		obj.setTitle((String) data.get("title"));
+		try {
+			obj.setEmail((String) data.get("email"));
+			obj.setEmployeeNumber(toString(data.get("employeeNumber")));
+			//obj.setFavoriteTopics(favoriteTopics);
+			obj.setFullName((String) data.get("fullName"));
+			obj.setHomePhoneNumber(toString(data.get("homePhoneNumber")));
+			obj.setMobileNumber(toString(data.get("mobileNumber")));
+			obj.setMobilePhoneNumber(toString(data.get("mobilePhoneNumber")));
+			obj.setName((String) data.get("name"));
+			obj.setTitle((String) data.get("title"));
+			obj.setAlias((String) data.get("alias"));
+			if(obj.getName()==null){
+				obj.setName((obj.getAlias()!=null?obj.getAlias():obj.getFullName())); 
+			}
 
-		obj.setAlias((String) data.get("alias"));
-		obj.setLoginPassword(ApplicationFactory.encrypt((String) data.get("loginPassword")));
-		try {
-			long orgId=(Long)data.get("organizationId");
-			Organization org= OrganizationService.getInstance().get(orgId);
-			if(org!=null)obj.setOrganization(org);
-		} catch (Exception e) {
-			errors.add("error.invalid.organization");
+		if(!nvl(data.get("organizationId"))){
+			try {
+				Organization org= OrganizationService.getInstance().get(toLong(data.get("organizationId")));
+				if(org!=null)obj.setOrganization(org);
+			} catch (Exception e) {
+				errors.add("error.invalid.organization");
+			}
 		}
-		try {
-			//Lookup position= LookupService.getInstance().getByTypeandCode("position", (String)data.get("position"));
-			long posId=Long.parseLong((String)data.get("positionId"));
-			Lookup position= LookupService.getInstance().get(posId);
-			if(position!=null) obj.setPosition(position);
-		} catch (Exception e) {
-			errors.add("error.invalid.position");
+		if(!nvl(data.get("positionId"))){
+			try {
+				Lookup position= LookupService.getInstance().get(toLong(data.get("positionId")));
+				if(position!=null) obj.setPosition(position);
+			} catch (Exception e) {
+				errors.add("error.invalid.position");
+			}
 		}
-		try {
-			//Lookup userLevel= LookupService.getInstance().getByTypeandCode("userLevel", (String)data.get("userLevel"));
-			long levelId=Long.parseLong((String)data.get("userLevelId"));
-			Lookup userLevel= LookupService.getInstance().get(levelId);
-			if(userLevel!=null) obj.setUserLevel(userLevel);
-		} catch (Exception e) {
-			errors.add("error.invalid.userLevel");
+		if(!nvl(data.get("userLevelId"))){
+			try {
+				//Lookup userLevel= LookupService.getInstance().getByTypeandCode("userLevel", (String)data.get("userLevel"));
+				Lookup userLevel= LookupService.getInstance().get(toLong(data.get("userLevelId")));
+				if(userLevel!=null) obj.setUserLevel(userLevel);
+			} catch (Exception e) {
+				errors.add("error.invalid.userLevel");
+			}
 		}
-		try {
-			//Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
-			long secId=Long.parseLong((String)data.get("securityLevelId"));
-			Lookup securityLevel= LookupService.getInstance().get(secId);
-			if(securityLevel!=null) obj.setSecurityLevel(securityLevel);
-		} catch (Exception e) {
-			errors.add("error.invalid.securityLevel");
+		if(!nvl(data.get("securityLevelId"))){
+			try {
+				//Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
+				Lookup securityLevel= LookupService.getInstance().get(toLong(data.get("securityLevelId")));
+				if(securityLevel!=null) obj.setSecurityLevel(securityLevel);
+			} catch (Exception e) {
+				errors.add("error.invalid.securityLevel");
+			}
 		}
-		try {
-			//Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
+		
 		} catch (Exception e) {
-			errors.add("error.invalid.status");
+			e.printStackTrace();
+			errors.add(e.getMessage());
 		}
+
+		/*
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
+		}
+		*/
 //		RoleService.getInstance().getBy("role.name='ADMINISTRATOR'");
 //		obj.setRoles(roles);
 
@@ -181,11 +205,15 @@ public class UserManager {
 //		obj.setSessionCode(sessionCode);
 	}
 	
+	
+	
 	public static Document toDocument(User obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("alias", obj.getAlias());
 		doc.append("fullName", obj.getFullName());
 		doc.append("title", obj.getTitle());
+		doc.append("id", obj.getId());
 		doc.append("email", obj.getEmail());
 		doc.append("employeeNumber", obj.getEmployeeNumber());
 		doc.append("homePhoneNumber", obj.getHomePhoneNumber());

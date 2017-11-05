@@ -23,7 +23,7 @@ import com.app.docmgr.model.DocumentHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -288,9 +288,9 @@ public class DocumentHistoryServiceBase {
 		try {
 			String filter = " WHERE documentHistory.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.DocumentHistory documentHistory "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT documentHistory FROM com.app.docmgr.model.DocumentHistory documentHistory "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -340,6 +340,15 @@ public class DocumentHistoryServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT documentHistory FROM com.app.docmgr.model.DocumentHistory documentHistory "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+			    com.app.docmgr.model.DocumentHistory documentHistory = (com.app.docmgr.model.DocumentHistory)itr.next();
+			    Hibernate.initialize(documentHistory.getSecurityLevel());                    
+			    Hibernate.initialize(documentHistory.getOwner());                    
+			    Hibernate.initialize(documentHistory.getStatus());                    
+			    Hibernate.initialize(documentHistory.getParentFolder());                    
+			    Hibernate.initialize(documentHistory.getParentDocument());                    
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);

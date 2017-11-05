@@ -23,7 +23,7 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
-public class ForumManager2 {
+public class ForumManager2 extends BaseUtil{
 	private static Logger log = Logger.getLogger(ForumManager2.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
@@ -34,7 +34,7 @@ public class ForumManager2 {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		ForumService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -49,7 +49,7 @@ public class ForumManager2 {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		ForumService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -98,11 +98,12 @@ public class ForumManager2 {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" forum."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" forum."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", forum."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
-		PartialList result=ForumService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=ForumService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -114,34 +115,35 @@ public class ForumManager2 {
 		obj.setFilterCode((String) data.get("filterCode"));
 		obj.setIcon((String) data.get("icon"));
 		obj.setName((String) data.get("name"));
-		
-		try {
-			long orgId=(Long)data.get("parentForumId");
-			Forum parentForum= ForumService.getInstance().get(orgId);
-			if(parentForum!=null) obj.setParentForum(parentForum);
-		} catch (Exception e) {
-			errors.add("error.invalid.parentForum");
+		if(!nvl(data.get("parentForumId"))){
+			try {
+				Forum parentForum= ForumService.getInstance().get(toLong(data.get("parentForumId")));
+				if(parentForum!=null) obj.setParentForum(parentForum);
+			} catch (Exception e) {
+				errors.add("error.invalid.parentForum");
+			}
 		}
-		try {
-			long typeId=Long.parseLong((String)data.get("forumTypeId"));
-			Lookup forumType= LookupService.getInstance().get(typeId);
-			if(forumType!=null) obj.setForumType(forumType);
-		} catch (Exception e) {
-			errors.add("error.invalid.forumType");
+		if(!nvl(data.get("forumTypeId"))){
+			try {
+				Lookup forumType= LookupService.getInstance().get(toLong(data.get("forumTypeId")));
+				if(forumType!=null) obj.setForumType(forumType);
+			} catch (Exception e) {
+				errors.add("error.invalid.forumType");
+			}
 		}
-		
-		try {
-			//Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
 	}
 	
 	public static Document toDocument(Forum obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("address", obj.getAddress());
 		doc.append("code", obj.getCode());
 		doc.append("description", obj.getDescription());

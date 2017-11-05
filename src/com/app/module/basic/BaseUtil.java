@@ -12,7 +12,7 @@ import org.w3c.tools.codec.Base64Decoder;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 
 public class BaseUtil {
-	public static String ADMIN_ROLE="ADMIN";
+	public static String ADMIN_ROLE="GOD"; //"ADMIN";
 	public static int itemPerPage=20;
 	
 	
@@ -22,7 +22,34 @@ public class BaseUtil {
 		}
 		return false;
 	}
+	
+	public static boolean nvl(Object o) {
+		if(o==null) return true;
+		if(o instanceof String) {
+			if(((String)o).trim().length() == 0 ) return true;
+		}
+		return false;
+	}
+	
+	public static long toLong(Object obj) throws Exception{
+		if(obj==null) return -1;
+		if(obj instanceof Long) return (Long) obj; 
+		if(obj instanceof Integer) return new Long((Integer) obj);
+		if(obj instanceof String)  return Long.parseLong((String) obj);
+		//System.out.println("Kok kesini"+ obj.getClass());
+		return Long.parseLong((String) obj);
+	}
 
+	public static String toString(Object obj) throws Exception{
+		if(obj==null) return null;
+		if(obj instanceof Long) return ""+((Long) obj).longValue(); 
+		if(obj instanceof Integer) return ""+((Integer) obj).intValue();
+		if(obj instanceof String)  return (String) obj;
+		//System.out.println("Kok kesini"+ obj.getClass());
+		return obj.toString();
+	}
+
+	
 	public static List constructTreeList(List list){
 		List treeList=new LinkedList();
 		Map[] parent=new Map[10];
@@ -64,7 +91,7 @@ public class BaseUtil {
 		return result.toString();
 	}
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		//0#Terverifikasi#
 		try{
 			FileInputStream fis=new FileInputStream("/Users/it.atsbanksinarmas.com/Documents/EKTP-R/Susiana.txt");
@@ -87,5 +114,20 @@ public class BaseUtil {
 		}
 	}
 	
-	
+	public static void main(String[] args) {
+		try {
+			
+		//Object test="21322";
+//		Object test=new Integer(21322);
+		Object test=new Long(21322);
+		//long x=(Long) test;
+		//System.out.println(""+x);
+		
+	//	long x=Long.parseLong((String) test);
+		System.out.println(""+toLong(test)/2); 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
 }

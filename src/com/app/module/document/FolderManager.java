@@ -38,7 +38,7 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
-public class FolderManager {
+public class FolderManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(FolderManager.class);
 	
 /*
@@ -47,7 +47,7 @@ public class FolderManager {
 		try {
 			String filterParam=null; 
 			String orderParam=" ORDER BY folder.id ASC ";
-			resultList= FolderService.getInstance().getPartialList(filterParam, orderParam, 0, BaseUtil.itemPerPage);
+			resultList= FolderService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {
 //			e.printStackTrace();
@@ -66,7 +66,7 @@ public class FolderManager {
 	   " SELECT * FROM   frm ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("FolderTree", sqlQuery, null);
 		//log.debug(Utility.debug(list));
-		return BaseUtil.constructTreeList(list);
+		return constructTreeList(list);
 	}	
 	
 
@@ -104,7 +104,7 @@ public class FolderManager {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		FolderService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -119,7 +119,7 @@ public class FolderManager {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		FolderService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -159,7 +159,7 @@ public class FolderManager {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND user."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(" AND folder."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -168,45 +168,50 @@ public class FolderManager {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" user."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" folder."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", folder."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+
 				}
 			}
 		}
-		PartialList result=FolderService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=FolderService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
-	}
+	}			
 	
 	private static void updateFromMap(Folder obj, Map data,List<String> errors) {
 		obj.setCode((String)data.get("code"));
 		obj.setFolderRepoId((String)data.get("folderRepoId"));
 		obj.setName((String)data.get("name"));
-		try {
-			long parentId=(Long)data.get("parentFolderId");
-			Folder parentFolder= FolderService.getInstance().get(parentId);
-			if(parentFolder!=null)obj.setParentFolder(parentFolder);
-		} catch (Exception e) {
-			errors.add("error.invalid.parentFolder");
+		if(!nvl(data.get("parentFolderId"))){
+			try {
+				Folder parentFolder= FolderService.getInstance().get(toLong(data.get("parentFolderId")));
+				if(parentFolder!=null)obj.setParentFolder(parentFolder);
+			} catch (Exception e) {
+				errors.add("error.invalid.parentFolder");
+			}
 		}
-		try {
-			long typeId=Long.parseLong((String)data.get("folderTypeId"));
-			Lookup folderType= LookupService.getInstance().get(typeId);
-			if(folderType!=null) obj.setFolderType(folderType);
-		} catch (Exception e) {
-			errors.add("error.invalid.folderType");
+		if(!nvl(data.get("folderTypeId"))){
+			try {
+				Lookup folderType= LookupService.getInstance().get(toLong(data.get("folderTypeId")));
+				if(folderType!=null) obj.setFolderType(folderType);
+			} catch (Exception e) {
+				errors.add("error.invalid.folderType");
+			}
 		}
-		try {
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong((String)data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
-
 	}
 	
 	public static Document toDocument(Folder obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("code", obj.getCode());
 		doc.append("folderRepoId", obj.getFolderRepoId());
 		doc.append("id", obj.getId());

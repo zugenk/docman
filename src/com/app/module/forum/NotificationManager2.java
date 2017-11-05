@@ -24,7 +24,7 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
-public class NotificationManager2 {
+public class NotificationManager2 extends BaseUtil {
 	private static Logger log = Logger.getLogger(NotificationManager2.class);
 	
 	/*
@@ -36,7 +36,7 @@ public class NotificationManager2 {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Notification", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		NotificationService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -51,7 +51,7 @@ public class NotificationManager2 {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Notification", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		NotificationService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -104,7 +104,7 @@ public class NotificationManager2 {
 				}
 			}
 		}
-		PartialList result=NotificationService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=NotificationService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -162,26 +162,7 @@ public class NotificationManager2 {
 		} catch (Exception e) {
 			errors.add("error.invalid.status");
 		}
-//		RoleService.getInstance().getBy("role.name='ADMINISTRATOR'");
-//		obj.setRoles(roles);
 
-//		obj.setPicture(picture);
-//		obj.setFirstLogin("true");
-//		obj.setIPassport(IPassport);
-//		obj.setLanguage(language);
-//		obj.setLastActive(lastActive);
-//		obj.setLastPassword(lastPassword);
-//		obj.setLastPasswordUpdate(lastPasswordUpdate);
-//		obj.setLastPinCode(lastPinCode);
-//		obj.setLastPinCodeUpdate(lastPinCodeUpdate);
-//		obj.setLastReleasedDate(lastReleasedDate);
-//		obj.setLastUpdatedBy(lastUpdatedBy);
-//		obj.setLastUpdatedDate(lastUpdatedDate);
-//		obj.setLoginFailed(loginFailed);
-//		obj.setMaxRelease(maxRelease);
-//		
-//		obj.setPinCode(pinCode);
-//		obj.setSessionCode(sessionCode);
 	}
 	*/
 	
@@ -189,13 +170,14 @@ public class NotificationManager2 {
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
 		String filterParam=" AND notification.subscriber='"+passport.getString("userId")+"' ";
 		String orderParam=" notification.id ASC, notification.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
 	
 	public static Document toDocument(Notification obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("flag", obj.getFlag());
 		doc.append("id", obj.getId());
 		//doc.append("message", obj.getPostMessage());

@@ -25,7 +25,7 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
 
-public class SharedDocumentManager {
+public class SharedDocumentManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(SharedDocumentManager.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
@@ -36,7 +36,7 @@ public class SharedDocumentManager {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		SharedDocumentService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -51,7 +51,7 @@ public class SharedDocumentManager {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		SharedDocumentService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -100,52 +100,57 @@ public class SharedDocumentManager {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" sharedDocument."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" sharedDocument."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", sharedDocument."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+
 				}
 			}
 		}
-		PartialList result=SharedDocumentService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=SharedDocumentService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
 	
 	private static void updateFromMap(SharedDocument obj, Map data,List<String> errors) {
 		obj.setGrantAction((String) data.get("grantAction"));
-		
-		try {
-			long docId=Long.parseLong((String)data.get("documentId"));
-			com.app.docmgr.model.Document document= DocumentService.getInstance().get(docId);
-			if(document!=null) obj.setDocument(document);
-		} catch (Exception e) {
-			errors.add("error.invalid.document");
+	
+		if(!nvl(data.get("documentId"))){
+			try {
+				com.app.docmgr.model.Document document= DocumentService.getInstance().get(toLong(data.get("documentId")));
+				if(document!=null) obj.setDocument(document);
+			} catch (Exception e) {
+				errors.add("error.invalid.document");
+			}
 		}
-		
-		try {
-			long orgId=(Long)data.get("targetOrganizationId");
-			Organization targetOrganization= OrganizationService.getInstance().get(orgId);
-			if(targetOrganization!=null)obj.setTargetOrganization(targetOrganization);
-		} catch (Exception e) {
-			errors.add("error.invalid.targetOrganization");
+		if(!nvl(data.get("targetOrganizationId"))){
+			try {
+				Organization targetOrganization= OrganizationService.getInstance().get(toLong(data.get("targetOrganizationId")));
+				if(targetOrganization!=null)obj.setTargetOrganization(targetOrganization);
+			} catch (Exception e) {
+				errors.add("error.invalid.targetOrganization");
+			}
 		}
-		try {
-			long usrId=Long.parseLong((String)data.get("targetUserId"));
-			User targetUser= UserService.getInstance().get(usrId);
-			if(targetUser!=null) obj.setTargetUser(targetUser);
-		} catch (Exception e) {
-			errors.add("error.invalid.targetUser");
+		if(!nvl(data.get("targetUserId"))){
+			try {
+				User targetUser= UserService.getInstance().get(toLong(data.get("targetUserId")));
+				if(targetUser!=null) obj.setTargetUser(targetUser);
+			} catch (Exception e) {
+				errors.add("error.invalid.targetUser");
+			}
 		}
-		try {
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
-
 	}
 	
 	public static Document toDocument(SharedDocument obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());	
 		doc.append("grantAction", obj.getGrantAction());
 		if (obj.getDocument()!=null) {
 			doc.append("document", obj.getDocument().getName());

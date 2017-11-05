@@ -23,7 +23,7 @@ import com.app.docmgr.model.Folder;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -284,9 +284,9 @@ public class FolderServiceBase {
 		try {
 			String filter = " WHERE folder.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.Folder folder "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT folder FROM com.app.docmgr.model.Folder folder "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -334,6 +334,13 @@ public class FolderServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT folder FROM com.app.docmgr.model.Folder folder "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+			    com.app.docmgr.model.Folder folder = (com.app.docmgr.model.Folder)itr.next();
+			    Hibernate.initialize(folder.getFolderType());                    
+			    Hibernate.initialize(folder.getStatus());                    
+			    Hibernate.initialize(folder.getParentFolder());                    
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);

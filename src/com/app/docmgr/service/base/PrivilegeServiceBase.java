@@ -23,7 +23,7 @@ import com.app.docmgr.model.Privilege;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -276,9 +276,9 @@ public class PrivilegeServiceBase {
 		try {
 			String filter = " WHERE 1=1 ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.Privilege privilege "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT privilege FROM com.app.docmgr.model.Privilege privilege "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);

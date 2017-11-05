@@ -23,7 +23,7 @@ import com.app.docmgr.model.UserHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -292,9 +292,9 @@ public class UserHistoryServiceBase {
 		try {
 			String filter = " WHERE userHistory.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.UserHistory userHistory "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT userHistory FROM com.app.docmgr.model.UserHistory userHistory "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -346,6 +346,17 @@ public class UserHistoryServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT userHistory FROM com.app.docmgr.model.UserHistory userHistory "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+			    com.app.docmgr.model.UserHistory userHistory = (com.app.docmgr.model.UserHistory)itr.next();
+			    Hibernate.initialize(userHistory.getRoles());                   
+			    Hibernate.initialize(userHistory.getFavoriteTopic());                   
+			    Hibernate.initialize(userHistory.getUserLevel());                    
+			    Hibernate.initialize(userHistory.getPosition());                    
+			    Hibernate.initialize(userHistory.getStatus());                    
+			    Hibernate.initialize(userHistory.getOrganization());                    
+			    Hibernate.initialize(userHistory.getSecurityLevel());                    
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);

@@ -30,7 +30,7 @@ import java.io.FileOutputStream;
 import org.apache.log4j.Logger;
 
 
-public class DocumentManager {
+public class DocumentManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(DocumentManager.class);
 
 	public static PartialList getDocumentList(int start){
@@ -38,7 +38,7 @@ public class DocumentManager {
 		try {
 			String filterParam=null; 
 			String orderParam=" ORDER BY document.id ASC ";
-			resultList= DocumentService.getInstance().getPartialList(filterParam, orderParam, 0, BaseUtil.itemPerPage);
+			resultList= DocumentService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {
 //			e.printStackTrace();
@@ -56,7 +56,7 @@ public class DocumentManager {
 	   " SELECT * FROM   frm ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("DocumentTree", sqlQuery, null);
 		//log.debug(Utility.debug(list));
-		return BaseUtil.constructTreeList(list);
+		return constructTreeList(list);
 	}	
 	
 
@@ -95,7 +95,7 @@ public class DocumentManager {
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		DocumentService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -110,7 +110,7 @@ public class DocumentManager {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		DocumentService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -150,7 +150,7 @@ public class DocumentManager {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND obj."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(" AND document."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -159,51 +159,54 @@ public class DocumentManager {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" obj."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" document."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", document."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
-		PartialList result=DocumentService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=DocumentService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
 	
-	private static void updateFromMap(Document obj, Map data,List<String> errors) {
+	private static void updateFromMap(Document obj, Map data,List<String> errors) throws Exception{
 		obj.setContentType((String) data.get("contentType"));
 		obj.setDescription((String) data.get("description"));
-		obj.setDocumentNumber((String) data.get("documentNumber"));
-		obj.setDocumentVersion((String) data.get("documentVersion"));
+		obj.setDocumentNumber(toString(data.get("documentNumber")));
+		obj.setDocumentVersion(toString(data.get("documentVersion")));
 		obj.setName((String) data.get("name"));
 		obj.setRepositoryId((String) data.get("repositoryId"));
-		
-		
 //		obj.set((String) data.get(""));
-		try {
-			long docId=(Long)data.get("parentDocumentId");
-			Document parentDocument= DocumentService.getInstance().get(docId);
-			if(parentDocument!=null)obj.setParentDocument(parentDocument);;
-		} catch (Exception e) {
-			errors.add("error.invalid.parentDocument");
+	
+		if(!nvl(data.get("parentDocumentId"))){
+			try {
+				Document parentDocument= DocumentService.getInstance().get(toLong(data.get("parentDocumentId")));
+				if(parentDocument!=null)obj.setParentDocument(parentDocument);;
+			} catch (Exception e) {
+				errors.add("error.invalid.parentDocument");
+			}
 		}
-		try {
-			long folderId=(Long)data.get("parentFolderId");
-			Folder parentFolder= FolderService.getInstance().get(folderId);
-			if(parentFolder!=null)obj.setParentFolder(parentFolder);
-		} catch (Exception e) {
-			errors.add("error.invalid.parentFolder");
+		if(!nvl(data.get("parentFolderId"))){
+			try {
+				Folder parentFolder= FolderService.getInstance().get(toLong(data.get("parentFolderId")));
+				if(parentFolder!=null)obj.setParentFolder(parentFolder);
+			} catch (Exception e) {
+				errors.add("error.invalid.parentFolder");
+			}
 		}
-		
-		try {
-			Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
-			if(securityLevel!=null) obj.setSecurityLevel(securityLevel);
-		} catch (Exception e) {
-			errors.add("error.invalid.securityLevel");
+		if(!nvl(data.get("securityLevelId"))){	
+			try {
+				Lookup securityLevel= LookupService.getInstance().get(toLong(data.get("securityLevelId")));
+				if(securityLevel!=null) obj.setSecurityLevel(securityLevel);
+			} catch (Exception e) {
+				errors.add("error.invalid.securityLevel");
+			}
 		}
 	}
-	
 	public static org.bson.Document toDocument(Document obj) {
 		org.bson.Document doc=new org.bson.Document();
 		//doc.append("", obj.get);
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("contentType", obj.getContentType());
 		doc.append("description", obj.getDescription());
 		doc.append("documentNumber", obj.getDocumentNumber());

@@ -23,7 +23,7 @@ import com.app.docmgr.model.LoginHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -282,9 +282,9 @@ public class LoginHistoryServiceBase {
 		try {
 			String filter = " WHERE loginHistory.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.LoginHistory loginHistory "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT loginHistory FROM com.app.docmgr.model.LoginHistory loginHistory "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -331,6 +331,12 @@ public class LoginHistoryServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT loginHistory FROM com.app.docmgr.model.LoginHistory loginHistory "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+			    com.app.docmgr.model.LoginHistory loginHistory = (com.app.docmgr.model.LoginHistory)itr.next();
+			    Hibernate.initialize(loginHistory.getUser());                    
+			    Hibernate.initialize(loginHistory.getStatus());                    
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);

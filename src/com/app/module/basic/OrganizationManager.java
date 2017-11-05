@@ -24,7 +24,7 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
-public class OrganizationManager {
+public class OrganizationManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(OrganizationManager.class);
 	
 	public static List<Map> getTree(String startId)  throws Exception{
@@ -37,7 +37,7 @@ public class OrganizationManager {
 	   " SELECT * FROM   frm ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("OrganizationTree", sqlQuery, null);
 		//log.debug(Utility.debug(list));
-		return BaseUtil.constructTreeList(list);
+		return constructTreeList(list);
 	}	
 	
 
@@ -70,11 +70,11 @@ public class OrganizationManager {
 		//log.debug("Create Organization :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
 		Organization organization= new Organization();
-		update(organization, data,errors);
+		updateFromMap(organization, data,errors);
 		organization.setCreatedBy(passport.getString("loginName"));
 		organization.setCreatedDate(new Date());
 		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		OrganizationService.getInstance().add(organization);
 		return toDocument(organization);
 	}
@@ -85,11 +85,11 @@ public class OrganizationManager {
 		long uid=Long.parseLong(organizationId);
 		Organization organization= OrganizationService.getInstance().get(uid);
 		if (organization==null) throw new Exception("error.object.notfound");
-		update(organization,data,errors) ;
+		updateFromMap(organization,data,errors) ;
 		organization.setLastUpdatedBy(passport.getString("loginName"));
 		organization.setLastUpdatedDate(new Date());
 		//organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		OrganizationService.getInstance().update(organization);
 		return toDocument(organization);
 	}
@@ -138,16 +138,17 @@ public class OrganizationManager {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" organization."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" organization."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", organization."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
-		PartialList result=OrganizationService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=OrganizationService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
 	
-	private static void update(Organization obj, Map data,List<String> errors) {
+	private static void updateFromMap(Organization obj, Map data,List<String> errors) {
 		obj.setAddress((String) data.get("address"));
 		obj.setCode((String) data.get("code"));
 		obj.setFilterCode((String) data.get("filterCode"));
@@ -155,43 +156,49 @@ public class OrganizationManager {
 		obj.setMnemonic((String) data.get("mnemonic"));
 		obj.setName((String) data.get("name"));
 		
-		try {
-			long orgId=(Long)data.get("parentId");
-			Organization parent= OrganizationService.getInstance().get(orgId);
-			if(parent!=null)obj.setParent(parent);
-		} catch (Exception e) {
-			errors.add("error.invalid.parent");
+		if(!nvl(data.get("parentId"))){
+			try {
+				long orgId=(Long)data.get("parentId");
+				Organization parent= OrganizationService.getInstance().get(orgId);
+				if(parent!=null)obj.setParent(parent);
+			} catch (Exception e) {
+				errors.add("error.invalid.parent");
+			}
 		}
-		try {
-			Lookup organizationType= LookupService.getInstance().getByTypeandCode("organizationType", (String)data.get("organizationType"));
-			if(organizationType!=null) obj.setOrganizationType(organizationType);
-		} catch (Exception e) {
-			errors.add("error.invalid.organizationLevel");
+		if(!nvl(data.get("organizationTypeId"))){
+			try {
+				Lookup organizationType= LookupService.getInstance().get(toLong(data.get("organizationTypeId")));
+				if(organizationType!=null) obj.setOrganizationType(organizationType);
+			} catch (Exception e) {
+				errors.add("error.invalid.organizationType");
+			}
 		}
-		try {
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
 	}
 	
-	public static Document toDocument(Organization organization) {
+	public static Document toDocument(Organization obj) {
 		Document doc=new Document();
-		doc.append("address", organization.getAddress());
-		doc.append("code", organization.getCode());
-		doc.append("filterCode", organization.getFilterCode());
-		doc.append("id", organization.getId());
-		doc.append("mailingList", organization.getMailingList());
+		doc.append("modelClass", obj.getClass().getName());
+		doc.append("address", obj.getAddress());
+		doc.append("code", obj.getCode());
+		doc.append("filterCode", obj.getFilterCode());
+		doc.append("id", obj.getId());
+		doc.append("mailingList", obj.getMailingList());
 		
-		if(organization.getParent()!=null) {
-			doc.append("parent", organization.getParent().getName());
-			doc.append("parentId", organization.getParent().getId());
+		if(obj.getParent()!=null) {
+			doc.append("parent", obj.getParent().getName());
+			doc.append("parentId", obj.getParent().getId());
 		}
-		if (organization.getOrganizationType()!=null) {
-			doc.append("organizationType", organization.getOrganizationType().getName());
-			doc.append("organizationTypeId", organization.getOrganizationType().getId());
+		if (obj.getOrganizationType()!=null) {
+			doc.append("organizationType", obj.getOrganizationType().getName());
+			doc.append("organizationTypeId", obj.getOrganizationType().getId());
 		}
 		return doc;
 	}

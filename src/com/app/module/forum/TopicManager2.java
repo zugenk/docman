@@ -30,7 +30,7 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
-public class TopicManager2 {
+public class TopicManager2 extends BaseUtil{
 	private static Logger log = Logger.getLogger(TopicManager2.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
@@ -41,7 +41,7 @@ public class TopicManager2 {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		TopicService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -56,7 +56,7 @@ public class TopicManager2 {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		TopicService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -105,11 +105,12 @@ public class TopicManager2 {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" topic."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" topic."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", topic."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
-		PartialList result=TopicService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=TopicService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -120,22 +121,23 @@ public class TopicManager2 {
 		obj.setFilterCode((String) data.get("filterCode"));
 		obj.setIcon((String) data.get("icon"));
 		obj.setName((String) data.get("name"));
-		
-		try {
-			long parentId=(Long)data.get("parentForumId");
-			Forum parentForum= ForumService.getInstance().get(parentId);
-			if(parentForum!=null)obj.setParentForum(parentForum);
-		} catch (Exception e) {
-			errors.add("error.invalid.parentForum");
+		if(!nvl(data.get("parentForumId"))){
+			try {
+				Forum parentForum= ForumService.getInstance().get(toLong(data.get("parentForumId")));
+				if(parentForum!=null)obj.setParentForum(parentForum);
+			} catch (Exception e) {
+				errors.add("error.invalid.parentForum");
+			}
 		}
-		try {
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				long statusId=Long.parseLong((String)data.get("statusId"));
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
-
 	}
 	
 	/*
@@ -157,6 +159,7 @@ public class TopicManager2 {
 	
 	public static Document toDocument(Topic obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("code", obj.getCode());
 		doc.append("description", obj.getDescription());
 		doc.append("filterCode", obj.getFilterCode());

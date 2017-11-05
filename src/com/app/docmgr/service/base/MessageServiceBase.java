@@ -23,7 +23,7 @@ import com.app.docmgr.model.Message;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -286,9 +286,9 @@ public class MessageServiceBase {
 		try {
 			String filter = " WHERE message.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.Message message "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT message FROM com.app.docmgr.model.Message message "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -337,6 +337,14 @@ public class MessageServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT message FROM com.app.docmgr.model.Message message "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+			    com.app.docmgr.model.Message message = (com.app.docmgr.model.Message)itr.next();
+			    Hibernate.initialize(message.getPostType());                    
+			    Hibernate.initialize(message.getStatus());                    
+			    Hibernate.initialize(message.getTopic());                    
+			    Hibernate.initialize(message.getParent());                    
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);

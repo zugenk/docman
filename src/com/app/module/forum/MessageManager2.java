@@ -25,7 +25,7 @@ import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 
-public class MessageManager2 {
+public class MessageManager2 extends BaseUtil{
 	private static Logger log = Logger.getLogger(MessageManager2.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
@@ -36,7 +36,7 @@ public class MessageManager2 {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Message", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		MessageService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -51,7 +51,7 @@ public class MessageManager2 {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Message", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		MessageService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -100,11 +100,12 @@ public class MessageManager2 {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" message."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" message."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", message."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
-		PartialList result=MessageService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=MessageService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -112,42 +113,45 @@ public class MessageManager2 {
 	private static void updateFromMap(Message obj, Map data,List<String> errors) {
 		obj.setContent((String) data.get("content"));
 		obj.setFilterCode((String) data.get("filterCode"));
-	
-		try {
-			long topicId=(Long)data.get("topicId");
-			Topic topic= TopicService.getInstance().get(topicId);
-			if(topic!=null) obj.setTopic(topic);
-		} catch (Exception e) {
-			errors.add("error.invalid.topic");
+		if(!nvl(data.get("topicId"))){
+			try {
+				Topic topic= TopicService.getInstance().get(toLong(data.get("topicId")));
+				if(topic!=null) obj.setTopic(topic);
+			} catch (Exception e) {
+				errors.add("error.invalid.topic");
+			}
 		}
-		try {
-			long typeId=Long.parseLong((String)data.get("postTypeId"));
-			Lookup postType= LookupService.getInstance().get(typeId);
-			if(postType!=null) obj.setPostType(postType);
-		} catch (Exception e) {
-			errors.add("error.invalid.postType");
+		if(!nvl(data.get("postTypeId"))){	
+			try {
+				Lookup postType= LookupService.getInstance().get(toLong(data.get("postTypeId")));
+				if(postType!=null) obj.setPostType(postType);
+			} catch (Exception e) {
+				errors.add("error.invalid.postType");
+			}
 		}
-		try {
-			long parentId=Long.parseLong((String)data.get("parentId"));
-			Message parent= MessageService.getInstance().get(parentId);
-			if(parent!=null) obj.setParent(parent);
-			
-		} catch (Exception e) {
-			errors.add("error.invalid.parent");
+		if(!nvl(data.get("parentId"))){
+			try {
+				Message parent= MessageService.getInstance().get(toLong(data.get("parentId")));
+				if(parent!=null) obj.setParent(parent);
+				
+			} catch (Exception e) {
+				errors.add("error.invalid.parent");
+			}
 		}
-		
-		try {
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
 
 	}
 	
 	public static Document toDocument(Message obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("content", obj.getContent());
 		doc.append("filterCode", obj.getFilterCode());
 		doc.append("id", obj.getId());

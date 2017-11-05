@@ -21,7 +21,7 @@ import com.app.docmgr.service.BookmarkService;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
-public class BookmarkManager {
+public class BookmarkManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(BookmarkManager.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
@@ -33,7 +33,7 @@ public class BookmarkManager {
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		BookmarkService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -48,7 +48,7 @@ public class BookmarkManager {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		BookmarkService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -97,11 +97,12 @@ public class BookmarkManager {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" bookmark."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" bookmark."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", bookmark."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -109,7 +110,7 @@ public class BookmarkManager {
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
 		String filterParam=" AND bookmark.owner='"+passport.getString("userId")+"' ";
 		String orderParam=" bookmark.category ASC, bookmark.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -121,27 +122,28 @@ public class BookmarkManager {
 		obj.setNote((String) data.get("note"));
 		obj.setUrl((String) data.get("url"));
 		
-		try {
-			//Lookup userLevel= LookupService.getInstance().getByTypeandCode("bookmarkType", (String)data.get("bookmarkType"));
-			long typeId=Long.parseLong((String)data.get("bookmarkTypeId"));
-			Lookup bookmarkType= LookupService.getInstance().get(typeId);
-			if(bookmarkType!=null) obj.setBookmarkType(bookmarkType);
-		} catch (Exception e) {
-			errors.add("error.invalid.bookmarkType");
+		if(!nvl(data.get("bookmarkTypeId"))){
+			try {
+				Lookup bookmarkType= LookupService.getInstance().get(toLong(data.get("bookmarkTypeId")));
+				if(bookmarkType!=null) obj.setBookmarkType(bookmarkType);
+			} catch (Exception e) {
+				errors.add("error.invalid.bookmarkType");
+			}
 		}
-		
-		try {
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				long statusId=Long.parseLong((String)data.get("statusId"));
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
-
 	}
 	
 	public static Document toDocument(Bookmark obj) {
 		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getName());
 		doc.append("category", obj.getCategory());
 		doc.append("id", obj.getId());
 		doc.append("name", obj.getName());

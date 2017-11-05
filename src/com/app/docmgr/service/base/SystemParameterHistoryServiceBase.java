@@ -23,7 +23,7 @@ import com.app.docmgr.model.SystemParameterHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -280,9 +280,9 @@ public class SystemParameterHistoryServiceBase {
 		try {
 			String filter = " WHERE systemParameterHistory.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.SystemParameterHistory systemParameterHistory "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT systemParameterHistory FROM com.app.docmgr.model.SystemParameterHistory systemParameterHistory "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -328,6 +328,11 @@ public class SystemParameterHistoryServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT systemParameterHistory FROM com.app.docmgr.model.SystemParameterHistory systemParameterHistory "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+			    com.app.docmgr.model.SystemParameterHistory systemParameterHistory = (com.app.docmgr.model.SystemParameterHistory)itr.next();
+			    Hibernate.initialize(systemParameterHistory.getStatus());                    
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);

@@ -24,7 +24,7 @@ import com.app.module.basic.UserManager;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
-public class AnnouncementManager {
+public class AnnouncementManager extends BaseUtil {
 	//Requested only for Create and Blast email..
 	
 	
@@ -38,7 +38,7 @@ public class AnnouncementManager {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -53,7 +53,7 @@ public class AnnouncementManager {
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 	//	obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "new"));
-		if(!errors.isEmpty()) throw new Exception(BaseUtil.listToString(errors));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -93,7 +93,7 @@ public class AnnouncementManager {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND user."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(" AND announcement."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -102,11 +102,13 @@ public class AnnouncementManager {
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" user."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" announcement."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=", announcement."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+
 				}
 			}
 		}
-		PartialList result=AnnouncementService.getInstance().getPartialList(filterParam.toString(), orderParam, start, BaseUtil.itemPerPage);
+		PartialList result=AnnouncementService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -116,33 +118,34 @@ public class AnnouncementManager {
 		obj.setTargetOrganizations((String) data.get("targetOrganizations"));
 		obj.setTargetUsers((String) data.get("targetUsers"));
 		
-		try {
-			//Lookup userLevel= LookupService.getInstance().getByTypeandCode("userLevel", (String)data.get("userLevel"));
-			long typelId=Long.parseLong((String)data.get("announcementTypeId"));
-			Lookup announcementType= LookupService.getInstance().get(typelId);
-			if(announcementType!=null) obj.setAnnouncementType(announcementType);
-		} catch (Exception e) {
-			errors.add("error.invalid.announcemenType");
+		if(!nvl(data.get("announcementTypeId"))){
+			try {
+				Lookup announcementType= LookupService.getInstance().get(toLong(data.get("announcementTypeId")));
+				if(announcementType!=null) obj.setAnnouncementType(announcementType);
+			} catch (Exception e) {
+				errors.add("error.invalid.announcemenType");
+			}
 		}
-		
-		try {
-			//Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
-			long statusId=Long.parseLong((String)data.get("statusId"));
-			Status status= StatusService.getInstance().get(statusId);
-			if(status!=null) obj.setStatus(status);
-		} catch (Exception e) {
-			errors.add("error.invalid.status");
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
 		}
 	}
 	
 	public static Document toDocument(Announcement obj) {
 		Document doc=new Document();
 		//doc.append("",obj.get
-		doc.append("",obj.getAnnouncementType().getName());
-		doc.append("",obj.getContent());
-		doc.append("",obj.getId());
-		doc.append("",obj.getTargetOrganizations());
-		doc.append("",obj.getTargetUsers());
+		doc.append("modelClass", obj.getClass().getName());
+		doc.append("name",obj.getAnnouncementType().getName());
+		doc.append("content",obj.getContent());
+		doc.append("id",obj.getId());
+		
+		doc.append("targetOrganization",obj.getTargetOrganizations());
+		doc.append("targetUsers",obj.getTargetUsers());
 		if(obj.getAnnouncementType()!=null){
 			doc.append("announcementType", obj.getAnnouncementType().getName());
 			doc.append("announcementTypeId", obj.getAnnouncementType().getId());

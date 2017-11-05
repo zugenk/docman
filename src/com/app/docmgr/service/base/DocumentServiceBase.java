@@ -23,7 +23,7 @@ import com.app.docmgr.model.Document;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 06-11-2017 00:08:53
  */
 
 	/**
@@ -288,9 +288,9 @@ public class DocumentServiceBase {
 		try {
 			String filter = " WHERE document.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.Document document "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT document FROM com.app.docmgr.model.Document document "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -340,6 +340,15 @@ public class DocumentServiceBase {
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT document FROM com.app.docmgr.model.Document document "+filter+" ");
 			result = query.list();
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+			    com.app.docmgr.model.Document document = (com.app.docmgr.model.Document)itr.next();
+			    Hibernate.initialize(document.getSecurityLevel());                    
+			    Hibernate.initialize(document.getOwner());                    
+			    Hibernate.initialize(document.getStatus());                    
+			    Hibernate.initialize(document.getParentFolder());                    
+			    Hibernate.initialize(document.getParentDocument());                    
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);
