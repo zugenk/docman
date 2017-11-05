@@ -1,5 +1,7 @@
 package com.app.docmgr.service;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +17,7 @@ import com.app.docmgr.model.Role;
 import com.app.docmgr.model.Topic;
 import com.app.docmgr.model.User;
 import com.app.docmgr.service.base.UserServiceBase;
+import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
 /**
@@ -84,5 +87,77 @@ public class UserService extends com.app.docmgr.service.base.UserServiceBase{
 		}
 		return user;
 	}
+	
+	public List getPrivilegeList(User user)  throws Exception{
+		Session session = null;
+		PreparedStatement ps=null;
+		ResultSet rs=null;
+		try {
+			session = ConnectionFactory.getInstance().getSession();
+		   	List privilegeList = new LinkedList();
+		   	String[] param=new String[2];
+	   		param[0]=user.getId().toString() ;
+			String sqlQuery = ApplicationFactory.mergeParam("SELECT DISTINCT(p.name) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE ur.user_id={0}",param);
+			ps = session.connection().prepareStatement(sqlQuery);			
+			rs = ps.executeQuery();
+			while (rs.next()) { 
+				privilegeList.add(rs.getString(1));
+			}
+			return privilegeList;
+		}catch (Exception e) {
+			System.err.println("Exception" + e.getMessage());
+			throw new RuntimeException(e);
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch (Exception e) {
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				}catch (Exception e) {
+				}
+			}
+		}
+	}
+	public boolean hasPrivilege(User user,String privilegeName)  throws Exception{
+		Session session = null;
+		PreparedStatement ps=null;
+		ResultSet rs=null;
+		try {
+			session = ConnectionFactory.getInstance().getSession();
+		   	//String sqlQuery = "SELECT count(p.id) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE p.name='"+privilege+"' and ur.user_id= "+ user.getId().toString(); 
+		   	String[] param=new String[2];
+		   		param[0]=privilegeName;
+		   		param[1]=user.getId().toString() ;
+			String sqlQuery = ApplicationFactory.mergeParam("SELECT count(p.id) as privilege FROM privilege p INNER JOIN role_privilege rp ON rp.privilege_id =p.id INNER JOIN user_role ur ON ur.role_id =rp.role_id  WHERE p.name='{0}' and ur.user_id={1}",param);
+			ps = session.connection().prepareStatement(sqlQuery);			
+			rs = ps.executeQuery();
+			int count=0;
+			if (rs.next()) { 
+				count=rs.getInt(1);
+			}
+			return (count>0);
+		}catch (Exception e) {
+			System.err.println("Exception" + e.getMessage());
+			throw new RuntimeException(e);
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch (Exception e) {
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				}catch (Exception e) {
+				}
+			}
+		}
+	}   
+
 	
 }

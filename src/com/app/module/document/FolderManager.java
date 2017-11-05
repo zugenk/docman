@@ -95,21 +95,6 @@ public class FolderManager {
 		return list;
 	}	
 
-	/*
-	private void create(Map data, Document passportData) {
-		// TODO Auto-generated method stub
-		Folder folder= new Folder();
-		folder.setCode(data.get("code"));
-		folder.setCreatedBy(passportData.getString(""));
-		folder.setCreatedDate(createdDate);
-		folder.setFolderType(folderType);
-		//folder.setLastUpdatedBy(lastUpdatedBy);
-		folder.setName(data.get("name"));
-		folder.setParentFolder(data.get("parentFolder");
-		FolderService.getInstance().add(folder);
-		
-	}
-	*/
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create Folder :/n/r"+Utility.debug(data));
