@@ -53,6 +53,8 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		}
 		iPass.put("favTopicIds", UserService.getFavTopicIds(user));
 		iPass.put("roleNames", UserService.getRoleNames(user)); 
+//		System.out.println(Utility.debug(iPass));
+//		System.out.println("====================PASSPORT ISSUED======================");
 		savePassport(iPass);
 		return iPass;
 	}
@@ -67,7 +69,9 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		init();
 //		MongoManager.insertOne(IPASSPORT_COLLECTION, iPass);
 		Document query=new Document("userId",iPass.get("userId"));
-		MongoManager.findOneAndUpdate(IPASSPORT_COLLECTION, query, iPass, true);
+		MongoManager.getCollection(IPASSPORT_COLLECTION).findOneAndReplace(query, iPass);
+		//MongoManager.findOneAndUpdate(IPASSPORT_COLLECTION, query, iPass, true);
+		log.debug("Passport Saved..");
 	}
 	
 	private static void init() {

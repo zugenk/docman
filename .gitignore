@@ -1,13 +1,9 @@
 /build/
 **/.DS_Store
 /DOCMAN_Hibernate.log
-<<<<<<< HEAD
 /BackUp/
-=======
-
 /bin
 /.classpath
 /.project
 /.settings
 /target
->>>>>>> branch 'master' of https://github.com/zugenk/docman.git
