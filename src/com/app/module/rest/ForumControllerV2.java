@@ -35,9 +35,9 @@ public class ForumControllerV2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager2.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -56,9 +56,9 @@ public class ForumControllerV2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager2.update(iPass, dataMap, forumId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -78,8 +78,8 @@ public class ForumControllerV2 {
 			
 //			response.put("result",ForumManager2.delete(iPass, forumId));
 			ForumManager2.delete(iPass, forumId);
+			response.put("ipassport",iPass.get("ipassport"));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -97,9 +97,9 @@ public class ForumControllerV2 {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager2.read(iPass, forumId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -117,9 +117,9 @@ public class ForumControllerV2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager2.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}

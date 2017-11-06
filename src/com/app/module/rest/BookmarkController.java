@@ -36,7 +36,7 @@ public class BookmarkController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",BookmarkManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -57,7 +57,7 @@ public class BookmarkController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",BookmarkManager.update(iPass, dataMap, bookmarkId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -77,7 +77,7 @@ public class BookmarkController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 //			response.put("result",BookmarkManager.delete(iPass, bookmarkId));
 			BookmarkManager.delete(iPass, bookmarkId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
@@ -99,6 +99,7 @@ public class BookmarkController {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",BookmarkManager.read(iPass, bookmarkId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -119,6 +120,7 @@ public class BookmarkController {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",BookmarkManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -138,15 +140,9 @@ public class BookmarkController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			int startId=0;
-			if(start!=null && start!=""){
-				try {
-					startId=Integer.parseInt(start);
-				} catch (Exception e) {
-					startId=0;
-				}
-			}
-			response.put("result",BookmarkManager.listByOwner(iPass, startId));
+			
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",BookmarkManager.listByOwner(iPass,BaseUtil.toInt(start)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {

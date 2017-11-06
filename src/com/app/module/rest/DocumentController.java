@@ -45,10 +45,9 @@ public class DocumentController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",DocumentManager.getTree(null));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",DocumentManager.getTree(null));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -63,10 +62,9 @@ public class DocumentController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",DocumentManager.getTree(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",DocumentManager.getTree(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -82,10 +80,9 @@ public class DocumentController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",DocumentManager.getDownline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",DocumentManager.getDownline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -100,10 +97,10 @@ public class DocumentController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",DocumentManager.getUpline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",DocumentManager.getUpline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}

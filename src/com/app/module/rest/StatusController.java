@@ -39,6 +39,7 @@ public class StatusController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -60,6 +61,7 @@ public class StatusController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.update(iPass, dataMap, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -79,6 +81,7 @@ public class StatusController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
+			response.put("ipassport",iPass.get("ipassport"));
 			
 //			response.put("result",UserManager.delete(iPass, userId));
 			UserManager.delete(iPass, userId);
@@ -101,6 +104,7 @@ public class StatusController {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.read(iPass, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -122,6 +126,7 @@ public class StatusController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -140,6 +145,7 @@ public class StatusController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
 			List result=StatusService.getInstance().findbyType(type);
 			toDocList(result);
 			response.put("result",result);
@@ -160,6 +166,7 @@ public class StatusController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",toDocument(StatusService.getInstance().getByTypeandCode(type, code)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			

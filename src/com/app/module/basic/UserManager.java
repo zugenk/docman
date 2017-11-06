@@ -112,9 +112,7 @@ public class UserManager extends BaseUtil{
 				}
 			}
 		}
-		System.out.println("filterParam=["+filterParam+"]");
-		System.out.println("orderParam=["+orderParam+"]");
-		PartialList result=UserService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=UserService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}

@@ -31,10 +31,9 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",FolderManager.getTree(null));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",FolderManager.getTree(null));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -49,10 +48,9 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",FolderManager.getTree(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",FolderManager.getTree(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -68,10 +66,9 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",FolderManager.getDownline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",FolderManager.getDownline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -86,10 +83,9 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",FolderManager.getUpline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",FolderManager.getUpline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}

@@ -35,6 +35,7 @@ public class SharedDocumentController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",SharedDocumentManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -56,6 +57,7 @@ public class SharedDocumentController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",SharedDocumentManager.update(iPass, dataMap, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -75,7 +77,7 @@ public class SharedDocumentController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 //			response.put("result",SharedDocumentManager.delete(iPass, userId));
 			SharedDocumentManager.delete(iPass, userId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
@@ -97,6 +99,7 @@ public class SharedDocumentController {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",SharedDocumentManager.read(iPass, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -117,6 +120,7 @@ public class SharedDocumentController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",SharedDocumentManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			

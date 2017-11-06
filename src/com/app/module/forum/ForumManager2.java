@@ -103,7 +103,7 @@ public class ForumManager2 extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=ForumService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=ForumService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}

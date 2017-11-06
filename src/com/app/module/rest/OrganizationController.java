@@ -36,10 +36,9 @@ public class OrganizationController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",OrganizationManager.getTree(null));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",OrganizationManager.getTree(null));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -54,10 +53,9 @@ public class OrganizationController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",OrganizationManager.getTree(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",OrganizationManager.getTree(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -73,10 +71,9 @@ public class OrganizationController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",OrganizationManager.getDownline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",OrganizationManager.getDownline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -91,10 +88,9 @@ public class OrganizationController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",OrganizationManager.getUpline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",OrganizationManager.getUpline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -113,6 +109,7 @@ public class OrganizationController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",OrganizationManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -134,6 +131,7 @@ public class OrganizationController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",OrganizationManager.update(iPass, dataMap,organizationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -153,7 +151,7 @@ public class OrganizationController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 //			response.put("result",OrganizationManager.delete(iPass, organizationId));
 			OrganizationManager.delete(iPass, organizationId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
@@ -175,6 +173,7 @@ public class OrganizationController {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",OrganizationManager.read(iPass, organizationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -195,6 +194,7 @@ public class OrganizationController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",OrganizationManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			

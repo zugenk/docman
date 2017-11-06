@@ -32,11 +32,11 @@ public class BaseUtil {
 	}
 	
 	public static long toLong(Object obj) throws Exception{
-		if(obj==null) return -1;
+		if(obj==null) return 0;
 		if(obj instanceof Long) return (Long) obj; 
 		if(obj instanceof Integer) return new Long((Integer) obj);
 		if(obj instanceof String)  return Long.parseLong((String) obj);
-		//System.out.println("Kok kesini"+ obj.getClass());
+//		throw new Exception("Expecting Long value instead of "+obj.getClass().getName());
 		return Long.parseLong((String) obj);
 	}
 
@@ -45,10 +45,16 @@ public class BaseUtil {
 		if(obj instanceof Long) return ""+((Long) obj).longValue(); 
 		if(obj instanceof Integer) return ""+((Integer) obj).intValue();
 		if(obj instanceof String)  return (String) obj;
-		//System.out.println("Kok kesini"+ obj.getClass());
+//		throw new Exception("Expecting String value instead of "+obj.getClass().getName());
 		return obj.toString();
 	}
-
+	public static int toInt(Object obj) throws Exception{
+		if(obj==null) return 0;
+		if(obj instanceof Integer) return ((Integer) obj).intValue();
+		if(obj instanceof String)  return Integer.parseInt((String) obj);
+//		throw new Exception("Expecting Integer value instead of "+obj.getClass().getName());
+		return 0;
+	}
 	
 	public static List constructTreeList(List list){
 		List treeList=new LinkedList();

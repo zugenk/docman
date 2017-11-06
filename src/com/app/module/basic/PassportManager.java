@@ -3,6 +3,7 @@ package com.app.module.basic;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -12,12 +13,16 @@ import org.bson.Document;
 import com.app.docmgr.model.LoginHistory;
 import com.app.docmgr.model.User;
 import com.app.docmgr.service.UserService;
+import com.app.docmgr.service.base.UserServiceBase;
+import com.app.shared.PartialList;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.IndexOptions;
 import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
+
+import bsh.util.Util;
 
 public class PassportManager {
 static String IPASSPORT_COLLECTION="IPassportData";
@@ -148,6 +153,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 	
 	public static void main(String[] args) {
 		try {
+			/*
 			MongoManager.init(DB_CFG);
 			User user=UserService.getInstance().get(new Long(1));
 			Document iPass=issuePassport(user);
@@ -158,11 +164,20 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			System.out.println(Utility.debug(checkPassport(ipassport)));
 			
 			System.out.println("==========================================================================================");
+			*/
 			
-			
+			PartialList lsUsr=UserService.getInstance().getPartialList(null,null, 0,20);
+			System.out.println("lewat kok");
+			UserManager.toDocList(lsUsr);
+			for (Iterator iterator = lsUsr.iterator(); iterator.hasNext();) {
+				Document user = (Document) iterator.next();
+				System.out.println(Utility.debug(user));
+			}
+			//System.out.println(Utility.debug(lsUsr));
 			//MongoManager.getCollection("Testing").insertOne(new Document("Nama","Martin").append("Role","Manager"));
 			//System.out.println(Utility.debug(MongoManager.find("Testing", new Document()).first()));
 		} catch (Exception e) {
+			System.out.println("Exception nih");
 			e.printStackTrace();
 		}
 	}

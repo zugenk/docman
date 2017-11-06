@@ -102,7 +102,7 @@ public class BookmarkManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -110,7 +110,7 @@ public class BookmarkManager extends BaseUtil{
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
 		String filterParam=" AND bookmark.owner='"+passport.getString("userId")+"' ";
 		String orderParam=" bookmark.category ASC, bookmark.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}

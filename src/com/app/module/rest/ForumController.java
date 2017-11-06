@@ -39,10 +39,9 @@ public class ForumController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",ForumManager.getTree(null));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getTree(null));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -57,10 +56,9 @@ public class ForumController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",ForumManager.getTree(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getTree(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -76,10 +74,9 @@ public class ForumController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",ForumManager.getDownline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getDownline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
@@ -94,10 +91,9 @@ public class ForumController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			if (iPass!=null) {
-				response.put("result",ForumManager.getUpline(startId));
-				return new ResponseEntity<Map>(response,HttpStatus.OK);
-			}
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getUpline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}

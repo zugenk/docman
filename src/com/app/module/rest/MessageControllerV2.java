@@ -36,6 +36,7 @@ public class MessageControllerV2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",MessageManager2.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -57,6 +58,7 @@ public class MessageControllerV2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",MessageManager2.update(iPass, dataMap, messageId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -76,7 +78,7 @@ public class MessageControllerV2 {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 //			response.put("result",MessageManager2.delete(iPass, messageId));
 			MessageManager2.delete(iPass, messageId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
@@ -98,6 +100,7 @@ public class MessageControllerV2 {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",MessageManager2.read(iPass, messageId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -118,6 +121,7 @@ public class MessageControllerV2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",MessageManager2.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			

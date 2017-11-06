@@ -143,7 +143,7 @@ public class OrganizationManager extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=OrganizationService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=OrganizationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}

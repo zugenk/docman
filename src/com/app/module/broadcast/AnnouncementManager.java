@@ -108,7 +108,7 @@ public class AnnouncementManager extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=AnnouncementService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=AnnouncementService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}

@@ -104,7 +104,7 @@ public class NotificationManager2 extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=NotificationService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=NotificationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
@@ -170,7 +170,7 @@ public class NotificationManager2 extends BaseUtil {
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
 		String filterParam=" AND notification.subscriber='"+passport.getString("userId")+"' ";
 		String orderParam=" notification.id ASC, notification.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}

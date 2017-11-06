@@ -40,7 +40,7 @@ public class LookupController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -61,7 +61,7 @@ public class LookupController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.update(iPass, dataMap, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -81,7 +81,7 @@ public class LookupController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 //			response.put("result",LookupManager.delete(iPass, userId));
 			LookupManager.delete(iPass, userId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
@@ -102,7 +102,7 @@ public class LookupController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.read(iPass, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -123,7 +123,7 @@ public class LookupController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -143,6 +143,7 @@ public class LookupController {
 		try {
 			log.debug(">>>>>List Lookup by type =["+type+"]");
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
 			List result=LookupService.getInstance().findbyType(type);
 			//System.out.println(Utility.debug(result));
 			toDocList(result);
@@ -166,6 +167,7 @@ public class LookupController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",toDocument(LookupService.getInstance().getByTypeandCode(type, code)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			

@@ -38,6 +38,7 @@ public class NotificationController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",NotificationManager2.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -59,6 +60,7 @@ public class NotificationController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",NotificationManager2.update(iPass, dataMap, notificationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -78,6 +80,7 @@ public class NotificationController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
+			response.put("ipassport",iPass.get("ipassport"));
 			
 //			response.put("result",NotificationManager2.delete(iPass, notificationId));
 			NotificationManager2.delete(iPass, notificationId);
@@ -100,6 +103,7 @@ public class NotificationController {
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",NotificationManager2.read(iPass, notificationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -120,6 +124,7 @@ public class NotificationController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
+			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",NotificationManager2.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -140,15 +145,9 @@ public class NotificationController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			int startId=0;
-			if(start!=null && start!=""){
-				try {
-					startId=Integer.parseInt(start);
-				} catch (Exception e) {
-					startId=0;
-				}
-			}
-			response.put("result",NotificationManager2.listByOwner(iPass, startId));
+			
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",NotificationManager2.listByOwner(iPass, BaseUtil.toInt(start)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
