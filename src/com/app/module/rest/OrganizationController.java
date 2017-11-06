@@ -29,7 +29,7 @@ import com.app.module.basic.UserManager;
 public class OrganizationController {
 	private Logger log = Logger.getLogger(OrganizationController.class);
 
-	@RequestMapping(value = "/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
@@ -45,7 +45,7 @@ public class OrganizationController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "{ID}/tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -61,8 +61,8 @@ public class OrganizationController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-	
-	@RequestMapping(value = "/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
+		
+	@RequestMapping(value = "{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -80,7 +80,7 @@ public class OrganizationController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "{ID}/upline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getUpline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -96,9 +96,9 @@ public class OrganizationController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
+	/* */
 	
-	
-	@RequestMapping(value = "/create",produces = "application/json", method = RequestMethod.POST)
+	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> create(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -119,7 +119,7 @@ public class OrganizationController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "/{ID}/update",produces = "application/json", method = RequestMethod.POST)
+	@RequestMapping(value = "{ID}/update",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> update(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -183,7 +183,7 @@ public class OrganizationController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "/list",produces = "application/json", method = RequestMethod.POST)
+	@RequestMapping(value = "list",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> list(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,

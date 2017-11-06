@@ -59,7 +59,7 @@ public class OrganizationManager extends BaseUtil {
 		  " WHERE organization.id='"+startId+"' "+
 		  " UNION ALL"+
 		  " SELECT x.id, x.code,x.name, x.parent, (q.level+1) as level FROM organization  x"+
-		  " JOIN q ON q.parent_organization = x.id) "+ 
+		  " JOIN q ON q.parent = x.id) "+ 
 		  " SELECT * FROM q order by level desc";
 		List list= DBQueryManager.getList("OrganizationUpline", sqlQuery, null);// new String[]{startId});
 		//log.debug(Utility.debug(list));
@@ -191,6 +191,8 @@ public class OrganizationManager extends BaseUtil {
 		doc.append("filterCode", obj.getFilterCode());
 		doc.append("id", obj.getId());
 		doc.append("mailingList", obj.getMailingList());
+		doc.append("mnemonic", obj.getMnemonic());
+		doc.append("name", obj.getName());
 		
 		if(obj.getParent()!=null) {
 			doc.append("parent", obj.getParent().getName());
@@ -199,6 +201,10 @@ public class OrganizationManager extends BaseUtil {
 		if (obj.getOrganizationType()!=null) {
 			doc.append("organizationType", obj.getOrganizationType().getName());
 			doc.append("organizationTypeId", obj.getOrganizationType().getId());
+		}
+		if (obj.getStatus()!=null) {
+			doc.append("status", obj.getStatus().getName());
+			doc.append("statusId", obj.getStatus().getId());
 		}
 		return doc;
 	}
