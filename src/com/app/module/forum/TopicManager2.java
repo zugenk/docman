@@ -110,6 +110,8 @@ public class TopicManager2 extends BaseUtil{
 				}
 			}
 		}
+		System.out.println("filterParam=["+(filterParam!=null?filterParam.toString():null)+"]");
+		System.out.println("orderParam"+ orderParam);
 		PartialList result=TopicService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;

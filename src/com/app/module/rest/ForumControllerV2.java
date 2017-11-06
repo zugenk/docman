@@ -17,12 +17,81 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
+import com.app.module.forum.ForumManager;
 import com.app.module.forum.ForumManager2;
 
 @Controller
 @RequestMapping("/v2/forum")
 public class ForumControllerV2 {
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ForumControllerV2.class);
+	
+	@RequestMapping(value = "tree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> getTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getTree(null));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "{ID}/tree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> getTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getTree(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "{ID}/downline",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> getDownline(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId
+			) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getDownline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "{ID}/upline",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> getUpline(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getUpline(startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
 	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> create(

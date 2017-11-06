@@ -34,7 +34,7 @@ public class MessageService extends com.app.docmgr.service.base.MessageServiceBa
 		return instance;
 	}
 	
-
+/*
 	@Override
 	public Message get(Long id) throws Exception{
 		Message message = null;
@@ -65,11 +65,11 @@ public class MessageService extends com.app.docmgr.service.base.MessageServiceBa
 		return message;
 	}
 
-	/**
+	/ **
 	 * @author Martin
 	 * @filterParam  query;
 	 * getBy() returns single object matching the filter 
-	 */
+	 * /
 	@Override
 	public Message getBy(String filterParam) throws Exception{
 		Message message = null;
@@ -344,6 +344,6 @@ public class MessageService extends com.app.docmgr.service.base.MessageServiceBa
 		
 		return result;
 	}
-
+*/
 	
 }
