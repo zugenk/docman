@@ -121,7 +121,7 @@ public class BookmarkController {
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",BookmarkManager.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", BookmarkManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -142,7 +142,7 @@ public class BookmarkController {
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",BookmarkManager.listByOwner(iPass,BaseUtil.toInt(start)));
+			BaseUtil.putList(response,"result", BookmarkManager.listByOwner(iPass,BaseUtil.toInt(start)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {

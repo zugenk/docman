@@ -127,7 +127,7 @@ public class StatusController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", UserManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -148,7 +148,7 @@ public class StatusController {
 			response.put("ipassport",iPass.get("ipassport"));
 			List result=StatusService.getInstance().findbyType(type);
 			toDocList(result);
-			response.put("result",result);
+			BaseUtil.putList(response,"result", result);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -158,7 +158,7 @@ public class StatusController {
 	}
 	
 	@RequestMapping(value = "/{type}/{code}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Map> list(
+	public @ResponseBody ResponseEntity<Map> getByTypeandCode(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="type") String type,

@@ -195,7 +195,7 @@ public class OrganizationController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",OrganizationManager.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", OrganizationManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {

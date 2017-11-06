@@ -127,7 +127,7 @@ public class UserController {
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", UserManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());

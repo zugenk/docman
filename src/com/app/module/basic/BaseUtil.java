@@ -7,8 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.Document;
 import org.w3c.tools.codec.Base64Decoder;
 
+import com.app.shared.PartialList;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 
 public class BaseUtil {
@@ -55,6 +57,17 @@ public class BaseUtil {
 //		throw new Exception("Expecting Integer value instead of "+obj.getClass().getName());
 		return 0;
 	}
+	
+	public static void putList(Map response,String key,Object result) {
+		if (result!=null && result instanceof PartialList) {
+			PartialList plist=(PartialList) result;
+			response.put("pageCtrl-start",plist.getStart()); //(plist.getStart()<=0?1:plist.getStart()));
+			response.put("pageCtrl-count",plist.getCount());
+			response.put("pageCtrl-total",plist.getTotal());
+		}
+		response.put((key==null?"result":key), result);
+	}
+	
 	
 	public static List constructTreeList(List list){
 		List treeList=new LinkedList();

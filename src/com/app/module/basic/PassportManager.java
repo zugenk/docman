@@ -173,6 +173,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 				Document user = (Document) iterator.next();
 				System.out.println(Utility.debug(user));
 			}
+			System.out.println("showing "+lsUsr.getStart()+" to "+(lsUsr.getStart()+lsUsr.getCount())+" of "+lsUsr.getTotal());
 			//System.out.println(Utility.debug(lsUsr));
 			//MongoManager.getCollection("Testing").insertOne(new Document("Nama","Martin").append("Role","Manager"));
 			//System.out.println(Utility.debug(MongoManager.find("Testing", new Document()).first()));

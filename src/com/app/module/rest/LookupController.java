@@ -124,7 +124,7 @@ public class LookupController {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",LookupManager.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", LookupManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -147,7 +147,7 @@ public class LookupController {
 			List result=LookupService.getInstance().findbyType(type);
 			//System.out.println(Utility.debug(result));
 			toDocList(result);
-			response.put("result",result);
+			BaseUtil.putList(response,"result", result);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -159,7 +159,7 @@ public class LookupController {
 	}
 	
 	@RequestMapping(value = "/{type}/{code}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Map> list(
+	public @ResponseBody ResponseEntity<Map> getByTypeandCode(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="type") String type,
