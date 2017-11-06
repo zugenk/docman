@@ -55,7 +55,6 @@ public class LoginManager {
 	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
 	 	iPass.put("loginHistId",lhId);
 	 	//iPass.put("loginUser",loginUser);
-	 	PassportManager.savePassport(iPass);
 	 	return iPass;
 	}
 	
@@ -139,7 +138,7 @@ public class LoginManager {
 			}
 		} 
 		
-		if (basicAuth!=null && basicAuth.length()>0) {
+		if (iPass==null && basicAuth!=null && basicAuth.length()>0) {
 			try {
 				iPass=LoginManager.loginWithBasicAuth(basicAuth);
 			} catch (Exception e) {

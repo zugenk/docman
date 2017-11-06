@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
@@ -12,6 +13,8 @@ import com.app.docmgr.model.LoginHistory;
 import com.app.docmgr.model.User;
 import com.app.docmgr.service.UserService;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.IndexOptions;
 import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
@@ -37,7 +40,6 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		}
 		if (iPass==null) {
 			iPass=new Document();// HashMap<String, Object>();
-			iPass.put("ipassport", genPassId());
 			iPass.put("userId", user.getId());
 			iPass.put("loginName", user.getLoginName());
 			iPass.put("fullName", user.getFullName());
@@ -49,7 +51,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 				iPass.put("securityLevelId", user.getSecurityLevel().getId());
 			}
 			iPass.put("lastAccess", System.currentTimeMillis());
-			log.debug("PASSPORT ISSUED ="+iPass.getString("ipassport"));
+			createNewPassport(iPass);
 		}
 		iPass.put("favTopicIds", UserService.getFavTopicIds(user));
 		iPass.put("roleNames", UserService.getRoleNames(user)); 
@@ -59,17 +61,54 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		return iPass;
 	}
 	
+	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	private static final int PASSPORT_LENGTH=32;
+	
 	private static String genPassId() {
 		// TODO Auto-generated method stub
-		return "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+		//return "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+		/*
+		int count=PASSPORT_LENGTH;
+		StringBuilder builder = new StringBuilder();
+		while (count-- != 0) {
+			int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+			builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+		}
+		return builder.toString();
+		*/
+		return RandomStringUtils.randomAlphanumeric(PASSPORT_LENGTH);
 
+	}
+	
+	public static void createNewPassport(Document iPass) {
+		init();
+		String  ipassport=null;
+		Document result=null; 
+		Document searchQ=new Document("ipassport", ipassport).append("lastAccess", new Document("$gte", (System.currentTimeMillis()-TIMEOUT_PERIOD)));
+		do {
+			try {
+				ipassport=genPassId();
+				searchQ.put("ipassport", ipassport);
+				result= MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
+			} catch (Exception e) {
+				log.error("Error creating/clearing New Passport",e);
+			}
+		}while(result!=null && ipassport!=null);
+		//its safe to clear the passport now..
+		MongoManager.getCollection(IPASSPORT_COLLECTION).deleteMany(new Document("ipassport", ipassport));	
+		iPass.put("ipassport", ipassport);
+		log.debug("PASSPORT ISSUED ="+iPass.getString("ipassport"));
 	}
 	
 	public static void savePassport(Document iPass) {
 		init();
-//		MongoManager.insertOne(IPASSPORT_COLLECTION, iPass);
+//		System.out.println("Saving Passport ");
 		Document query=new Document("userId",iPass.get("userId"));
-		MongoManager.getCollection(IPASSPORT_COLLECTION).findOneAndReplace(query, iPass);
+		FindOneAndReplaceOptions opt=new FindOneAndReplaceOptions();
+		opt.upsert(true);
+		Document result=MongoManager.getCollection(IPASSPORT_COLLECTION).findOneAndReplace(query, iPass,opt); 
+//		if(result==null) System.out.println(" Result is null");
+//		else System.out.println("Not Null:"+Utility.debug(result));
 		//MongoManager.findOneAndUpdate(IPASSPORT_COLLECTION, query, iPass, true);
 		log.debug("Passport Saved..");
 	}
@@ -84,12 +123,12 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 	
 	public static Document checkLastPassport(Long userId) throws Exception{
 		init();
-		Document searchQ=new Document("userId", userId); //.append("lastAccess", new Document("$gte", (System.currentTimeMillis()-TIMEOUT_PERIOD)));
+		Document searchQ=new Document("userId", userId).append("lastAccess", new Document("$gte", (System.currentTimeMillis()-TIMEOUT_PERIOD)));
 //		return MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
 		Document iPass= MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
 		if (iPass!=null) {
 			iPass.put("lastAccess", System.currentTimeMillis());
-			savePassport(iPass);
+			//savePassport(iPass);
 			log.debug("PASSPORT CHECKED OK ="+iPass.getString("ipassport"));
 		}
 		return iPass;
@@ -97,13 +136,12 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 	
 	public static Document checkPassport(String ipassport) throws Exception{
 		init();
-		
-		Document searchQ=new Document("ipassport", ipassport);//.append("lastAccess", new Document("$gte", (System.currentTimeMillis()-TIMEOUT_PERIOD)));
+		Document searchQ=new Document("ipassport", ipassport).append("lastAccess", new Document("$gte", (System.currentTimeMillis()-TIMEOUT_PERIOD)));
 		Document iPass= MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
 		if (iPass!=null) {
 			iPass.put("lastAccess", System.currentTimeMillis());
-			savePassport(iPass);
 			log.debug("PASSPORT CHECKED OK ="+iPass.getString("ipassport"));
+			savePassport(iPass);
 		} else  log.debug("PASSPORT INVALID "+ipassport);
 		return iPass;
 	}
