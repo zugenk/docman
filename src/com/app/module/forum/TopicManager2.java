@@ -156,6 +156,23 @@ public class TopicManager2 extends BaseUtil{
 
 	}
 	*/
+	public static PartialList getTopicList(int start) throws Exception{
+		PartialList resultList=null;
+		String filterParam=null; 
+		String orderParam=" ORDER BY topic.id ASC ";
+		resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+		toDocList(resultList);
+		return resultList;
+	}
+	
+	public static PartialList getTopicListByForum(Forum forum,int start) throws Exception{
+		PartialList resultList=null;
+		String filterParam=" AND topic.forum="+forum.getId(); 
+		String orderParam=" ORDER BY topic.id ASC ";
+		resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+		toDocList(resultList);
+		return resultList;
+	}
 	
 	public static Document toDocument(Topic obj) {
 		Document doc=new Document();

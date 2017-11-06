@@ -89,7 +89,7 @@ public class UserController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "/{ID}",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "/{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -97,7 +97,7 @@ public class UserController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug("Read User id["+userId+"]  by "+iPass.getString("loginName") );
+			log.debug("Detail User id["+userId+"]  by "+iPass.getString("loginName") );
 
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
@@ -119,7 +119,7 @@ public class UserController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug("Read User list by "+iPass.getString("loginName") );
+			log.debug("List User by "+iPass.getString("loginName") );
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			

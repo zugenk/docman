@@ -196,7 +196,7 @@
 	<target name="compile" depends="init,compile.check, hbmcopy" description="Generate files" unless="compile.no">
 		<!-- copy todir="${src}" file="${classes}/MessageResources.properties" overwrite="yes"/>
 		<copy todir="${src}/com/ams/apps/shared" file="PartialList.java" overwrite="yes"/ -->
-		<javac srcdir="${src}" destdir="${bin}" fork="true" memoryinitialsize="256m" memorymaximumsize="512m" deprecation="false">
+		<javac srcdir="${src}" destdir="${bin}" fork="true" memoryinitialsize="256m" memorymaximumsize="512m" deprecation="false" includeantruntime='false'>
 			<classpath>
 				<path refid="compile.class.path"/>
 			</classpath>    	
@@ -434,9 +434,10 @@
 		  		<exclude name="WEB-INF/classes/"/>
 		  		<exclude name="WEB-INF/db/"/>
 		  		<exclude name="WEB-INF/jsp-ext/"/>
+		  		<exclude name="WEB-INF/lib/${ant.project.name}.jar"/>
 			</fileset>
+			
 		</war>
-		<delete file="${lib}/${ant.project.name}.jar"></delete>
 	</target>
 	
 	<target name="release.jar" depends="compile" description="Packaging Project Jar" >

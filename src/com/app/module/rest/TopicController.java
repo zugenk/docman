@@ -20,9 +20,9 @@ import com.app.module.basic.LoginManager;
 import com.app.module.forum.TopicManager2;
 
 @Controller
-@RequestMapping("/v1/topic2")
-public class TopicController2 {
-	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TopicController2.class);
+@RequestMapping("/v1/topic")
+public class TopicController {
+	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TopicController.class);
 	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> create(

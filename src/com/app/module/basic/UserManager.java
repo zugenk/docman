@@ -49,7 +49,7 @@ public class UserManager extends BaseUtil{
 	}
 	
 	public static Document update(Document passport,Map data,String objId) throws Exception{
-		log.debug("Create User :/n/r"+Utility.debug(data)+" by "+passport.getString("loginName"));
+		log.debug("Update User :/n/r"+Utility.debug(data)+" by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		long uid=Long.parseLong(objId);
 		User obj= UserService.getInstance().get(uid);
@@ -112,6 +112,8 @@ public class UserManager extends BaseUtil{
 				}
 			}
 		}
+		System.out.println("filterParam=["+filterParam+"]");
+		System.out.println("orderParam=["+orderParam+"]");
 		PartialList result=UserService.getInstance().getPartialList(filterParam.toString(), orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;

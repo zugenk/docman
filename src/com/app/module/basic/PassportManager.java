@@ -21,8 +21,8 @@ import com.simas.webservice.Utility;
 
 public class PassportManager {
 static String IPASSPORT_COLLECTION="IPassportData";
-//static String DB_CFG="DEFAULT|mongo-docman|27017|DOCMAN";
-static String DB_CFG="DEFAULT|localhost|27017|DOCMAN";
+static String DB_CFG="DEFAULT|mongo-docman|27017|DOCMAN";
+//static String DB_CFG="DEFAULT|localhost|27017|DOCMAN";
 static boolean inited=false;
 
 static int TIMEOUT_PERIOD=600000; //10 Mins
@@ -149,12 +149,13 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 	public static void main(String[] args) {
 		try {
 			MongoManager.init(DB_CFG);
-//			User user=UserService.getInstance().get(new Long(1));
-//			issuePassport(user);
+			User user=UserService.getInstance().get(new Long(1));
+			Document iPass=issuePassport(user);
+			String ipassport= iPass.getString("ipassport");
 			FindIterable<Document> result=MongoManager.getCollection(IPASSPORT_COLLECTION).find();
 			System.out.println(Utility.debug(result.first()));
 			System.out.println("==========================================================================================");
-			System.out.println(Utility.debug(checkPassport("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef")));
+			System.out.println(Utility.debug(checkPassport(ipassport)));
 			
 			System.out.println("==========================================================================================");
 			

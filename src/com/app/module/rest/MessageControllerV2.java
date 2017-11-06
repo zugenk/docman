@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
-import com.app.module.forum.ForumManager2;
+import com.app.module.forum.MessageManager2;
+//import com.app.module.forum.ForumManager;
 
 @Controller
-@RequestMapping("/v1/forum2")
-public class ForumController2 {
-	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ForumController2.class);
+@RequestMapping("/v2/message")
+public class MessageControllerV2 {
+	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(MessageControllerV2.class);
 	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> create(
@@ -35,7 +36,7 @@ public class ForumController2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",ForumManager2.create(iPass, dataMap));
+			response.put("result",MessageManager2.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -49,14 +50,14 @@ public class ForumController2 {
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String forumId) {
+			@PathVariable(value="ID") String messageId) {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",ForumManager2.update(iPass, dataMap, forumId));
+			response.put("result",MessageManager2.update(iPass, dataMap, messageId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -69,15 +70,15 @@ public class ForumController2 {
 	public @ResponseBody ResponseEntity<Map> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String forumId) {
+			@PathVariable(value="ID") String messageId) {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-//			response.put("result",ForumManager2.delete(iPass, forumId));
-			ForumManager2.delete(iPass, forumId);
+//			response.put("result",MessageManager2.delete(iPass, messageId));
+			MessageManager2.delete(iPass, messageId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -90,14 +91,14 @@ public class ForumController2 {
 	public @ResponseBody ResponseEntity<Map> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String forumId) {
+			@PathVariable(value="ID") String messageId) {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",ForumManager2.read(iPass, forumId));
+			response.put("result",MessageManager2.read(iPass, messageId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -117,7 +118,7 @@ public class ForumController2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",ForumManager2.list(iPass, dataMap));
+			response.put("result",MessageManager2.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {

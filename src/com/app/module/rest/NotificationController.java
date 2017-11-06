@@ -13,18 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.BaseUtil;
+import com.app.module.basic.BookmarkManager;
 import com.app.module.basic.LoginManager;
-import com.app.module.forum.MessageManager2;
-//import com.app.module.forum.ForumManager;
+import com.app.module.forum.NotificationManager2;
 
 @Controller
-@RequestMapping("/v1/message2")
-public class MessageController2 {
-	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(MessageController2.class);
-	
+@RequestMapping("/v1/notification")
+public class NotificationController {
+	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(NotificationController.class);
+
+/*
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> create(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
@@ -36,7 +38,7 @@ public class MessageController2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",MessageManager2.create(iPass, dataMap));
+			response.put("result",NotificationManager2.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -50,14 +52,14 @@ public class MessageController2 {
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String messageId) {
+			@PathVariable(value="ID") String notificationId) {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",MessageManager2.update(iPass, dataMap, messageId));
+			response.put("result",NotificationManager2.update(iPass, dataMap, notificationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -70,15 +72,15 @@ public class MessageController2 {
 	public @ResponseBody ResponseEntity<Map> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String messageId) {
+			@PathVariable(value="ID") String notificationId) {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-//			response.put("result",MessageManager2.delete(iPass, messageId));
-			MessageManager2.delete(iPass, messageId);
+//			response.put("result",NotificationManager2.delete(iPass, notificationId));
+			NotificationManager2.delete(iPass, notificationId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -91,14 +93,14 @@ public class MessageController2 {
 	public @ResponseBody ResponseEntity<Map> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String messageId) {
+			@PathVariable(value="ID") String notificationId) {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			List<String> roles= (List)iPass.get("roleNames");
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",MessageManager2.read(iPass, messageId));
+			response.put("result",NotificationManager2.read(iPass, notificationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -118,11 +120,40 @@ public class MessageController2 {
 			List<String> roles= (List)iPass.get("roleNames");
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			response.put("result",MessageManager2.list(iPass, dataMap));
+			response.put("result",NotificationManager2.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+*/
+	
+	@RequestMapping(value = "myList",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> list(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestParam(value = "start", required = false) String start) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+//			List<String> roles= (List)iPass.get("roleNames");
+//			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
+			int startId=0;
+			if(start!=null && start!=""){
+				try {
+					startId=Integer.parseInt(start);
+				} catch (Exception e) {
+					startId=0;
+				}
+			}
+			response.put("result",NotificationManager2.listByOwner(iPass, startId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			log.error("Error geting Bookmark-ListByOwner",e);
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
