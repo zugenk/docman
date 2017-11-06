@@ -294,6 +294,7 @@ public class ForumServiceBase {
 			query.setFirstResult(start);
 			query.setMaxResults(count);			
 			result.addAll(query.list());	
+			System.out.println("Sampai sini msh oke dong ");
 			java.util.Iterator itr = result.iterator();
 			while(itr.hasNext()){
 				com.app.docmgr.model.Forum forum = (com.app.docmgr.model.Forum)itr.next();

@@ -12,8 +12,11 @@ import org.bson.Document;
 
 import com.app.docmgr.model.LoginHistory;
 import com.app.docmgr.model.User;
+import com.app.docmgr.service.ForumService;
 import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.base.UserServiceBase;
+import com.app.module.forum.ForumManager;
+import com.app.module.forum.ForumManager2;
 import com.app.shared.PartialList;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
@@ -166,14 +169,14 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			System.out.println("==========================================================================================");
 			*/
 			
-			PartialList lsUsr=UserService.getInstance().getPartialList(null,null, 0,20);
+			PartialList result=ForumService.getInstance().getPartialList(null,null, 0,20);
 			System.out.println("lewat kok");
-			UserManager.toDocList(lsUsr);
-			for (Iterator iterator = lsUsr.iterator(); iterator.hasNext();) {
+			ForumManager2.toDocList(result);
+			for (Iterator iterator = result.iterator(); iterator.hasNext();) {
 				Document user = (Document) iterator.next();
 				System.out.println(Utility.debug(user));
 			}
-			System.out.println("showing "+lsUsr.getStart()+" to "+(lsUsr.getStart()+lsUsr.getCount())+" of "+lsUsr.getTotal());
+			System.out.println("showing "+result.getStart()+" to "+(result.getStart()+result.getCount())+" of "+result.getTotal());
 			//System.out.println(Utility.debug(lsUsr));
 			//MongoManager.getCollection("Testing").insertOne(new Document("Nama","Martin").append("Role","Manager"));
 			//System.out.println(Utility.debug(MongoManager.find("Testing", new Document()).first()));

@@ -34,6 +34,7 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		return instance;
 	}
 	
+	/*
 	@Override
 	public Forum get(Long id) throws Exception{
 		Forum forum = null;
@@ -64,11 +65,11 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		return forum;
 	}
 
-	/**
+	/ **
 	 * @author Martin
 	 * @filterParam  query;
 	 * getBy() returns single object matching the filter 
-	 */
+	 * /
 	@Override
 	public Forum getBy(String filterParam) throws Exception{
 		Forum forum = null;
@@ -344,4 +345,5 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		
 		return result;
 	}
+	*/
 }
