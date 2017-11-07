@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
-import com.app.module.forum.TopicManager2;
+import com.app.module.forum.TopicManager;
 
 @Controller
 @RequestMapping("/v1/topic")
@@ -36,7 +36,7 @@ public class TopicController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager2.create(iPass, dataMap));
+			response.put("result",TopicManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -58,7 +58,7 @@ public class TopicController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager2.update(iPass, dataMap, topicId));
+			response.put("result",TopicManager.update(iPass, dataMap, topicId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -79,7 +79,7 @@ public class TopicController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
 //			response.put("result",TopicManager2.delete(iPass, topicId));
-			TopicManager2.delete(iPass, topicId);
+			TopicManager.delete(iPass, topicId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -100,7 +100,7 @@ public class TopicController {
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager2.read(iPass, topicId));
+			response.put("result",TopicManager.read(iPass, topicId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -121,7 +121,7 @@ public class TopicController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", TopicManager2.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", TopicManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {

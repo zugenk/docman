@@ -21,6 +21,7 @@ import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.StatusService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
+import com.app.module.basic.LookupManager;
 import com.simas.webservice.Utility;
 
 
@@ -91,7 +92,7 @@ public class LookupController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-	
+	*/
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
@@ -132,7 +133,7 @@ public class LookupController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-	*/
+	
 	
 	@RequestMapping(value = "/list/{type}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> listByType(
@@ -146,7 +147,7 @@ public class LookupController {
 			response.put("ipassport",iPass.get("ipassport"));
 			List result=LookupService.getInstance().findbyType(type);
 			//System.out.println(Utility.debug(result));
-			toDocList(result);
+			LookupManager.toDocList(result);
 			BaseUtil.putList(response,"result", result);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -168,7 +169,7 @@ public class LookupController {
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",toDocument(LookupService.getInstance().getByTypeandCode(type, code)));
+			response.put("result",LookupManager.toDocument(LookupService.getInstance().getByTypeandCode(type, code)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -177,26 +178,6 @@ public class LookupController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 			
-	public static Document toDocument(Lookup obj) {
-		Document doc=new Document();
-		doc.append("code", obj.getCode());
-		doc.append("description", obj.getDescription());
-		doc.append("id", obj.getId());
-		doc.append("name", obj.getName());
-		doc.append("status", obj.getStatus().getName());
-		doc.append("statusId", obj.getStatus().getId());
-		doc.append("type", obj.getType());
-		return doc;
-	}
-	
-	public static void toDocList(List list){
-		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-		if(list.isEmpty()) return;
-		for (int i = 0; i < list.size(); i++) {
-			Lookup obj = (Lookup) list.get(i);
-			list.set(i, toDocument(obj));
-		}
-	}
-		
+
 	
 }

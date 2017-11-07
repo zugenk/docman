@@ -24,7 +24,7 @@ import com.app.docmgr.model.Lookup;
 import com.app.docmgr.service.ForumService;
 import com.app.docmgr.service.LookupService;
 import com.app.module.basic.LoginManager;
-import com.app.module.forum.ForumManager;
+import com.app.module.forum.old.ForumManagerOld;
 
 @Controller
 @RequestMapping("/v1")

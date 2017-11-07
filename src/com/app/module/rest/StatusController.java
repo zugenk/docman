@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.app.docmgr.model.Status;
-import com.app.docmgr.model.User;
+
 import com.app.docmgr.service.StatusService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
-import com.app.module.basic.UserManager;
+import com.app.module.basic.StatusManager;
 
 @Controller
 @RequestMapping("/v1/status")
@@ -40,7 +39,7 @@ public class StatusController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.create(iPass, dataMap));
+			response.put("result",StatusManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -62,7 +61,7 @@ public class StatusController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.update(iPass, dataMap, userId));
+			response.put("result",StatusManager.update(iPass, dataMap, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -83,8 +82,8 @@ public class StatusController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
 			
-//			response.put("result",UserManager.delete(iPass, userId));
-			UserManager.delete(iPass, userId);
+//			response.put("result",StatusManager.delete(iPass, userId));
+			StatusManager.delete(iPass, userId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -92,6 +91,7 @@ public class StatusController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
+	*/
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> read(
@@ -105,7 +105,7 @@ public class StatusController {
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.read(iPass, userId));
+			response.put("result",StatusManager.read(iPass, userId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -127,7 +127,7 @@ public class StatusController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", UserManager.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", StatusManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -135,7 +135,7 @@ public class StatusController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-	*/
+	
 	
 	@RequestMapping(value = "/list/{type}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> listByType(
@@ -147,7 +147,7 @@ public class StatusController {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			List result=StatusService.getInstance().findbyType(type);
-			toDocList(result);
+			StatusManager.toDocList(result);
 			BaseUtil.putList(response,"result", result);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
@@ -167,7 +167,7 @@ public class StatusController {
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",toDocument(StatusService.getInstance().getByTypeandCode(type, code)));
+			response.put("result",StatusManager.toDocument(StatusService.getInstance().getByTypeandCode(type, code)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -175,26 +175,4 @@ public class StatusController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-			
-	public static Document toDocument(Status obj) {
-		Document doc=new Document();
-		doc.append("code", obj.getCode());
-		doc.append("description", obj.getDescription());
-		doc.append("id", obj.getId());
-		doc.append("name", obj.getName());
-		doc.append("state", obj.getState());
-		doc.append("type", obj.getType());
-		return doc;
-	}
-	
-	public static void toDocList(List list){
-		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-		if(list.isEmpty()) return;
-		for (int i = 0; i < list.size(); i++) {
-			Status obj = (Status) list.get(i);
-			list.set(i, toDocument(obj));
-		}
-	}
-		
-	
 }

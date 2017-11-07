@@ -1,11 +1,8 @@
 package com.app.module.rest;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
@@ -16,23 +13,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.app.docmgr.model.Forum;
-import com.app.docmgr.model.Lookup;
-import com.app.docmgr.service.ForumService;
-import com.app.docmgr.service.LookupService;
+import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.forum.ForumManager;
-import com.simas.webservice.Utility;
 
 @Controller
-@RequestMapping("/v1")
+@RequestMapping("/v1/forum")
 public class ForumController {
-	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ForumController.class.getName());
+	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ForumController.class);
 	
-	@RequestMapping(value = "forum/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
@@ -48,7 +40,7 @@ public class ForumController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "forum/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "{ID}/tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getTree(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -65,7 +57,7 @@ public class ForumController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "forum/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -83,7 +75,7 @@ public class ForumController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "forum/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
+	@RequestMapping(value = "{ID}/upline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> getUpline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
@@ -100,224 +92,105 @@ public class ForumController {
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-
-	@RequestMapping(value = "action/add-forum",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Map> addForum(
+	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Map> create(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@RequestBody final Map forumMap) {
-		Map resp=new HashMap();
-		String sessionId = "";
+			@RequestBody final Map dataMap) {
+		Map response=new HashMap();
 		try {
-			ResponseEntity<Map> responseMapFilter = LoginManager.preFilter(forumMap,ipassport,basicAuth,"add-forum");
-			if(responseMapFilter.getStatusCode() != HttpStatus.OK) return responseMapFilter;
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			List<String> roles= (List)iPass.get("roleNames");
+			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			Map preFilterMap = (Map) responseMapFilter.getBody();
-			sessionId = (String)preFilterMap.get("ipassport");
-			log.debug("["+sessionId+"] - ipassport: " +ipassport);
-	
-			String name = (String)forumMap.get("name");
-			log.debug("["+sessionId+"] - name: " +name);
-			
-			Integer forumTypeId = (Integer)forumMap.get("forumTypeId");
-			log.debug("["+sessionId+"] - forumTypeId: " +forumTypeId);
-			
-			if ("".equals(name) || name == null){
-				resp.put("responseCode", "01");
-				resp.put("errorMessage", "error.forumName.failed");
-				return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-			}
-			
-			Lookup forumTypeObj = null;
-			if (forumTypeId == null){
-				resp.put("responseCode", "01");
-				resp.put("errorMessage", "error.forumTypeId.failed");
-				return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-			}else{
-	//			forumTypeObj = LookupService.getInstance().getByTypeandCode("forum", forumType);
-				forumTypeObj = LookupService.getInstance().get(Long.valueOf(forumTypeId.toString()));
-				log.debug("["+sessionId+"] - forumTypeObj: " +forumTypeObj);
-				if (forumTypeObj == null){
-					resp.put("responseCode", "01");
-					resp.put("errorMessage", "error.forumType.notFound");
-					return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-				}
-			}
-			
-			Boolean isUniqueCode = false;
-			String code = "";
-			Forum forumObj = null;
-			while (!isUniqueCode) {
-				code = ForumManager.generateReferralCode("F", name);
-				forumObj = ForumService.getInstance().getBy(" and forum.code = '"+code+"' ");
-				if (forumObj == null) isUniqueCode = true;
-			}
-			log.debug("["+sessionId+"] - isUniqueCode : "+isUniqueCode);
-			log.debug("["+sessionId+"] - code: " +code);
-			
-			String createdBy = (String)preFilterMap.get("fullName");
-			log.debug("["+sessionId+"] - createdBy: " +createdBy);
-			
-			/*String icon = (String)forumMap.get("icon");
-			log.debug("["+sessionId+"] - icon: " +icon);*/
-			
-			/*if ("".equals(icon) || icon == null){
-				resp.put("responseCode", "01");
-				resp.put("errorMessage", "error.forumIcon.failed");
-				return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-			}*/
-			
-			
-			if (!ForumManager.addForum(code, "ico.jpg", name, forumTypeObj, null, null, createdBy)){
-				resp.put("responseCode", "01");
-				resp.put("errorMessage", "error.addforum.failed");
-				return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-			}
-	
-			resp.put("responseCode", "00");
-			resp.put("responseMessage", "add-forum Success");
-			return new ResponseEntity<Map>(resp,HttpStatus.OK);			
-		} catch (Exception e) {	
-			e.printStackTrace();
-			log.debug("["+sessionId+"] - error : " +e+" : "+e.getMessage());
-			resp.put("errorMessage", e.getMessage());
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.create(iPass, dataMap));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "action/get-forum/{ID}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Map> getForum(
+	@RequestMapping(value = "{ID}/update",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Map> update(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestBody final Map dataMap,
+			@PathVariable(value="ID") String forumId) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			List<String> roles= (List)iPass.get("roleNames");
+			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
+			
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.update(iPass, dataMap, forumId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "{ID}/delete",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Map> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String forumId) {
-		Map resp=new HashMap();
-		String sessionId = "";
+		Map response=new HashMap();
 		try {
-			ResponseEntity<Map> responseMapFilter = LoginManager.preFilter(new HashMap(),ipassport,basicAuth,"get-forum");
-			if(responseMapFilter.getStatusCode() != HttpStatus.OK) return responseMapFilter;
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			List<String> roles= (List)iPass.get("roleNames");
+			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			Map preFilterMap = (Map) responseMapFilter.getBody();
-			sessionId = (String)preFilterMap.get("ipassport");
-			log.debug("["+sessionId+"] - ipassport: " +ipassport);
-	
-//			Integer forumId = (Integer)forumMap.get("forumId");
-			log.debug("["+sessionId+"] - forumId: " +forumId);
-			
-			if ("all".equalsIgnoreCase(forumId)){
-				List forumList = new LinkedList();
-				forumList = ForumService.getInstance().getListAll("", "id asc");
-				log.debug("[app-config] - forumList: " +forumList);
-				List forumListNew = new LinkedList();
-				for (int i=0; i< forumList.size(); i++){
-					Map forumData = new HashMap();
-					Forum forumObj = (Forum)forumList.get(i);
-					forumData.put("id", forumObj.getId());
-					forumData.put("code", forumObj.getCode());
-					forumData.put("name", forumObj.getName());
-					if (forumObj.getParentForum() != null){
-						forumData.put("parentForumId", forumObj.getParentForum().getId());
-					}else{
-						forumData.put("parentForumId", null);
-					}
-					
-					forumListNew.add(forumData);
-				}
-				resp.put("forumList", forumListNew);
-			}else{
-				Forum forumObj = null;
-				if (forumId == null){
-					resp.put("responseCode", "01");
-					resp.put("errorMessage", "error.forumId.failed");
-					return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-				}else{
-		//			forumTypeObj = LookupService.getInstance().getByTypeandCode("forum", forumType);
-					forumObj = ForumService.getInstance().get(Long.valueOf(forumId));
-					log.debug("["+sessionId+"] - forumObj: " +forumObj);
-					if (forumObj == null){
-						resp.put("responseCode", "01");
-						resp.put("errorMessage", "error.forumId.notFound");
-						return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-					}
-				}
-				
-				Map forumDetail = new HashMap();
-				forumDetail.put("id", forumObj.getId());
-				forumDetail.put("code", forumObj.getCode());
-				forumDetail.put("name", forumObj.getName());
-				if (forumObj.getParentForum() != null){
-					forumDetail.put("parentForumId", forumObj.getParentForum().getId());
-				}else{
-					forumDetail.put("parentForumId", null);
-				}
-				resp.put("forumDetail", forumDetail);
-			}
-			
-			resp.put("responseCode", "00");
-			resp.put("responseMessage", "get-forum Success");
-			return new ResponseEntity<Map>(resp,HttpStatus.OK);				
-		} catch (Exception e) {	
-			e.printStackTrace();
-			log.debug("["+sessionId+"] - error : " +e+" : "+e.getMessage());
-			resp.put("errorMessage", e.getMessage());
+//			response.put("result",ForumManager2.delete(iPass, forumId));
+			ForumManager.delete(iPass, forumId);
+			response.put("ipassport",iPass.get("ipassport"));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "action/del-forum/{ID}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Map> delForum(
+	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String forumId) {
-		Map resp=new HashMap();
-		String sessionId = "";
+		Map response=new HashMap();
 		try {
-			ResponseEntity<Map> responseMapFilter = LoginManager.preFilter(new HashMap(),ipassport,basicAuth,"del-forum");
-			if(responseMapFilter.getStatusCode() != HttpStatus.OK) return responseMapFilter;
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+//			List<String> roles= (List)iPass.get("roleNames");
+//			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
-			Map preFilterMap = (Map) responseMapFilter.getBody();
-			sessionId = (String)preFilterMap.get("ipassport");
-			log.debug("["+sessionId+"] - ipassport: " +ipassport);
-			
-			Forum forumObj = null;
-			if (forumId == null){
-				resp.put("responseCode", "01");
-				resp.put("errorMessage", "error.forumId.failed");
-				return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-			}else{
-	//			forumTypeObj = LookupService.getInstance().getByTypeandCode("forum", forumType);
-				forumObj = ForumService.getInstance().get(Long.valueOf(forumId));
-				log.debug("["+sessionId+"] - forumObj: " +forumObj);
-				if (forumObj == null){
-					resp.put("responseCode", "01");
-					resp.put("errorMessage", "error.forumId.notFound");
-					return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
-				}
-			}
-
-			Map forumDetail = new HashMap();
-			forumDetail.put("id", forumObj.getId());
-			forumDetail.put("code", forumObj.getCode());
-			forumDetail.put("name", forumObj.getName());
-			if (forumObj.getParentForum() != null){
-				forumDetail.put("parentForumId", forumObj.getParentForum().getId());
-			}else{
-				forumDetail.put("parentForumId", null);
-			} 
-		
-			resp.put("forumDetail", forumDetail);
-			
-			ForumService.getInstance().delete(forumObj);
-			resp.put("responseCode", "00");
-			resp.put("responseMessage", "del-forum Success");
-			return new ResponseEntity<Map>(resp,HttpStatus.OK);		
-		} catch (Exception e) {	
-			e.printStackTrace();
-			log.debug("["+sessionId+"] - error : " +e+" : "+e.getMessage());
-			resp.put("errorMessage", e.getMessage());
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.read(iPass, forumId));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-
-
+	
+	@RequestMapping(value = "list",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Map> list(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestBody final Map dataMap) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			List<String> roles= (List)iPass.get("roleNames");
+			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
+			
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", ForumManager.list(iPass, dataMap));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
 }
-

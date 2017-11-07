@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.basic.UserManager;
-import com.app.module.forum.ForumManager;
+import com.app.module.forum.old.ForumManagerOld;
 import com.simas.webservice.Utility;
 
 @Controller

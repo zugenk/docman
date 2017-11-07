@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.BookmarkManager;
 import com.app.module.basic.LoginManager;
-import com.app.module.forum.NotificationManager2;
+import com.app.module.forum.NotificationManager;
 
 @Controller
 @RequestMapping("/v1/notification")
@@ -39,7 +39,7 @@ public class NotificationController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",NotificationManager2.create(iPass, dataMap));
+			response.put("result",NotificationManager.create(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -61,7 +61,7 @@ public class NotificationController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",NotificationManager2.update(iPass, dataMap, notificationId));
+			response.put("result",NotificationManager.update(iPass, dataMap, notificationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -83,7 +83,7 @@ public class NotificationController {
 			response.put("ipassport",iPass.get("ipassport"));
 			
 //			response.put("result",NotificationManager2.delete(iPass, notificationId));
-			NotificationManager2.delete(iPass, notificationId);
+			NotificationManager.delete(iPass, notificationId);
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -91,7 +91,7 @@ public class NotificationController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-	
+	*/
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
@@ -104,7 +104,7 @@ public class NotificationController {
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",NotificationManager2.read(iPass, notificationId));
+			response.put("result",NotificationManager.read(iPass, notificationId));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -112,6 +112,7 @@ public class NotificationController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
+	
 	
 	@RequestMapping(value = "list",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map> list(
@@ -125,7 +126,7 @@ public class NotificationController {
 			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", NotificationManager2.list(iPass, dataMap));
+			BaseUtil.putList(response,"result", NotificationManager.list(iPass, dataMap));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -133,7 +134,7 @@ public class NotificationController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
-*/
+
 	
 	@RequestMapping(value = "myList",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Map> list(
@@ -147,7 +148,7 @@ public class NotificationController {
 //			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", NotificationManager2.listByOwner(iPass, BaseUtil.toInt(start)));
+			BaseUtil.putList(response,"result", NotificationManager.listByOwner(iPass, BaseUtil.toInt(start)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {

@@ -16,7 +16,7 @@ import com.app.docmgr.service.ForumService;
 import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.base.UserServiceBase;
 import com.app.module.forum.ForumManager;
-import com.app.module.forum.ForumManager2;
+import com.app.module.forum.old.ForumManagerOld;
 import com.app.shared.PartialList;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
@@ -171,7 +171,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			
 			PartialList result=ForumService.getInstance().getPartialList(null,null, 0,20);
 			System.out.println("lewat kok");
-			ForumManager2.toDocList(result);
+			ForumManager.toDocList(result);
 			for (Iterator iterator = result.iterator(); iterator.hasNext();) {
 				Document user = (Document) iterator.next();
 				System.out.println(Utility.debug(user));
