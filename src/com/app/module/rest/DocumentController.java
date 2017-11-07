@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.document.DocumentManager;
+import com.app.module.forum.NotificationManager;
 
 
 
@@ -103,6 +105,27 @@ public class DocumentController {
 		
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@RequestMapping(value = "myList",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Map> list(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestParam(value = "start", required = false) String start) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			log.debug(" My Document list by "+ iPass.getString("loginName") );
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", DocumentManager.listByOwner(iPass, BaseUtil.toInt(start)));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			log.error("Error geting Bookmark-ListByOwner",e);
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}

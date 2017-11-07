@@ -144,12 +144,9 @@ public class NotificationController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			List<String> roles= (List)iPass.get("roleNames");
-//			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			System.out.println(" My Notification list by "+ iPass.getString("loginName") );
+			log.debug(" My Notification list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", NotificationManager.listByOwner(iPass, BaseUtil.toInt(start)));
-			System.out.println("Sampe sini...");
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
 			
 		} catch (Exception e) {

@@ -11,6 +11,7 @@ import com.app.docmgr.model.Folder;
 import com.app.docmgr.model.Lookup;
 import com.app.docmgr.model.Organization;
 import com.app.docmgr.model.User;
+import com.app.docmgr.service.BookmarkService;
 import com.app.docmgr.service.DocumentService;
 import com.app.docmgr.service.FolderService;
 import com.app.docmgr.service.LookupService;
@@ -168,6 +169,16 @@ public class DocumentManager extends BaseUtil {
 		toDocList(result);
 		return result;
 	}
+	
+	
+	public static PartialList listByOwner(org.bson.Document passport,int start) throws Exception{
+		String filterParam=" AND document.owner.id='"+passport.getLong("userId")+"' ";
+		String orderParam=" document.contentType ASC, document.name ASC ";
+		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
+		toDocList(result);
+		return result;
+	}
+	
 	
 	private static void updateFromMap(Document obj, Map data,List<String> errors) throws Exception{
 		obj.setContentType((String) data.get("contentType"));

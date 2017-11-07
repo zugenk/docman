@@ -138,13 +138,10 @@ public class BookmarkController {
 		Map response=new HashMap();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			List<String> roles= (List)iPass.get("roleNames");
-//			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			log.debug(" My Bookmark list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", BookmarkManager.listByOwner(iPass,BaseUtil.toInt(start)));
 			return new ResponseEntity<Map>(response,HttpStatus.OK);
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 			log.error("Error geting Bookmark-ListByOwner",e);
