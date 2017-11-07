@@ -108,7 +108,7 @@ public class BookmarkManager extends BaseUtil{
 	}
 	
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
-		String filterParam=" AND bookmark.owner='"+passport.getString("userId")+"' ";
+		String filterParam=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=" bookmark.category ASC, bookmark.name ASC ";
 		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
 		toDocList(result);

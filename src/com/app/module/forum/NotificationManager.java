@@ -146,9 +146,9 @@ public class NotificationManager extends BaseUtil {
 	
 	
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
-		String filterParam=" AND notification.subscriber='"+passport.getString("userId")+"' ";
-		String orderParam=" notification.id ASC, notification.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
+		String filterParam=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";
+		String orderParam=" notification.id DESC";
+		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
