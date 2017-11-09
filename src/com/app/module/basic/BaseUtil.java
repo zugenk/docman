@@ -8,15 +8,33 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.w3c.tools.codec.Base64Decoder;
 
+import com.app.docmgr.model.Status;
+import com.app.docmgr.service.StatusService;
 import com.app.shared.PartialList;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 
 public class BaseUtil {
 	public static String ADMIN_ROLE="GOD"; //"ADMIN";
 	public static int itemPerPage=20;
+	final static int MAX_WRONG_PASSWD_ATTEMPT=3;
+	public static Status BLOCKED_USER_STATUS=null; //StatusService.getInstance().getByTypeandCode("User", "Blocked");
+	private static boolean inited=false;
 	
+	public static void init(){
+		if (inited) return;
+		try {
+			BLOCKED_USER_STATUS=StatusService.getInstance().getByTypeandCode("User", "blocked");
+			inited=true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static boolean nvl(String s) {
 		if(s==null || s.trim().length() == 0 ){
@@ -131,6 +149,35 @@ public class BaseUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public static org.springframework.util.MultiValueMap<String, Object> toMultiValueMap(Map<String, Object> request){
+    	MultiValueMap<String, Object> requestMap= new LinkedMultiValueMap<String, Object>();
+    	if (request!=null && !request.isEmpty()){
+    		for (Iterator<String> iterator = request.keySet().iterator(); iterator.hasNext();) {
+    			String key = (String) iterator.next();
+				requestMap.add(key, request.get(key));
+			}
+    	};
+    	return requestMap;
+	}
+	
+	public static void setBasicAuth(String user, String password, HttpHeaders headers) {
+    	String plainCreds = user+":"+password;//"okmAdmin:admin";
+    	byte[] plainCredsBytes = plainCreds.getBytes();
+    	byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
+    	String base64Creds = new String(base64CredsBytes);
+    	headers.add("Authorization", "Basic " + base64Creds);
+	}
+	
+	public static MediaType toMediaType(String contentType)throws Exception{
+		MediaType ct=MediaType.valueOf(contentType);
+    	if (ct==null) {
+    		contentType=MediaType.APPLICATION_JSON_VALUE;
+     		throw new Exception("Unknown or undefined MediaType defaulting to ["+MediaType.APPLICATION_JSON_VALUE+"]");
+     	} else System.out.println("Setting Media Type = ["+ct.toString()+"]");
+    	return ct;
 	}
 	
 	public static void main(String[] args) {

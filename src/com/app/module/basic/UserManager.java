@@ -63,6 +63,62 @@ public class UserManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
+	public static Document updateMe(Document passport,Map data) throws Exception{
+		log.debug("Update User profile :/n/r"+Utility.debug(data)+" by "+passport.getString("loginName"));
+		List<String> errors=new LinkedList<String>();
+		User obj= UserService.getInstance().get(passport.getLong("userId"));
+		if (obj==null) throw new Exception("error.object.notfound");
+		updateFromMap(obj,data,errors) ;
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
+		//obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		UserService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	public static Document updateMyPassword(Document passport,Map data) throws Exception{
+		log.debug("Update Password :/n/r"+Utility.debug(data)+" by "+passport.getString("loginName"));
+		List<String> errors=new LinkedList<String>();
+		User obj= UserService.getInstance().get(passport.getLong("userId"));
+		if (obj==null) throw new Exception("error.object.notfound");
+		String encriptedPassword=ApplicationFactory.encrypt((String) data.get("loginPassword"));
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
+	
+		if(!encriptedPassword.equals(obj.getLoginPassword())){
+	 		//TODO: AuditTrails
+	 		incrementLoginCounter(obj);
+	 		throw new Exception("error.login.password");
+	 	}  
+		obj.setLoginPassword((String) data.get("newLoginPassword"));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		UserService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	
+	public static Document resetMyPassword(Document passport,Map data) throws Exception{
+		log.debug("Update Password :/n/r"+Utility.debug(data)+" by "+passport.getString("loginName"));
+		List<String> errors=new LinkedList<String>();
+		User obj= UserService.getInstance().get(passport.getLong("userId"));
+		if (obj==null) throw new Exception("error.object.notfound");
+		String encriptedPassword=ApplicationFactory.encrypt((String) data.get("loginPassword"));
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
+		//TODO: Reset to generated password
+		/*
+		if(!encriptedPassword.equals(obj.getLoginPassword())){
+	 		//TODO: AuditTrails
+	 		incrementLoginCounter(obj);
+	 		throw new Exception("error.login.password");
+	 	}  */
+		obj.setLoginPassword((String) data.get("newLoginPassword"));
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		UserService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
 	public static void delete(Document passport,String objId) throws Exception {
 		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
 		long usrId= Long.parseLong(objId);
@@ -246,6 +302,21 @@ public class UserManager extends BaseUtil{
 			User obj = (User) list.get(i);
 			list.set(i, toDocument(obj));
 		}
+	}
+	
+	public static boolean incrementLoginCounter(User loginUser) throws Exception{
+		boolean isBlocked=false;
+		
+		
+ 		int ctr=loginUser.getLoginFailed()+1;
+ 		if (ctr>=MAX_WRONG_PASSWD_ATTEMPT) {
+ 			loginUser.setStatus(BLOCKED_USER_STATUS);
+ 			isBlocked=true;
+ 		}
+ 		loginUser.setLoginFailed(ctr+1);
+ 		UserService.getInstance().update(loginUser);
+ 		return isBlocked;
+
 	}
 
 }

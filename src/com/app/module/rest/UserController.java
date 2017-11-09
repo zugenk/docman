@@ -135,4 +135,58 @@ public class UserController {
 		}
 		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
 	}
+	
+	@RequestMapping(value = "me/update",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Map> update(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestBody final Map dataMap) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",UserManager.updateMe(iPass, dataMap));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "me/chgPwd",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Map> changeMyPasswd(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestBody final Map dataMap) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",UserManager.updateMyPassword(iPass, dataMap));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "me/rstPwd",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Map> resetMyPasswd(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestBody final Map dataMap) {
+		Map response=new HashMap();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",UserManager.resetMyPassword(iPass, dataMap));
+			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+	}
 }

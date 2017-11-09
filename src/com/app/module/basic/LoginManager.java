@@ -24,18 +24,17 @@ import com.meterware.httpunit.HttpHeader;
 import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
 
-public class LoginManager {
+public class LoginManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(LoginManager.class.getName());
-	final static int MAX_WRONG_PASSWD_ATTEMPT=3;
+	
 	
 	public static Document login(String loginName,String passwd) throws Exception{
-		
+		init();
 		// TODO Auto-generated method stub
 		UserService userService = UserService.getInstance();
-		Status blockedStatus=StatusService.getInstance().getByTypeandCode("User", "removed");
 		
 		User loginUser = null;
-		loginUser = userService.getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+blockedStatus.getId()+"' "); 
+		loginUser = userService.getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
 		if(loginUser==null) throw new Exception("error.login.failed");
 		//log.debug(Utility.debug(loginUser));
 		
@@ -43,12 +42,7 @@ public class LoginManager {
 	 	//String encriptedPassword=pwd;
 	 	if(!encriptedPassword.equals(loginUser.getLoginPassword())){
 	 		recordLoginHistory(loginUser,"rejected",null,"Wrong Password");
-	 		int ctr=loginUser.getLoginFailed()+1;
-	 		if (ctr>=MAX_WRONG_PASSWD_ATTEMPT) {
-	 			loginUser.setStatus(blockedStatus);
-	 		}
-	 		loginUser.setLoginFailed(ctr+1);
-	 		UserService.getInstance().update(loginUser);
+	 		UserManager.incrementLoginCounter(loginUser);
 	 		throw new Exception("error.login.password");
 	 	} 
 	 	Document iPass=PassportManager.issuePassport(loginUser);
@@ -57,6 +51,8 @@ public class LoginManager {
 	 	//iPass.put("loginUser",loginUser);
 	 	return iPass;
 	}
+	
+	
 	
 	public static Document loginWithBasicAuth(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
     	String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
