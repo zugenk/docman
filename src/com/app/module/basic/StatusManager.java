@@ -9,16 +9,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 
-import com.app.docmgr.model.Lookup;
-import com.app.docmgr.model.Organization;
 import com.app.docmgr.model.Status;
-import com.app.docmgr.model.Status;
-import com.app.docmgr.service.LookupService;
-import com.app.docmgr.service.OrganizationService;
-import com.app.docmgr.service.RoleService;
 import com.app.docmgr.service.StatusService;
-import com.app.docmgr.service.StatusService;
-import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
 

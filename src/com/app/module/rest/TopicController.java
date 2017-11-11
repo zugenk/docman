@@ -21,112 +21,103 @@ import com.app.module.forum.TopicManager;
 
 @Controller
 @RequestMapping("/v1/topic")
-public class TopicController {
+public class TopicController extends BaseUtil{
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TopicController.class);
 	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Map> create(
+	public @ResponseBody ResponseEntity<Document> create(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap) {
-		Map response=new HashMap();
+		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			List<String> roles= (List)iPass.get("roleNames");
-			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+		//	
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.create(iPass, dataMap));
-			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			return reply(response);  
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+		return reply(response);  
 	}
 	
 	@RequestMapping(value = "{ID}/update",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Map> update(
+	public @ResponseBody ResponseEntity<Document> update(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
 			@PathVariable(value="ID") String topicId) {
-		Map response=new HashMap();
+		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			List<String> roles= (List)iPass.get("roleNames");
-			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.update(iPass, dataMap, topicId));
-			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			return reply(response);  
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+		return reply(response);  
 	}
 	
 	@RequestMapping(value = "{ID}/delete",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Map> delete(
+	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String topicId) {
-		Map response=new HashMap();
+		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			List<String> roles= (List)iPass.get("roleNames");
-			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
+//			
 			response.put("ipassport",iPass.get("ipassport"));
-//			response.put("result",TopicManager2.delete(iPass, topicId));
+//			response.put("result",TopicManager.delete(iPass, topicId));
 			TopicManager.delete(iPass, topicId);
-			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			return reply(response);  
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+		return reply(response);  
 	}
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Map> read(
+	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String topicId) {
-		Map response=new HashMap();
+		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			List<String> roles= (List)iPass.get("roleNames");
-//			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.read(iPass, topicId));
-			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			return reply(response);  
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+		return reply(response);  
 	}
 	
 	@RequestMapping(value = "list",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Map> list(
+	public @ResponseBody ResponseEntity<Document> list(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap) {
-		Map response=new HashMap();
+		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			List<String> roles= (List)iPass.get("roleNames");
-			if (!roles.contains(BaseUtil.ADMIN_ROLE)) return new ResponseEntity<Map>(response,HttpStatus.UNAUTHORIZED);
-			
+			//
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", TopicManager.list(iPass, dataMap));
-			return new ResponseEntity<Map>(response,HttpStatus.OK);
+			return reply(response);  
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(response,HttpStatus.BAD_REQUEST);
+		return reply(response);  
 	}
 }

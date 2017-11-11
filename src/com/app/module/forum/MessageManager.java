@@ -38,6 +38,7 @@ public class MessageManager extends BaseUtil{
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Message", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		MessageService.getInstance().add(obj);
+		TopicManager.generateNotification(obj);
 		return toDocument(obj);
 	}
 	

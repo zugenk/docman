@@ -12,6 +12,8 @@ import org.bson.Document;
 
 import com.app.docmgr.model.Forum;
 import com.app.docmgr.model.Lookup;
+import com.app.docmgr.model.Message;
+import com.app.docmgr.model.Notification;
 import com.app.docmgr.model.Organization;
 import com.app.docmgr.model.Role;
 import com.app.docmgr.model.Status;
@@ -19,6 +21,7 @@ import com.app.docmgr.model.Topic;
 import com.app.docmgr.model.User;
 import com.app.docmgr.service.ForumService;
 import com.app.docmgr.service.LookupService;
+import com.app.docmgr.service.NotificationService;
 import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.RoleService;
 import com.app.docmgr.service.StatusService;
@@ -49,8 +52,7 @@ public class TopicManager extends BaseUtil{
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 		//log.debug("Create Topic :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		Topic obj= TopicService.getInstance().get(uid);
+		Topic obj= TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -63,8 +65,7 @@ public class TopicManager extends BaseUtil{
 	
 	public static void delete(Document passport,String objId) throws Exception {
 		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Topic obj=TopicService.getInstance().get(usrId);
+		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "deleted"));
 		obj.setLastUpdatedDate(new Date());
@@ -74,8 +75,7 @@ public class TopicManager extends BaseUtil{
 
 	public static Document read(Document passport,String objId) throws Exception {
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Topic obj=TopicService.getInstance().get(usrId);
+		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		return toDocument(obj);
 	}
@@ -117,6 +117,60 @@ public class TopicManager extends BaseUtil{
 		return result;
 	}
 	
+	
+	public static Document subscribe(Document passport,String objId) throws Exception {
+		log.debug("Subscribe to topic["+objId+"] by "+passport.getString("loginName"));
+		Topic obj=TopicService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		User subscriber=UserService.getInstance().get(passport.getLong("userId"));
+		obj.getSubscribers().add(subscriber);
+		TopicService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	public static Document unSubscribe(Document passport,String objId) throws Exception {
+		log.debug("Unsubscribe from topic["+objId+"] by "+passport.getString("loginName"));
+		Topic obj=TopicService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		User subscriber=UserService.getInstance().get(passport.getLong("userId"));
+		obj.getSubscribers().remove(subscriber);
+		TopicService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	public static List<Document> getSubscriberList(Topic topic) {
+		List<Document> subscriberList=new LinkedList<Document>();
+		for (Iterator<User> iterator = topic.getSubscribers().iterator(); iterator.hasNext();) {
+			User user = iterator.next();
+			subscriberList.add(UserManager.toDocument(user));
+		}
+		return subscriberList;
+	}
+	
+	public static Document like(Document passport,String objId) throws Exception {
+		log.debug("Like the topic["+objId+"] by "+passport.getString("loginName"));
+		Topic obj=TopicService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		User loginUser=UserService.getInstance().get(passport.getLong("userId"));
+		loginUser.getFavoriteTopics().add(obj);
+		UserService.getInstance().update(loginUser);
+		obj.setNumberOfLike(obj.getNumberOfLike()+1);
+		TopicService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	public static Document unLike(Document passport,String objId) throws Exception {
+		log.debug("Unlike the topic["+objId+"] by "+passport.getString("loginName"));
+		Topic obj=TopicService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		User loginUser=UserService.getInstance().get(passport.getLong("userId"));
+		loginUser.getFavoriteTopics().remove(obj);
+		UserService.getInstance().update(loginUser);
+		obj.setNumberOfLike(obj.getNumberOfLike()+1);
+		TopicService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+
 	private static void updateFromMap(Topic obj, Map data,List<String> errors) {
 		obj.setCode((String) data.get("code"));
 		obj.setDescription((String) data.get("description"));
@@ -133,7 +187,6 @@ public class TopicManager extends BaseUtil{
 		}
 		if(!nvl(data.get("statusId"))){
 			try {
-				long statusId=Long.parseLong((String)data.get("statusId"));
 				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
 				if(status!=null) obj.setStatus(status);
 			} catch (Exception e) {
@@ -142,22 +195,7 @@ public class TopicManager extends BaseUtil{
 		}
 	}
 	
-	/*
-	private void subscribe(Document passport, String topicId) throws Exception{
-		long tpId=Long.parseLong(topicId);
-		Topic topic=TopicService.getInstance().get(tpId);
-		Set<User> subscriberSet=topic.getSubscribers();
-		subscriberSet.add(UserService.getInstance().get(passport.getLong("userId")));
-		TopicService.getInstance().update(topic);		
-	}
-	
-	private void listSubscriber(Document passport, String topicId) {
-		long tpId=Long.parseLong(topicId);
-		Topic topic=TopicService.getInstance().get(tpId);
-		topic.getSubscribers();
 
-	}
-	*/
 	public static PartialList getTopicList(int start) throws Exception{
 		PartialList resultList=null;
 		String filterParam=null; 
@@ -174,6 +212,43 @@ public class TopicManager extends BaseUtil{
 		resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
 		toDocList(resultList);
 		return resultList;
+	}
+	
+	
+	
+	public static boolean generateNotification(Message postMessage){
+		if(postMessage.getTopic()!=null){
+			try{
+				Topic topic= TopicService.getInstance().get(postMessage.getTopic().getId());
+				topic.setNumberOfPost(topic.getNumberOfPost()+1);
+				if (topic.getSubscribers()!=null || topic.getSubscribers().size()<=0) {
+					NotificationService notifService=NotificationService.getInstance();
+					Lookup notificationType=LookupService.getInstance().getByTypeandCode("notificationType","postMessage");
+					Notification notification;
+					User subscriber;
+					int i=0;
+					for (Iterator iterator = topic.getSubscribers().iterator(); iterator.hasNext();) {
+						subscriber = (User) iterator.next();
+						notification=new Notification();
+						//notify.setFlag(null);
+						notification.setNotificationType(notificationType);
+						notification.setPostMessage(postMessage);
+						notification.setSubscriber(subscriber);
+						notifService.add(notification);
+						i++;
+					} 
+					log.debug("Generate Notification to "+i+"  Subscribers is Success");
+					return true;
+				}
+				log.debug("Not Generate any Notification, PostMessage.Topic doesnt have any Subscribers..");
+				return true;
+			}catch (Exception e) {
+				log.error("Error Generating Notification for messageId["+postMessage.getId()+"]",e);
+			}
+			return false;
+		}
+		log.debug("Not generating Notification, PostMessage doesnt have any Topic");
+		return false;
 	}
 	
 	public static Document toDocument(Topic obj) {
@@ -201,15 +276,7 @@ public class TopicManager extends BaseUtil{
 		return doc;
 	}
 	
-	public static List<Document> getSubscriberList(Topic topic) {
-		List<Document> subscriberList=new LinkedList<Document>();
-		for (Iterator<User> iterator = topic.getSubscribers().iterator(); iterator.hasNext();) {
-			User user = iterator.next();
-			subscriberList.add(UserManager.toDocument(user));
-		}
-		return subscriberList;
-	}
-	
+
 	public static void toDocList(List list){
 		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 		if(list.isEmpty()) return;
@@ -217,6 +284,15 @@ public class TopicManager extends BaseUtil{
 			Topic obj = (Topic) list.get(i);
 			list.set(i, toDocument(obj));
 		}
+	}
+	public static List toDocList(Set set){
+		List list=new LinkedList();
+		if(set.isEmpty()) return list;
+		for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+			Topic obj = (Topic) iterator.next();
+			list.add(toDocument(obj));
+		}
+		return list;
 	}
 
 }

@@ -37,24 +37,8 @@ public class UserService extends com.app.docmgr.service.base.UserServiceBase{
 		return instance;
 	}
 	
-	public static List<String> getRoleNames(User user) {
-		List<String> roleNames=new LinkedList<String>();
-		for (Iterator iterator = user.getRoles().iterator(); iterator.hasNext();) {
-			Role role = (Role) iterator.next();
-			roleNames.add(role.getName());
-		}
-		return roleNames;
-	}
 
-	public static List<Long> getFavTopicIds(User user) {
-		List<Long> favTopicIds=new LinkedList<Long>();
-		for (Iterator iterator = user.getFavoriteTopics().iterator(); iterator.hasNext();) {
-			Topic topic = (Topic) iterator.next();
-			favTopicIds.add(topic.getId());
-		}
-		return favTopicIds;
-	}
-	
+/*	
 
 	public User get(Long id) throws Exception{
 		User user = null;
@@ -87,6 +71,7 @@ public class UserService extends com.app.docmgr.service.base.UserServiceBase{
 		}
 		return user;
 	}
+	*/
 	
 	public List getPrivilegeList(User user)  throws Exception{
 		Session session = null;

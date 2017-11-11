@@ -30,13 +30,12 @@ public class LoginManager extends BaseUtil{
 	
 	public static Document login(String loginName,String passwd) throws Exception{
 		init();
-		// TODO Auto-generated method stub
 		UserService userService = UserService.getInstance();
 		
 		User loginUser = null;
 		loginUser = userService.getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
 		if(loginUser==null) throw new Exception("error.login.failed");
-		//log.debug(Utility.debug(loginUser));
+//		log.debug(Utility.debug(loginUser));
 		
 		String encriptedPassword=ApplicationFactory.encrypt(passwd);
 	 	//String encriptedPassword=pwd;

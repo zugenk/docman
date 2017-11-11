@@ -19,9 +19,9 @@ public class SimpleCORSFilter implements Filter {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
         
-//        response.setHeader("access-control-allow-credentials","true");
-//        response.setHeader("access-control-allow-origin","chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop");
-//        response.setHeader("access-control-expose-headers","Access-Control-Allow-Origin,Access-Control-Allow-Credentials");
+        response.setHeader("access-control-allow-credentials","true");
+        //response.setHeader("access-control-allow-origin","chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop");
+        response.setHeader("access-control-expose-headers","Access-Control-Allow-Origin,Access-Control-Allow-Credentials");
         chain.doFilter(req, res);
     }
 

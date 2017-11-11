@@ -16,32 +16,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.basic.PassportManager;
 import com.app.shared.ApplicationFactory;
 
 @Controller
 @RequestMapping("/v1")
-public class LoginController {
+public class LoginController  extends BaseUtil{
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
 	
 	@RequestMapping(value = "action/login",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Map> login( //){
+	public @ResponseBody ResponseEntity<Document> login(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
-		Map resp=new HashMap();
+		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport,basicAuth); //(null,"Basic YWRtaW46YWRtaW4="); //
+			Document iPass=LoginManager.authenticate(ipassport,basicAuth); 
 			if(iPass==null)	{
-				resp.put("errorMessage", "error.authentication.failed");
+				response.put("errorMessage", "error.authentication.failed");
 			} else {
-				return new ResponseEntity<Map>((Map)iPass,HttpStatus.OK); //resp,HttpStatus.OK); // 
+				return reply(iPass);
 			}
+			
 		} catch (Exception e) {	
 	//		e.printStackTrace();
-			resp.put("errorMessage", e.getMessage());
+			response.put("errorMessage", e.getMessage());
 		}
-		return new ResponseEntity<Map>(resp,HttpStatus.BAD_REQUEST);
+		return reply(response);
 	}																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												
 	
 	

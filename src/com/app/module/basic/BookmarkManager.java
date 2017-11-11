@@ -25,7 +25,8 @@ public class BookmarkManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(BookmarkManager.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
-		//log.debug("Create Bookmark :/n/r"+Utility.debug(data));
+		log.debug("Creating Bookmark by "+passport.getString("loginName"));
+		auditLog(passport, "Create", "Bookmark", "Creating Bookmark", null);
 		List<String> errors=new LinkedList<String>();
 		Bookmark obj= new Bookmark();
 		updateFromMap(obj, data,errors);
@@ -39,35 +40,39 @@ public class BookmarkManager extends BaseUtil{
 	}
 	
 	public static Document update(Document passport,Map data,String objId) throws Exception{
-		//log.debug("Create Bookmark :/n/r"+Utility.debug(data));
+		log.debug("Updating Bookmark["+objId+"] by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		Bookmark obj= BookmarkService.getInstance().get(uid);
+		Bookmark obj= BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if (!isAdmin(passport) || !isOwner(obj, passport)) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		BookmarkService.getInstance().update(obj);
 		return toDocument(obj);
 	}
 	
 	public static void delete(Document passport,String objId) throws Exception {
-		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Bookmark obj=BookmarkService.getInstance().get(usrId);
+		log.debug("Deleting Bookmark["+objId+" by "+passport.getString("loginName"));
+		Bookmark obj=BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if (!isAdmin(passport) || !isOwner(obj, passport)) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		BookmarkService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String objId) throws Exception {
-		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Bookmark obj=BookmarkService.getInstance().get(usrId);
+	private static boolean isOwner(Bookmark obj,Document passport) {
+		String owner= obj.getCreatedBy();
+		if(!nvl(obj.getOwner()))  owner= obj.getOwner().getLoginName();
+		return passport.getString("loginName").equals(owner);
+	}
+	
+	public static Document detail(Document passport,String objId) throws Exception {
+		log.debug("Detail Bookmark["+objId+" "+passport.getString("loginName"));
+		Bookmark obj=BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		return toDocument(obj);
 	}
@@ -132,7 +137,6 @@ public class BookmarkManager extends BaseUtil{
 		}
 		if(!nvl(data.get("statusId"))){
 			try {
-				long statusId=Long.parseLong((String)data.get("statusId"));
 				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
 				if(status!=null) obj.setStatus(status);
 			} catch (Exception e) {

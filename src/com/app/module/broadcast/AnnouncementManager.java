@@ -20,14 +20,10 @@ import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
 import com.app.module.basic.BaseUtil;
-import com.app.module.basic.UserManager;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
 public class AnnouncementManager extends BaseUtil {
-	//Requested only for Create and Blast email..
-	
-	
 	private static Logger log = Logger.getLogger(AnnouncementManager.class);
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
@@ -40,6 +36,7 @@ public class AnnouncementManager extends BaseUtil {
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().add(obj);
+		blastEmail(obj);
 		return toDocument(obj);
 	}
 	
@@ -164,6 +161,69 @@ public class AnnouncementManager extends BaseUtil {
 			Announcement obj = (Announcement) list.get(i);
 			list.set(i, toDocument(obj));
 		}
+	}
+	
+	private static boolean blastEmail(Announcement ann) {
+//		String message=ApplicationFactory.applyTemplate(emailContext, emailTemplate)
+		String subject="Announcement Blast ";
+		ann.getAnnouncementType();
+		String message=ann.getContent();
+		ann.getCreatedBy();
+		ann.getCreatedDate();
+		ann.getStatus();
+		List<String> toAddress=new LinkedList<String>();
+		if(!nvl(ann.getTargetOrganizations())){
+			String[] orgArr=ann.getTargetOrganizations().split("\\|");
+			for (int i = 0; i < orgArr.length; i++) {
+				try {
+					Organization org=OrganizationService.getInstance().get(toLong(orgArr[i]));
+					if (org!=null){
+						if(!nvl(org.getMailingList())){
+							toAddress.add(org.getMailingList());
+						}
+					} else {
+						try {
+							List<User> usrList=UserService.getInstance().getListAll("user.organization.id='"+org.getId()+"' ", null);
+							for (Iterator iterator = usrList.iterator(); iterator.hasNext();) {
+								User user = (User) iterator.next();
+								if(!nvl(user.getEmail())) toAddress.add(user.getEmail());
+							}
+						} catch (Exception e) {
+							log.error("Error populate toAddress through Announcement organization.user",e);
+						}
+					}
+				} catch (Exception e) {
+					log.error("Error populate toAddress through Announcement targetOrganizations",e);
+				}
+			}
+		}
+		if(!nvl(ann.getTargetUsers())){
+			String[] usrArr=ann.getTargetUsers().split("\\|");
+			for (int i = 0; i < usrArr.length; i++) {
+				try {
+					User usr=UserService.getInstance().get(toLong(usrArr[i]));
+					if (usr!=null){
+						if(!nvl(usr.getEmail())){
+							toAddress.add(usr.getEmail());
+						}
+					}
+				} catch (Exception e) {
+					log.error("Error populate toAddress through Announcement targetUsers",e);
+				}
+			}
+			
+		}
+		String from="";
+		try {
+			User sender=UserService.getInstance().getBy("user.loginName='"+ann.getCreatedBy()+"' ");
+			from=sender.getEmail();
+			ApplicationFactory.sendMail(from, toAddress, subject, message);
+			
+		} catch (Exception e) {
+			log.error("Error populate toAddress through Announcement targetUsers",e);
+		}
+	
+		return false;
 	}
 	
 }

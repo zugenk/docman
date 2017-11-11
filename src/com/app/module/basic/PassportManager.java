@@ -61,8 +61,8 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			iPass.put("lastAccess", System.currentTimeMillis());
 			createNewPassport(iPass);
 		}
-		iPass.put("favTopicIds", UserService.getFavTopicIds(user));
-		iPass.put("roleNames", UserService.getRoleNames(user)); 
+		iPass.put("favTopicIds", UserManager.getFavTopicIds(user));
+//		iPass.put("roleNames", UserManager.getRoleNames(user)); 
 //		System.out.println(Utility.debug(iPass));
 //		System.out.println("====================PASSPORT ISSUED======================");
 		savePassport(iPass);
