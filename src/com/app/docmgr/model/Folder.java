@@ -22,7 +22,7 @@ public class Folder  implements java.io.Serializable {
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
      private Status status;
-     private Folder parentFolder;
+     private Folder parent;
 
 
     // Constructors
@@ -154,12 +154,12 @@ public class Folder  implements java.io.Serializable {
     /**
      * 
      */
-    public Folder getParentFolder() {
-        return this.parentFolder;
+    public Folder getParent() {
+        return this.parent;
     }
     
-    public void setParentFolder(Folder parentFolder) {
-        this.parentFolder = parentFolder;
+    public void setParent(Folder parent) {
+        this.parent = parent;
     }
 
 

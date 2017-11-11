@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -50,11 +50,11 @@
 			document.forms.user.user_loginPassword_filter.value="";
 			document.forms.user.user_pinCode_filter.value="";
 			document.forms.user.user_mobileNumber_filter.value="";
+			document.forms.user.user_picture_filter.value="";
 			document.forms.user.user_language_filter.value="";
 			document.forms.user.user_title_filter.value="";
 			document.forms.user.user_name_filter.value="";
 			document.forms.user.user_alias_filter.value="";
-			document.forms.user.user_picture_filter.value="";
 			document.forms.user.user_email_filter.value="";
 			document.forms.user.user_fullName_filter.value="";
 			document.forms.user.user_homePhoneNumber_filter.value="";
@@ -185,6 +185,20 @@
 			</logic:notEqual>
 		</td>
 		<td>			
+			<bean:message key="user.picture.key"/>
+			<logic:equal name="user_fieldOrder" value="picture">
+				<logic:equal name="user_orderType" value="ASC">
+					<a href="#" onclick="doOrder('picture', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="user_orderType" value="DESC">
+					<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="user_fieldOrder" value="picture">
+				<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
 			<bean:message key="user.language.key"/>
 			<logic:equal name="user_fieldOrder" value="language">
 				<logic:equal name="user_orderType" value="ASC">
@@ -238,20 +252,6 @@
 			</logic:equal>
 			<logic:notEqual name="user_fieldOrder" value="alias">
 				<a href="#" onclick="doOrder('alias', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
-			</logic:notEqual>
-		</td>
-		<td>			
-			<bean:message key="user.picture.key"/>
-			<logic:equal name="user_fieldOrder" value="picture">
-				<logic:equal name="user_orderType" value="ASC">
-					<a href="#" onclick="doOrder('picture', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
-				</logic:equal>
-				<logic:equal name="user_orderType" value="DESC">
-					<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
-				</logic:equal>
-			</logic:equal>
-			<logic:notEqual name="user_fieldOrder" value="picture">
-				<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -556,11 +556,11 @@
 		<td><bean:write name="element" property="loginPassword"/></td>
 		<td><bean:write name="element" property="pinCode"/></td>
 		<td><bean:write name="element" property="mobileNumber"/></td>
+		<td><bean:write name="element" property="picture"/></td>
 		<td><bean:write name="element" property="language"/></td>
 		<td><bean:write name="element" property="title"/></td>
 		<td><bean:write name="element" property="name"/></td>
 		<td><bean:write name="element" property="alias"/></td>
-		<td><bean:write name="element" property="picture"/></td>
 		<td><bean:write name="element" property="email"/></td>
 		<td><bean:write name="element" property="fullName"/></td>
 		<td><bean:write name="element" property="homePhoneNumber"/></td>
@@ -660,6 +660,11 @@
 		<td><input type="text" name="user_mobileNumber_filter" value="<bean:write name="user_mobileNumber_filter"/>"></td>
 	</tr>
 	<tr>
+		<td width="150"><bean:message key="user.picture.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="user_picture_filter" value="<bean:write name="user_picture_filter"/>"></td>
+	</tr>
+	<tr>
 		<td width="150"><bean:message key="user.language.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="user_language_filter" value="<bean:write name="user_language_filter"/>"></td>
@@ -678,11 +683,6 @@
 		<td width="150"><bean:message key="user.alias.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="user_alias_filter" value="<bean:write name="user_alias_filter"/>"></td>
-	</tr>
-	<tr>
-		<td width="150"><bean:message key="user.picture.key"/></td>
-		<td width="10">:</td>
-		<td><input type="text" name="user_picture_filter" value="<bean:write name="user_picture_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150"><bean:message key="user.email.key"/></td>

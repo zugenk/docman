@@ -23,7 +23,7 @@ import com.app.docmgr.model.Document;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-11-2017 00:08:53
+ * @createDate 12-11-2017 00:00:51
  */
 
 	/**
@@ -63,8 +63,8 @@ public class DocumentServiceBase {
 			Hibernate.initialize(document.getSecurityLevel());			
 			Hibernate.initialize(document.getOwner());			
 			Hibernate.initialize(document.getStatus());			
-			Hibernate.initialize(document.getParentFolder());			
-			Hibernate.initialize(document.getParentDocument());			
+			Hibernate.initialize(document.getFolder());			
+			Hibernate.initialize(document.getParent());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -102,8 +102,8 @@ public class DocumentServiceBase {
 				Hibernate.initialize(document.getSecurityLevel());			
 				Hibernate.initialize(document.getOwner());			
 				Hibernate.initialize(document.getStatus());			
-				Hibernate.initialize(document.getParentFolder());			
-				Hibernate.initialize(document.getParentDocument());			
+				Hibernate.initialize(document.getFolder());			
+				Hibernate.initialize(document.getParent());			
 			}
 			return document;
 		} catch (HibernateException e) {
@@ -304,8 +304,8 @@ public class DocumentServiceBase {
 				Hibernate.initialize(document.getSecurityLevel());			
 				Hibernate.initialize(document.getOwner());			
 				Hibernate.initialize(document.getStatus());			
-				Hibernate.initialize(document.getParentFolder());			
-				Hibernate.initialize(document.getParentDocument());			
+				Hibernate.initialize(document.getFolder());			
+				Hibernate.initialize(document.getParent());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -346,8 +346,8 @@ public class DocumentServiceBase {
 			    Hibernate.initialize(document.getSecurityLevel());                    
 			    Hibernate.initialize(document.getOwner());                    
 			    Hibernate.initialize(document.getStatus());                    
-			    Hibernate.initialize(document.getParentFolder());                    
-			    Hibernate.initialize(document.getParentDocument());                    
+			    Hibernate.initialize(document.getFolder());                    
+			    Hibernate.initialize(document.getParent());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

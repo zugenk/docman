@@ -20,14 +20,13 @@ public class UserHistory  implements java.io.Serializable {
      private String loginName;
      private String loginPassword;
      private String pinCode;
-     private String mobileNumber;
+     private String picture;
      private Lookup userLevel;
      private String language;
      private String title;
      private String name;
      private String alias;
      private Lookup position;
-     private String picture;
      private String email;
      private String fullName;
      private String homePhoneNumber;
@@ -162,12 +161,12 @@ public class UserHistory  implements java.io.Serializable {
     /**
      * 
      */
-    public String getMobileNumber() {
-        return this.mobileNumber;
+    public String getPicture() {
+        return this.picture;
     }
     
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     /**
@@ -234,17 +233,6 @@ public class UserHistory  implements java.io.Serializable {
     
     public void setPosition(Lookup position) {
         this.position = position;
-    }
-
-    /**
-     * 
-     */
-    public String getPicture() {
-        return this.picture;
-    }
-    
-    public void setPicture(String picture) {
-        this.picture = picture;
     }
 
     /**

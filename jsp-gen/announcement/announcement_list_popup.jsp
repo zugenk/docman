@@ -16,7 +16,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -49,7 +49,7 @@
 
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td class="titleHeader" colspan="17" align="left">
+		<td class="titleHeader" colspan="18" align="left">
 			<bean:message key="page.Announcement.ListPopup"/>
 		</td>
 	</tr>
@@ -65,6 +65,7 @@
 		 %>
 		<tr bgcolor="<% out.print(bgcolor); %>">
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="content"/>');"><bean:write name="element" property="content"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="subject"/>');"><bean:write name="element" property="subject"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="targetUsers"/>');"><bean:write name="element" property="targetUsers"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="targetOrganizations"/>');"><bean:write name="element" property="targetOrganizations"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="createdDate"/>');"><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></a></td>

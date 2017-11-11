@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -77,19 +77,18 @@
 		</logic:messagesPresent>
 
 		<tr>
-			<td width="150"><b><bean:message key="auditTrail.entity.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="auditTrail.entity.key"/></b></td>
 			<td width="10">:</td>			
 			<td>
 				<html:text name="auditTrail" property="entity"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="auditTrail.entity">
-			<tr>
-				<td colspan="3">
-					<font color="red"><html:errors property="auditTrail.entity"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
+
+		<tr>
+			<td width="150"><b><bean:message key="auditTrail.entityId.key"/></b></td>
+			<td width="10">:</td>			
+			<td><html:text name="auditTrail" property="entityId"/></td>
+		</tr>
 
 		<tr>
 			<td width="150"><b><bean:message key="auditTrail.doneBy.key"/> <font color="#FF0000">*</font></b></td>
@@ -130,16 +129,16 @@
 		</tr>
 
 		<tr>
-			<td width="150"><b><bean:message key="auditTrail.actions.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="auditTrail.action.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>			
 			<td>
-				<html:text name="auditTrail" property="actions"/>
+				<html:text name="auditTrail" property="action"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="auditTrail.actions">
+		<logic:messagesPresent property="auditTrail.action">
 			<tr>
 				<td colspan="3">
-					<font color="red"><html:errors property="auditTrail.actions"/></font>
+					<font color="red"><html:errors property="auditTrail.action"/></font>
 				</td>
 			</tr>
 		</logic:messagesPresent>

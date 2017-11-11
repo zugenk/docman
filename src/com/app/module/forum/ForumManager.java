@@ -29,11 +29,11 @@ public class ForumManager extends BaseUtil{
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
-	   " SELECT forum.id as id, forum.code,forum.name,forum.id||'' as tree, COALESCE(forum.parent_forum,0) as parent_forum, 0 AS level FROM forum "+
-	   ((startId==null||startId.length()==0)?" WHERE forum.parent_forum is null":" WHERE forum.id='"+startId+"' ")+
+	   " SELECT forum.id as id, forum.code,forum.name,forum.id||'' as tree, COALESCE(forum.parent,0) as parent, 0 AS level FROM forum "+
+	   ((startId==null||startId.length()==0)?" WHERE forum.parent is null":" WHERE forum.id='"+startId+"' ")+
 	   " UNION  ALL"+
-	   " SELECT f.id as id, f.code,f.name,(c.tree||'.'||f.id) as tree, COALESCE(f.parent_forum,0) as parent_forum, (c.level + 1) as level FROM frm  c "+
-	   " JOIN forum f ON f.parent_forum = c.id )"+
+	   " SELECT f.id as id, f.code,f.name,(c.tree||'.'||f.id) as tree, COALESCE(f.parent,0) as parent, (c.level + 1) as level FROM frm  c "+
+	   " JOIN forum f ON f.parent = c.id )"+
 	   " SELECT * FROM   frm ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("ForumTree", sqlQuery, null);
 		//log.debug(Utility.debug(list));
@@ -41,11 +41,11 @@ public class ForumManager extends BaseUtil{
 	}	
 
 	public static List getDownline(String startId) throws Exception{
-		String sqlQuery = " WITH RECURSIVE q AS (  SELECT forum.id, forum.code,forum.name, forum.parent_forum, 1 as level FROM forum"+
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT forum.id, forum.code,forum.name, forum.parent, 1 as level FROM forum"+
 		  " WHERE forum.id='"+startId+"' "+
 		  " UNION ALL"+
-		  " SELECT x.id, x.code,x.name, x.parent_forum, (q.level+1) as level FROM forum  x"+
-		  " JOIN q ON q.id = x.parent_forum) "+ 
+		  " SELECT x.id, x.code,x.name, x.parent, (q.level+1) as level FROM forum  x"+
+		  " JOIN q ON q.id = x.parent) "+ 
 		  " SELECT * FROM q order by level ASC";
 		List list= DBQueryManager.getList("ForumDownline", sqlQuery, null); //new String[]{startId});
 		//log.debug(Utility.debug(list));
@@ -53,11 +53,11 @@ public class ForumManager extends BaseUtil{
 	}	
 
 	public static List getUpline(String startId) throws Exception{
-		String sqlQuery = " WITH RECURSIVE q AS (  SELECT forum.id, forum.code,forum.name, forum.parent_forum, 1 as level FROM forum"+
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT forum.id, forum.code,forum.name, forum.parent, 1 as level FROM forum"+
 		  " WHERE forum.id='"+startId+"' "+
 		  " UNION ALL"+
-		  " SELECT x.id, x.code,x.name, x.parent_forum, (q.level+1) as level FROM forum  x"+
-		  " JOIN q ON q.parent_forum = x.id) "+ 
+		  " SELECT x.id, x.code,x.name, x.parent, (q.level+1) as level FROM forum  x"+
+		  " JOIN q ON q.parent = x.id) "+ 
 		  " SELECT * FROM q order by level desc";
 		List list= DBQueryManager.getList("ForumUpline", sqlQuery, null);// new String[]{startId});
 		//log.debug(Utility.debug(list));
@@ -147,16 +147,15 @@ public class ForumManager extends BaseUtil{
 	}
 	
 	private static void updateFromMap(Forum obj, Map data,List<String> errors) {
-		obj.setAddress((String) data.get("address"));
 		obj.setCode((String) data.get("code"));
 		obj.setDescription((String) data.get("description"));
 		obj.setFilterCode((String) data.get("filterCode"));
 		obj.setIcon((String) data.get("icon"));
 		obj.setName((String) data.get("name"));
-		if(!nvl(data.get("parentForumId"))){
+		if(!nvl(data.get("parentId"))){
 			try {
-				Forum parentForum= ForumService.getInstance().get(toLong(data.get("parentForumId")));
-				if(parentForum!=null) obj.setParentForum(parentForum);
+				Forum parent= ForumService.getInstance().get(toLong(data.get("parentId")));
+				if(parent!=null) obj.setParent(parent);
 			} catch (Exception e) {
 				errors.add("error.invalid.parentForum");
 			}
@@ -182,7 +181,6 @@ public class ForumManager extends BaseUtil{
 	public static Document toDocument(Forum obj) {
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getName());
-		doc.append("address", obj.getAddress());
 		doc.append("code", obj.getCode());
 		doc.append("description", obj.getDescription());
 		doc.append("filterCode", obj.getFilterCode());
@@ -193,9 +191,9 @@ public class ForumManager extends BaseUtil{
 			doc.append("forumType", obj.getForumType().getName());
 			doc.append("forumTypeId", obj.getForumType().getId());
 		}
-		if(obj.getParentForum()!=null){
-			doc.append("parentForum", obj.getParentForum().getName());
-			doc.append("parentForumId", obj.getParentForum().getId());
+		if(obj.getParent()!=null){
+			doc.append("parent", obj.getParent().getName());
+			doc.append("parentId", obj.getParent().getId());
 		}
 		if(obj.getStatus()!=null){
 			doc.append("status", obj.getStatus().getName());

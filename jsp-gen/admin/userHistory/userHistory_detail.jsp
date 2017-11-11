@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -85,9 +85,9 @@
 			<td><bean:write name="userHistory" property="pinCode"/></td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="userHistory.mobileNumber.key"/></b></td>
+			<td width="150"><b><bean:message key="userHistory.picture.key"/></b></td>
 			<td width="10">:</td>
-			<td><bean:write name="userHistory" property="mobileNumber"/></td>
+			<td><bean:write name="userHistory" property="picture"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="userHistory.language.key"/></b></td>
@@ -108,11 +108,6 @@
 			<td width="150"><b><bean:message key="userHistory.alias.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="userHistory" property="alias"/></td>
-		</tr>
-		<tr>
-			<td width="150"><b><bean:message key="userHistory.picture.key"/></b></td>
-			<td width="10">:</td>
-			<td><bean:write name="userHistory" property="picture"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="userHistory.email.key"/></b></td>
@@ -307,6 +302,12 @@
 				&nbsp;
 				<% 		}
 					} %>
+				<% if(com.app.docmgr.admin.action.UserHistoryAction.allowableAction.contains("activate")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:USER_HISTORY_ACTIVATE")) { %>
+				<input type="button" value="<bean:message key="button.activate"/>" onclick="this.form.action.value='activate_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
 				<% if(com.app.docmgr.admin.action.UserHistoryAction.allowableAction.contains("close")) { 
 						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:USER_HISTORY_CLOSE")) { %>
 				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
@@ -322,6 +323,12 @@
 				<% if(com.app.docmgr.admin.action.UserHistoryAction.allowableAction.contains("remove")) { 
 						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:USER_HISTORY_REMOVE")) { %>
 				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.UserHistoryAction.allowableAction.contains("block")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:USER_HISTORY_BLOCK")) { %>
+				<input type="button" value="<bean:message key="button.block"/>" onclick="this.form.action.value='block_confirm';this.form.submit()" />
 				&nbsp;
 				<% 		}
 					} %>

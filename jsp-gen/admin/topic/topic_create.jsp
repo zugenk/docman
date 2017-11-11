@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -64,34 +64,20 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="topic.code.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="topic.code.key"/></b></td>
 			<td width="10">:</td>			
 			<td>
 				<html:text name="topic" property="code"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="topic.code">
-			<tr>
-				<td colspan="3">
-					<font color="red"><html:errors property="topic.code"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
 
 		<tr>
-			<td width="150"><b><bean:message key="topic.icon.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="topic.icon.key"/></b></td>
 			<td width="10">:</td>			
 			<td>
 				<html:text name="topic" property="icon"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="topic.icon">
-			<tr>
-				<td colspan="3">
-					<font color="red"><html:errors property="topic.icon"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
 
 		<tr>
 			<td width="150"><b><bean:message key="topic.name.key"/> <font color="#FF0000">*</font></b></td>
@@ -205,15 +191,22 @@
 			</tr>
 		</logic:messagesPresent>
 <% */ %> 		<tr>
-			<td width="150"><b><bean:message key="topic.parentForum.key"/></b></td>
+			<td width="150"><b><bean:message key="topic.forum.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="topic" property="parentForum" style="width:135"  value="${topic.parentForum.id}">
+				<html-el:select  name="topic" property="forum" style="width:135"  value="${topic.forum.id}">
 					<option value=""></option>
-					<html:options collection="parentForumList" property="id" labelProperty="name"/>
+					<html:options collection="forumList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>
+		<logic:messagesPresent property="topic.forum">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="topic.forum"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
 		<tr>
 			<td width="150"></td>
 			<td width="10"></td>

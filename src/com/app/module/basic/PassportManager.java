@@ -16,7 +16,6 @@ import com.app.docmgr.service.ForumService;
 import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.base.UserServiceBase;
 import com.app.module.forum.ForumManager;
-import com.app.module.forum.old.ForumManagerOld;
 import com.app.shared.PartialList;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.FindOneAndReplaceOptions;

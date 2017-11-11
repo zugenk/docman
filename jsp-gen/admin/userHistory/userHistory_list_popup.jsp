@@ -16,7 +16,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -49,7 +49,7 @@
 
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td class="titleHeader" colspan="43" align="left">
+		<td class="titleHeader" colspan="42" align="left">
 			<bean:message key="page.UserHistory.ListPopup"/>
 		</td>
 	</tr>
@@ -71,12 +71,11 @@
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="loginName"/>');"><bean:write name="element" property="loginName"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="loginPassword"/>');"><bean:write name="element" property="loginPassword"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="pinCode"/>');"><bean:write name="element" property="pinCode"/></a></td>
-		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="mobileNumber"/>');"><bean:write name="element" property="mobileNumber"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="picture"/>');"><bean:write name="element" property="picture"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="language"/>');"><bean:write name="element" property="language"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="title"/>');"><bean:write name="element" property="title"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="name"/>');"><bean:write name="element" property="name"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="alias"/>');"><bean:write name="element" property="alias"/></a></td>
-		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="picture"/>');"><bean:write name="element" property="picture"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="email"/>');"><bean:write name="element" property="email"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="fullName"/>');"><bean:write name="element" property="fullName"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="homePhoneNumber"/>');"><bean:write name="element" property="homePhoneNumber"/></a></td>

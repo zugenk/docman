@@ -19,22 +19,20 @@
 			name="code"
 			column="code"
 			type="string"
-			not-null="true"
+			not-null="false"
 			length="20"
 		/>
 		<property
 			name="icon"
 			column="icon"
 			type="string"
-			not-null="true"
-			length="50"
+			not-null="false"
 		/>
 		<property
 			name="name"
 			column="name"
 			type="string"
 			not-null="true"
-			length="150"
 		/>
 
 		<property
@@ -46,17 +44,18 @@
 		/>
 		<property
 			name="numberOfLike"
-			column="number_of_like"
 			type="java.lang.Integer"
 			not-null="false"
-		/>
-
+		>
+			<column name="number_of_like" default="0"/>
+		</property>
 		<property
 			name="numberOfPost"
-			column="number_of_post"
 			type="java.lang.Integer"
 			not-null="false"
-		/>
+		>
+			<column name="number_of_post" default="0"/>
+		</property>
 		<many-to-one
 			name="status"
 			column="status"
@@ -99,10 +98,10 @@
 			length="100"
 		/>
 		<many-to-one
-			name="parentForum"
-			column="parent_forum"
+			name="forum"
+			column="forum"
 			class="com.app.docmgr.model.Forum"
-			not-null="false"
+			not-null="true"
 		>
 		</many-to-one>
 

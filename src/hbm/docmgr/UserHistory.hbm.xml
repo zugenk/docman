@@ -64,13 +64,11 @@
 			not-null="false"
 			length="100"
 		/>
-
 		<property
-			name="mobileNumber"
-			column="mobile_number"
+			name="picture"
+			column="picture"
 			type="string"
 			not-null="false"
-			length="50"
 		/>
 
 		<many-to-one
@@ -115,14 +113,6 @@
 			not-null="false"
 		>
 		</many-to-one>
-		<property
-			name="picture"
-			column="picture"
-			type="string"
-			not-null="false"
-			length="4000"
-		/>
-		
 		<property
 			name="email"
 			column="email"

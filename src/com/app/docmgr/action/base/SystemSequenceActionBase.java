@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class SystemSequenceActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.SystemSequenceActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;

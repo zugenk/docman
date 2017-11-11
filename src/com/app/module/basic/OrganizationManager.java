@@ -173,6 +173,15 @@ public class OrganizationManager extends BaseUtil {
 				errors.add("error.invalid.organizationType");
 			}
 		}
+		if(!nvl(data.get("securityLevelId"))){
+			try {
+				//Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
+				Lookup securityLevel= LookupService.getInstance().get(toLong(data.get("securityLevelId")));
+				if(securityLevel!=null) obj.setSecurityLevel(securityLevel);
+			} catch (Exception e) {
+				errors.add("error.invalid.securityLevel");
+			}
+		}
 		if(!nvl(data.get("statusId"))){
 			try {
 				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
@@ -202,10 +211,14 @@ public class OrganizationManager extends BaseUtil {
 			doc.append("organizationType", obj.getOrganizationType().getName());
 			doc.append("organizationTypeId", obj.getOrganizationType().getId());
 		}
-		if (obj.getStatus()!=null) {
+		if(obj.getSecurityLevel()!=null){
+			doc.append("securityLevel", obj.getSecurityLevel().getName());
+			doc.append("securityLevelId", obj.getSecurityLevel().getId());
+		}
+/*		if (obj.getStatus()!=null) {
 			doc.append("status", obj.getStatus().getName());
 			doc.append("statusId", obj.getStatus().getId());
-		}
+		} */
 		return doc;
 	}
 	

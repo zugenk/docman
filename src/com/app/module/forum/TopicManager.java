@@ -177,10 +177,10 @@ public class TopicManager extends BaseUtil{
 		obj.setFilterCode((String) data.get("filterCode"));
 		obj.setIcon((String) data.get("icon"));
 		obj.setName((String) data.get("name"));
-		if(!nvl(data.get("parentForumId"))){
+		if(!nvl(data.get("forumId"))){
 			try {
-				Forum parentForum= ForumService.getInstance().get(toLong(data.get("parentForumId")));
-				if(parentForum!=null)obj.setParentForum(parentForum);
+				Forum forum= ForumService.getInstance().get(toLong(data.get("forumId")));
+				if(forum!=null)obj.setForum(forum);
 			} catch (Exception e) {
 				errors.add("error.invalid.parentForum");
 			}
@@ -264,9 +264,9 @@ public class TopicManager extends BaseUtil{
 		doc.append("numberOfLike", obj.getNumberOfLike());
 		doc.append("numberOfPost", obj.getNumberOfPost());
 		
-		if(obj.getParentForum()!=null){
-			doc.append("parentForum", obj.getParentForum().getName());
-			doc.append("parentForumId", obj.getParentForum().getId());
+		if(obj.getForum()!=null){
+			doc.append("forum", obj.getForum().getName());
+			doc.append("forumId", obj.getForum().getId());
 		}
 		if(obj.getStatus()==null) {
 			doc.append("status", obj.getStatus().getName());

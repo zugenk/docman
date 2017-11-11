@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class BookmarkActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.BookmarkActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -95,6 +95,10 @@ public class BookmarkActionBase extends Action{
 	    		forward = doProcessConfirm(mapping, form, request, response);
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		doProcessOk(mapping, form, request, response);
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		forward = doActivateConfirm(mapping, form, request, response);
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		doActivateOk(mapping, form, request, response);
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
@@ -107,6 +111,10 @@ public class BookmarkActionBase extends Action{
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		forward = doBlockConfirm(mapping, form, request, response);
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		doBlockOk(mapping, form, request, response);
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		forward = doCancelConfirm(mapping, form, request, response);
 	    	}else if("cancel_ok".equalsIgnoreCase(action)){
@@ -839,6 +847,53 @@ public class BookmarkActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doActivateConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Bookmark bookmark = (Bookmark) request.getSession().getAttribute("bookmark");
+    		if (bookmark == null){
+	    		bookmark = BookmarkService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("bookmark", bookmark);
+	    	}
+    		if(bookmark == null){
+    			response.sendRedirect("bookmark.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("activate_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("bookmark.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doActivateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Bookmark bookmark = (Bookmark) request.getSession().getAttribute("bookmark");
+    		if(bookmark == null){
+    			response.sendRedirect("bookmark.do?action=activate_confirm");
+    		}
+    		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","activated"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
+    		BookmarkService.getInstance().update(bookmark);
+    		response.sendRedirect("bookmark.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("bookmark.do?action=activate_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -980,6 +1035,53 @@ public class BookmarkActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doBlockConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Bookmark bookmark = (Bookmark) request.getSession().getAttribute("bookmark");
+    		if (bookmark == null){
+	    		bookmark = BookmarkService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("bookmark", bookmark);
+	    	}
+    		if(bookmark == null){
+    			response.sendRedirect("bookmark.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("block_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("bookmark.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doBlockOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Bookmark bookmark = (Bookmark) request.getSession().getAttribute("bookmark");
+    		if(bookmark == null){
+    			response.sendRedirect("bookmark.do?action=block_confirm");
+    		}
+    		bookmark.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark","blocked"));
+			bookmark.setLastUpdatedDate(new Date());
+			bookmark.setLastUpdatedBy(_doneBy);
+    		BookmarkService.getInstance().update(bookmark);
+    		response.sendRedirect("bookmark.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("bookmark.do?action=block_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1042,14 +1144,8 @@ public class BookmarkActionBase extends Action{
 			}
 			String category = request.getParameter("category");
 			bookmark.setCategory(category);
-			if(category==null || category.trim().length() == 0 ){
-				errors.add("bookmark.category", new ActionError("error.bookmark.category"));
-			}
 			String note = request.getParameter("note");
 			bookmark.setNote(note);
-			if(note==null || note.trim().length() == 0 ){
-				errors.add("bookmark.note", new ActionError("error.bookmark.note"));
-			}
 /* 			String createdDate = request.getParameter("createdDate");
 			if(createdDate==null || createdDate.trim().length() == 0 ){
 				bookmark.setCreatedDate(null);
@@ -1123,6 +1219,9 @@ public class BookmarkActionBase extends Action{
 					bookmark.setOwner(ownerObj);
 				}
 			}catch(Exception ex){}	
+			if(ownerObj==null){
+				errors.add("bookmark.owner", new ActionError("error.bookmark.owner"));
+			}
 
     	}catch(Exception ex){
     		ex.printStackTrace();

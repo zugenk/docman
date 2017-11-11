@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -57,7 +57,7 @@
 			document.forms.folder.folder_lastUpdatedBy_filter.value="";
 			document.forms.folder.folder_folderType_filter.value="";
 			document.forms.folder.folder_status_filter.value="";
-			document.forms.folder.folder_parentFolder_filter.value="";
+			document.forms.folder.folder_parent_filter.value="";
 			document.forms.folder.submit();
 		}
 
@@ -202,7 +202,7 @@
 		</td>
 		<td><bean:message key="folder.folderType.key"/></td>
 		<td><bean:message key="folder.status.key"/></td>
-		<td><bean:message key="folder.parentFolder.key"/></td>
+		<td><bean:message key="folder.parent.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -236,8 +236,8 @@
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="parentFolder">								
-					<bean:write name="element" property="parentFolder.name"/>
+				<logic:notEmpty name="element"	property="parent">								
+					<bean:write name="element" property="parent.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -379,25 +379,25 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="folder.parentFolder.key"/></td>
+			<td width="150"><bean:message key="folder.parent.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  folder_parentFolder_filter_value = (String)request.getSession().getAttribute("folder_parentFolder_filter");
-					if("".equals(folder_parentFolder_filter_value)) folder_parentFolder_filter_value = "0";
+					String  folder_parent_filter_value = (String)request.getSession().getAttribute("folder_parent_filter");
+					if("".equals(folder_parent_filter_value)) folder_parent_filter_value = "0";
 				%>				
-				<select name="folder_parentFolder_filter">
+				<select name="folder_parent_filter">
 					<option value=""></option>
-					<logic:iterate id="parentFolderElement" name="parentFolderList"  type="com.app.docmgr.model.Folder">
+					<logic:iterate id="parentElement" name="parentList"  type="com.app.docmgr.model.Folder">
 						
-						<option value="<bean:write name="parentFolderElement" property="id"/>" 
+						<option value="<bean:write name="parentElement" property="id"/>" 
 							<%
-								Long folder_parentFolder_id = parentFolderElement.getId();							
-								Long folder_parentFolder_filter_value_c = new Long(folder_parentFolder_filter_value);
-								if(folder_parentFolder_filter_value_c.equals(folder_parentFolder_id))out.print(" SELECTED ");
+								Long folder_parent_id = parentElement.getId();							
+								Long folder_parent_filter_value_c = new Long(folder_parent_filter_value);
+								if(folder_parent_filter_value_c.equals(folder_parent_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="parentFolderElement" property="name"/></option>
+						<bean:write name="parentElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

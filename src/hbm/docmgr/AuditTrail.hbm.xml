@@ -26,7 +26,14 @@
 			name="entity"
 			column="entity"
 			type="string"
-			not-null="true"
+			not-null="false"
+			length="30"
+		/>
+		<property
+			name="entityId"
+			column="entity_id"
+			type="java.lang.Long"
+			not-null="false"
 			length="30"
 		/>
 		<property
@@ -51,20 +58,16 @@
 			length="30"
 		/>
 		<property
-			name="actions"
-			column="actions"
+			name="action"
+			column="action"
 			type="string"
 			not-null="true"
-			length="255"
 		/>
 		<property
 			name="description"
 			column="description"
 			type="string"
 			not-null="false"
-			length="255"
 		/>
-
-
 	</class>
 </hibernate-mapping>

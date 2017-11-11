@@ -1,11 +1,7 @@
 package com.app.module.rest;
-
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,8 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.basic.UserManager;
-import com.app.module.forum.old.ForumManagerOld;
-import com.simas.webservice.Utility;
 
 @Controller
 @RequestMapping("/v1/user")

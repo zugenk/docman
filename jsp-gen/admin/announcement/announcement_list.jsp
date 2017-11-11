@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -47,6 +47,7 @@
 
 		function doReset(){
 			document.forms.announcement.announcement_content_filter.value="";
+			document.forms.announcement.announcement_subject_filter.value="";
 			document.forms.announcement.announcement_targetUsers_filter.value="";
 			document.forms.announcement.announcement_targetOrganizations_filter.value="";
 			document.forms.announcement.announcement_createdDate_filter_start.value="";
@@ -78,23 +79,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="17" align="left">
+		<td class="titleHeader" colspan="18" align="left">
 			<bean:message key="page.Announcement.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -113,6 +114,20 @@
 			</logic:equal>
 			<logic:notEqual name="announcement_fieldOrder" value="content">
 				<a href="#" onclick="doOrder('content', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
+			<bean:message key="announcement.subject.key"/>
+			<logic:equal name="announcement_fieldOrder" value="subject">
+				<logic:equal name="announcement_orderType" value="ASC">
+					<a href="#" onclick="doOrder('subject', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="announcement_orderType" value="DESC">
+					<a href="#" onclick="doOrder('subject', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="announcement_fieldOrder" value="subject">
+				<a href="#" onclick="doOrder('subject', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -215,6 +230,7 @@
 		 %>
 		<tr bgcolor="<% out.print(bgcolor); %>">
 		<td><bean:write name="element" property="content"/></td>
+		<td><bean:write name="element" property="subject"/></td>
 		<td><bean:write name="element" property="targetUsers"/></td>
 		<td><bean:write name="element" property="targetOrganizations"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
@@ -242,12 +258,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 		<% if(com.app.docmgr.admin.action.AnnouncementAction.allowableAction.contains("create")) { 
 				if (UserService.getInstance().hasPrivilege(loginUser,"ADMIN:ANNOUNCEMENT_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -265,6 +281,11 @@
 		<td width="150"><bean:message key="announcement.content.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="announcement_content_filter" value="<bean:write name="announcement_content_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="announcement.subject.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="announcement_subject_filter" value="<bean:write name="announcement_subject_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150"><bean:message key="announcement.targetUsers.key"/></td>

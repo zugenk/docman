@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -52,12 +52,11 @@
 			document.forms.userHistory.userHistory_loginName_filter.value="";
 			document.forms.userHistory.userHistory_loginPassword_filter.value="";
 			document.forms.userHistory.userHistory_pinCode_filter.value="";
-			document.forms.userHistory.userHistory_mobileNumber_filter.value="";
+			document.forms.userHistory.userHistory_picture_filter.value="";
 			document.forms.userHistory.userHistory_language_filter.value="";
 			document.forms.userHistory.userHistory_title_filter.value="";
 			document.forms.userHistory.userHistory_name_filter.value="";
 			document.forms.userHistory.userHistory_alias_filter.value="";
-			document.forms.userHistory.userHistory_picture_filter.value="";
 			document.forms.userHistory.userHistory_email_filter.value="";
 			document.forms.userHistory.userHistory_fullName_filter.value="";
 			document.forms.userHistory.userHistory_homePhoneNumber_filter.value="";
@@ -108,23 +107,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="43" align="right">
+		<td colspan="42" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="43" align="left">
+		<td class="titleHeader" colspan="42" align="left">
 			<bean:message key="page.UserHistory.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="43" align="right">
+		<td colspan="42" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="43" align="right">
+		<td colspan="42" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -230,17 +229,17 @@
 			</logic:notEqual>
 		</td>
 		<td>			
-			<bean:message key="userHistory.mobileNumber.key"/>
-			<logic:equal name="userHistory_fieldOrder" value="mobile_number">
+			<bean:message key="userHistory.picture.key"/>
+			<logic:equal name="userHistory_fieldOrder" value="picture">
 				<logic:equal name="userHistory_orderType" value="ASC">
-					<a href="#" onclick="doOrder('mobile_number', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+					<a href="#" onclick="doOrder('picture', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
 				</logic:equal>
 				<logic:equal name="userHistory_orderType" value="DESC">
-					<a href="#" onclick="doOrder('mobile_number', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+					<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 				</logic:equal>
 			</logic:equal>
-			<logic:notEqual name="userHistory_fieldOrder" value="mobile_number">
-				<a href="#" onclick="doOrder('mobile_number', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			<logic:notEqual name="userHistory_fieldOrder" value="picture">
+				<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -297,20 +296,6 @@
 			</logic:equal>
 			<logic:notEqual name="userHistory_fieldOrder" value="alias">
 				<a href="#" onclick="doOrder('alias', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
-			</logic:notEqual>
-		</td>
-		<td>			
-			<bean:message key="userHistory.picture.key"/>
-			<logic:equal name="userHistory_fieldOrder" value="picture">
-				<logic:equal name="userHistory_orderType" value="ASC">
-					<a href="#" onclick="doOrder('picture', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
-				</logic:equal>
-				<logic:equal name="userHistory_orderType" value="DESC">
-					<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
-				</logic:equal>
-			</logic:equal>
-			<logic:notEqual name="userHistory_fieldOrder" value="picture">
-				<a href="#" onclick="doOrder('picture', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -618,12 +603,11 @@
 		<td><bean:write name="element" property="loginName"/></td>
 		<td><bean:write name="element" property="loginPassword"/></td>
 		<td><bean:write name="element" property="pinCode"/></td>
-		<td><bean:write name="element" property="mobileNumber"/></td>
+		<td><bean:write name="element" property="picture"/></td>
 		<td><bean:write name="element" property="language"/></td>
 		<td><bean:write name="element" property="title"/></td>
 		<td><bean:write name="element" property="name"/></td>
 		<td><bean:write name="element" property="alias"/></td>
-		<td><bean:write name="element" property="picture"/></td>
 		<td><bean:write name="element" property="email"/></td>
 		<td><bean:write name="element" property="fullName"/></td>
 		<td><bean:write name="element" property="homePhoneNumber"/></td>
@@ -683,12 +667,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="43" align="right">
+		<td colspan="42" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="43" align="right">
+		<td colspan="42" align="right">
 		<% if(com.app.docmgr.action.UserHistoryAction.allowableAction.contains("create")) { 
 				if (privilegeList.contains("USER_HISTORY_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -741,9 +725,9 @@
 		<td><input type="text" name="userHistory_pinCode_filter" value="<bean:write name="userHistory_pinCode_filter"/>"></td>
 	</tr>
 	<tr>
-		<td width="150"><bean:message key="userHistory.mobileNumber.key"/></td>
+		<td width="150"><bean:message key="userHistory.picture.key"/></td>
 		<td width="10">:</td>
-		<td><input type="text" name="userHistory_mobileNumber_filter" value="<bean:write name="userHistory_mobileNumber_filter"/>"></td>
+		<td><input type="text" name="userHistory_picture_filter" value="<bean:write name="userHistory_picture_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150"><bean:message key="userHistory.language.key"/></td>
@@ -764,11 +748,6 @@
 		<td width="150"><bean:message key="userHistory.alias.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="userHistory_alias_filter" value="<bean:write name="userHistory_alias_filter"/>"></td>
-	</tr>
-	<tr>
-		<td width="150"><bean:message key="userHistory.picture.key"/></td>
-		<td width="10">:</td>
-		<td><input type="text" name="userHistory_picture_filter" value="<bean:write name="userHistory_picture_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150"><bean:message key="userHistory.email.key"/></td>

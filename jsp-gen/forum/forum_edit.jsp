@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -64,33 +64,19 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="forum.code.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="forum.code.key"/></b></td>
 			<td width="10">:</td>
 			<td>
 				<html:text name="forum" property="code"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="forum.code">
-			<tr>
-				<td colspan="2">
-					<font color="red"><html:errors property="forum.code"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
 		<tr>
-			<td width="150"><b><bean:message key="forum.icon.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="forum.icon.key"/></b></td>
 			<td width="10">:</td>
 			<td>
 				<html:text name="forum" property="icon"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="forum.icon">
-			<tr>
-				<td colspan="2">
-					<font color="red"><html:errors property="forum.icon"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
 		<tr>
 			<td width="150"><b><bean:message key="forum.name.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
@@ -106,24 +92,10 @@
 			</tr>
 		</logic:messagesPresent>
 		<tr>
-			<td width="150"><b><bean:message key="forum.description.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="forum.description.key"/></b></td>
 			<td width="10">:</td>
 			<td>
 				<html:text name="forum" property="description"/>
-			</td>
-		</tr>
-		<logic:messagesPresent property="forum.description">
-			<tr>
-				<td colspan="2">
-					<font color="red"><html:errors property="forum.description"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
-		<tr>
-			<td width="150"><b><bean:message key="forum.address.key"/></b></td>
-			<td width="10">:</td>
-			<td>
-				<html:text name="forum" property="address"/>
 			</td>
 		</tr>
   <% /* %> 		<tr>
@@ -223,12 +195,12 @@
 			</tr>
 		</logic:messagesPresent>
 		<tr>
-			<td width="150"><b><bean:message key="forum.parentForum.key"/></b></td>
+			<td width="150"><b><bean:message key="forum.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="forum" property="parentForum" style="width:135"  value="${forum.parentForum.id}">
+				<html-el:select  name="forum" property="parent" style="width:135"  value="${forum.parent.id}">
 					<option value=""></option>
-					<html:options collection="parentForumList" property="id" labelProperty="name"/>
+					<html:options collection="parentList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>

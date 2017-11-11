@@ -19,15 +19,14 @@
 			name="code"
 			column="code"
 			type="string"
-			not-null="true"
+			not-null="false"
 			length="20"
 		/>
 		<property
 			name="icon"
 			column="icon"
 			type="string"
-			not-null="true"
-			length="50"
+			not-null="false"
 		/>
 		<property
 			name="name"
@@ -40,8 +39,8 @@
 			name="description"
 			column="description"
 			type="string"
-			not-null="true"
-			length="500"
+			not-null="false"
+			length="1000"
 		/>
 		<many-to-one
 			name="status"
@@ -57,13 +56,6 @@
 			not-null="true"
 		>
 		</many-to-one>
-		<property
-			name="address"
-			column="address"
-			type="string"
-			not-null="false"
-			length="255"
-		/>
 		<property
 			name="createdDate"
 			column="created_date"
@@ -99,8 +91,8 @@
 			length="100"
 		/>
 		<many-to-one
-			name="parentForum"
-			column="parent_forum"
+			name="parent"
+			column="parent"
 			class="com.app.docmgr.model.Forum"
 			not-null="false"
 		>

@@ -141,16 +141,16 @@
 		/>
 
 		<many-to-one
-			name="parentFolder"
-			column="parent_folder"
+			name="folder"
+			column="folder"
 			class="com.app.docmgr.model.Folder"
 			not-null="true"
 		>
 		</many-to-one>
 		
 		<many-to-one
-			name="parentDocument"
-			column="parent_document"
+			name="parent"
+			column="parent"
 			class="com.app.docmgr.model.Document"
 			not-null="false"
 		>

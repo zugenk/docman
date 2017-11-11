@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class DocumentActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.DocumentActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -95,6 +95,10 @@ public class DocumentActionBase extends Action{
 	    		forward = doProcessConfirm(mapping, form, request, response);
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		doProcessOk(mapping, form, request, response);
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		forward = doActivateConfirm(mapping, form, request, response);
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		doActivateOk(mapping, form, request, response);
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
@@ -107,6 +111,10 @@ public class DocumentActionBase extends Action{
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		forward = doBlockConfirm(mapping, form, request, response);
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		doBlockOk(mapping, form, request, response);
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		forward = doCancelConfirm(mapping, form, request, response);
 	    	}else if("cancel_ok".equalsIgnoreCase(action)){
@@ -143,12 +151,12 @@ public class DocumentActionBase extends Action{
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
-			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
-			List parentFolderList = parentFolderService.getList(null, null);
-			request.setAttribute("parentFolderList", parentFolderList);
-			com.app.docmgr.service.DocumentService parentDocumentService = com.app.docmgr.service.DocumentService.getInstance();
-			List parentDocumentList = parentDocumentService.getList(null, null);
-			request.setAttribute("parentDocumentList", parentDocumentList);
+			com.app.docmgr.service.FolderService folderService = com.app.docmgr.service.FolderService.getInstance();
+			List folderList = folderService.getList(null, null);
+			request.setAttribute("folderList", folderList);
+			com.app.docmgr.service.DocumentService parentService = com.app.docmgr.service.DocumentService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 		}catch(Exception ex){
 		
 		}
@@ -305,22 +313,22 @@ public class DocumentActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("document_status_filter", param_document_status_filter);
-		String param_document_parentFolder_filter = "";
-		if(request.getParameter("document_parentFolder_filter")!=null){
-			param_document_parentFolder_filter = request.getParameter("document_parentFolder_filter");
-			if(param_document_parentFolder_filter.length() > 0 ){				
-				document_filterSb.append("  AND document.parentFolder = '"+param_document_parentFolder_filter+"' ");
+		String param_document_folder_filter = "";
+		if(request.getParameter("document_folder_filter")!=null){
+			param_document_folder_filter = request.getParameter("document_folder_filter");
+			if(param_document_folder_filter.length() > 0 ){				
+				document_filterSb.append("  AND document.folder = '"+param_document_folder_filter+"' ");
 			}
 		}		
-		request.getSession().setAttribute("document_parentFolder_filter", param_document_parentFolder_filter);
-		String param_document_parentDocument_filter = "";
-		if(request.getParameter("document_parentDocument_filter")!=null){
-			param_document_parentDocument_filter = request.getParameter("document_parentDocument_filter");
-			if(param_document_parentDocument_filter.length() > 0 ){				
-				document_filterSb.append("  AND document.parentDocument = '"+param_document_parentDocument_filter+"' ");
+		request.getSession().setAttribute("document_folder_filter", param_document_folder_filter);
+		String param_document_parent_filter = "";
+		if(request.getParameter("document_parent_filter")!=null){
+			param_document_parent_filter = request.getParameter("document_parent_filter");
+			if(param_document_parent_filter.length() > 0 ){				
+				document_filterSb.append("  AND document.parent = '"+param_document_parent_filter+"' ");
 			}
 		}		
-		request.getSession().setAttribute("document_parentDocument_filter", param_document_parentDocument_filter);
+		request.getSession().setAttribute("document_parent_filter", param_document_parent_filter);
 		
 		if(document_fieldOrder!=null && document_orderType != null )document_filterSb.append(" ORDER BY "+document_fieldOrder+" "+document_orderType);
 		
@@ -446,12 +454,12 @@ public class DocumentActionBase extends Action{
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
- */ 			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
-			List parentFolderList = parentFolderService.getList(null, null);
-			request.setAttribute("parentFolderList", parentFolderList);
-			com.app.docmgr.service.DocumentService parentDocumentService = com.app.docmgr.service.DocumentService.getInstance();
-			List parentDocumentList = parentDocumentService.getList(null, null);
-			request.setAttribute("parentDocumentList", parentDocumentList);
+ */ 			com.app.docmgr.service.FolderService folderService = com.app.docmgr.service.FolderService.getInstance();
+			List folderList = folderService.getList(null, null);
+			request.setAttribute("folderList", folderList);
+			com.app.docmgr.service.DocumentService parentService = com.app.docmgr.service.DocumentService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 
     		request.getSession().setAttribute("document", document);
     		forward = mapping.findForward("create");
@@ -486,12 +494,12 @@ public class DocumentActionBase extends Action{
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
-*/			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
-			List parentFolderList = parentFolderService.getList(null, null);
-			request.setAttribute("parentFolderList", parentFolderList);
-			com.app.docmgr.service.DocumentService parentDocumentService = com.app.docmgr.service.DocumentService.getInstance();
-			List parentDocumentList = parentDocumentService.getList(null, null);
-			request.setAttribute("parentDocumentList", parentDocumentList);
+*/			com.app.docmgr.service.FolderService folderService = com.app.docmgr.service.FolderService.getInstance();
+			List folderList = folderService.getList(null, null);
+			request.setAttribute("folderList", folderList);
+			com.app.docmgr.service.DocumentService parentService = com.app.docmgr.service.DocumentService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 	
     		if(errors.isEmpty()){
     			forward = mapping.findForward("create_confirm");
@@ -549,12 +557,12 @@ public class DocumentActionBase extends Action{
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
-*/ 			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
-			List parentFolderList = parentFolderService.getList(null, null);
-			request.setAttribute("parentFolderList", parentFolderList);
-			com.app.docmgr.service.DocumentService parentDocumentService = com.app.docmgr.service.DocumentService.getInstance();
-			List parentDocumentList = parentDocumentService.getList(null, null);
-			request.setAttribute("parentDocumentList", parentDocumentList);
+*/ 			com.app.docmgr.service.FolderService folderService = com.app.docmgr.service.FolderService.getInstance();
+			List folderList = folderService.getList(null, null);
+			request.setAttribute("folderList", folderList);
+			com.app.docmgr.service.DocumentService parentService = com.app.docmgr.service.DocumentService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 
     		forward = mapping.findForward("edit");
     	}catch(Exception ex){
@@ -585,12 +593,12 @@ public class DocumentActionBase extends Action{
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Document'  ", null);
 			request.setAttribute("statusList", statusList);
- */			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
-			List parentFolderList = parentFolderService.getList(null, null);
-			request.setAttribute("parentFolderList", parentFolderList);
-			com.app.docmgr.service.DocumentService parentDocumentService = com.app.docmgr.service.DocumentService.getInstance();
-			List parentDocumentList = parentDocumentService.getList(null, null);
-			request.setAttribute("parentDocumentList", parentDocumentList);
+ */			com.app.docmgr.service.FolderService folderService = com.app.docmgr.service.FolderService.getInstance();
+			List folderList = folderService.getList(null, null);
+			request.setAttribute("folderList", folderList);
+			com.app.docmgr.service.DocumentService parentService = com.app.docmgr.service.DocumentService.getInstance();
+			List parentList = parentService.getList(null, null);
+			request.setAttribute("parentList", parentList);
 
     		if(errors.isEmpty()){
     			forward = mapping.findForward("edit_confirm");
@@ -909,6 +917,53 @@ public class DocumentActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doActivateConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Document document = (Document) request.getSession().getAttribute("document");
+    		if (document == null){
+	    		document = DocumentService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("document", document);
+	    	}
+    		if(document == null){
+    			response.sendRedirect("document.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("activate_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("document.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doActivateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Document document = (Document) request.getSession().getAttribute("document");
+    		if(document == null){
+    			response.sendRedirect("document.do?action=activate_confirm");
+    		}
+    		document.setStatus(StatusService.getInstance().getByTypeandCode("Document","activated"));
+			document.setLastUpdatedDate(new Date());
+			document.setLastUpdatedBy(_doneBy);
+    		DocumentService.getInstance().update(document);
+    		response.sendRedirect("document.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("document.do?action=activate_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1050,6 +1105,53 @@ public class DocumentActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doBlockConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Document document = (Document) request.getSession().getAttribute("document");
+    		if (document == null){
+	    		document = DocumentService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("document", document);
+	    	}
+    		if(document == null){
+    			response.sendRedirect("document.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("block_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("document.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doBlockOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Document document = (Document) request.getSession().getAttribute("document");
+    		if(document == null){
+    			response.sendRedirect("document.do?action=block_confirm");
+    		}
+    		document.setStatus(StatusService.getInstance().getByTypeandCode("Document","blocked"));
+			document.setLastUpdatedDate(new Date());
+			document.setLastUpdatedBy(_doneBy);
+    		DocumentService.getInstance().update(document);
+    		response.sendRedirect("document.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("document.do?action=block_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1120,6 +1222,10 @@ public class DocumentActionBase extends Action{
 			document.setDocumentVersion(documentVersion);
 			String description = request.getParameter("description");
 			document.setDescription(description);
+			String priority = request.getParameter("priority");
+			try{
+				document.setPriority(new java.lang.Integer(priority));
+			}catch(Exception ex){}
 /* 			String createdDate = request.getParameter("createdDate");
 			if(createdDate==null || createdDate.trim().length() == 0 ){
 				document.setCreatedDate(null);
@@ -1193,31 +1299,31 @@ public class DocumentActionBase extends Action{
 			if(statusObj==null){
 				errors.add("document.status", new ActionError("error.document.status"));
 			}
-*/ 			com.app.docmgr.model.Folder  parentFolderObj =null;
-			com.app.docmgr.service.FolderService parentFolderService = com.app.docmgr.service.FolderService.getInstance();
+*/ 			com.app.docmgr.model.Folder  folderObj =null;
+			com.app.docmgr.service.FolderService folderService = com.app.docmgr.service.FolderService.getInstance();
 			try{
-				String parentFolderStr = request.getParameter("parentFolder");
+				String folderStr = request.getParameter("folder");
 				
-				if(parentFolderStr == null || parentFolderStr.trim().length() == 0 ){
-					document.setParentFolder(null);
+				if(folderStr == null || folderStr.trim().length() == 0 ){
+					document.setFolder(null);
 				}else{			
-					parentFolderObj = parentFolderService.get(new Long(parentFolderStr));
-					document.setParentFolder(parentFolderObj);
+					folderObj = folderService.get(new Long(folderStr));
+					document.setFolder(folderObj);
 				}
 			}catch(Exception ex){}	
-			if(parentFolderObj==null){
-				errors.add("document.parentFolder", new ActionError("error.document.parentFolder"));
+			if(folderObj==null){
+				errors.add("document.folder", new ActionError("error.document.folder"));
 			}
-			com.app.docmgr.model.Document  parentDocumentObj =null;
-			com.app.docmgr.service.DocumentService parentDocumentService = com.app.docmgr.service.DocumentService.getInstance();
+			com.app.docmgr.model.Document  parentObj =null;
+			com.app.docmgr.service.DocumentService parentService = com.app.docmgr.service.DocumentService.getInstance();
 			try{
-				String parentDocumentStr = request.getParameter("parentDocument");
+				String parentStr = request.getParameter("parent");
 				
-				if(parentDocumentStr == null || parentDocumentStr.trim().length() == 0 ){
-					document.setParentDocument(null);
+				if(parentStr == null || parentStr.trim().length() == 0 ){
+					document.setParent(null);
 				}else{			
-					parentDocumentObj = parentDocumentService.get(new Long(parentDocumentStr));
-					document.setParentDocument(parentDocumentObj);
+					parentObj = parentService.get(new Long(parentStr));
+					document.setParent(parentObj);
 				}
 			}catch(Exception ex){}	
 

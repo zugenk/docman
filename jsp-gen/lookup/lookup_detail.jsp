@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -141,6 +141,12 @@
 				&nbsp;
 				<% 		}
 					} %>
+				<% if(com.app.docmgr.action.LookupAction.allowableAction.contains("activate")) { 
+						if (privilegeList.contains("LOOKUP_ACTIVATE")) { %>
+				<input type="button" value="<bean:message key="button.activate"/>" onclick="this.form.action.value='activate_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
 				<% if(com.app.docmgr.action.LookupAction.allowableAction.contains("close")) { 
 						if (privilegeList.contains("LOOKUP_CLOSE")) { %>
 				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
@@ -156,6 +162,12 @@
 				<% if(com.app.docmgr.action.LookupAction.allowableAction.contains("remove")) { 
 						if (privilegeList.contains("LOOKUP_REMOVE")) { %>
 				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.LookupAction.allowableAction.contains("block")) { 
+						if (privilegeList.contains("LOOKUP_BLOCK")) { %>
+				<input type="button" value="<bean:message key="button.block"/>" onclick="this.form.action.value='block_confirm';this.form.submit()" />
 				&nbsp;
 				<% 		}
 					} %>

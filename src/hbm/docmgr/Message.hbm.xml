@@ -19,7 +19,7 @@
 			name="content"
 			column="content"
 			type="string"
-			not-null="true"
+			not-null="false"
 			length="4000"
 		/>
 		<many-to-one

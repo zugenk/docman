@@ -93,7 +93,7 @@ public class AuditTrailManager extends BaseUtil{
 	}
 	
 	private static void updateFromMap(AuditTrail obj, Map data,List<String> errors) {
-		obj.setActions((String) data.get("actions"));
+		obj.setAction((String) data.get("action"));
 		obj.setApprovedBy((String) data.get("approvedBy"));
 		//obj.setAuditTime(new Date());
 		obj.setDescription((String)data.get("description"));
@@ -108,12 +108,13 @@ public class AuditTrailManager extends BaseUtil{
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getName());
 		doc.append("id", obj.getId());
-		doc.append("actions", obj.getActions());
+		doc.append("action", obj.getAction());
 		doc.append("approvedBy", obj.getApprovedBy());
 		doc.append("description", obj.getDescription());
 		doc.append("auditTime", obj.getAuditTime());
 		doc.append("doneBy", obj.getDoneBy());
 		doc.append("entity", obj.getEntity());
+		doc.append("entityId", obj.getEntityId());
 		doc.append("sessionId", obj.getSessionId());
 		return doc;
 	}

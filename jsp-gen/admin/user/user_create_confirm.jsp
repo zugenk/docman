@@ -19,7 +19,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -67,6 +67,11 @@
 			<td><bean:write name="user" property="mobileNumber"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="user.picture.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="user" property="picture"/></td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="user.language.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="user" property="language"/></td>
@@ -85,11 +90,6 @@
 			<td width="150"><b><bean:message key="user.alias.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="user" property="alias"/></td>
-		</tr>
-		<tr>
-			<td width="150"><b><bean:message key="user.picture.key"/></b></td>
-			<td width="10">:</td>
-			<td><bean:write name="user" property="picture"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="user.email.key"/></b></td>

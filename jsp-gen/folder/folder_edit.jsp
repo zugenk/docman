@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -195,12 +195,12 @@
 			</tr>
 		</logic:messagesPresent>
   <% */ %> 		<tr>
-			<td width="150"><b><bean:message key="folder.parentFolder.key"/></b></td>
+			<td width="150"><b><bean:message key="folder.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="folder" property="parentFolder" style="width:135"  value="${folder.parentFolder.id}">
+				<html-el:select  name="folder" property="parent" style="width:135"  value="${folder.parent.id}">
 					<option value=""></option>
-					<html:options collection="parentFolderList" property="id" labelProperty="name"/>
+					<html:options collection="parentList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>

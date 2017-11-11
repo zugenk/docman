@@ -15,6 +15,7 @@ public class Announcement  implements java.io.Serializable {
      private Long id;
      private String content;
      private Lookup announcementType;
+     private String subject;
      private String targetUsers;
      private String targetOrganizations;
      private Date createdDate;
@@ -71,6 +72,17 @@ public class Announcement  implements java.io.Serializable {
     
     public void setAnnouncementType(Lookup announcementType) {
         this.announcementType = announcementType;
+    }
+
+    /**
+     * 
+     */
+    public String getSubject() {
+        return this.subject;
+    }
+    
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     /**

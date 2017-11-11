@@ -13,7 +13,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -97,6 +97,15 @@
 			<td><bean:write name="organization" property="filterCode"/></td>
 		</tr>
 		<tr>
+			<td width="150"><b><bean:message key="organization.securityLevel.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="organization"	property="securityLevel">			
+					<bean:write name="organization" property="securityLevel.id"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="organization.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
@@ -143,11 +152,11 @@
 			<td><bean:message key="user.loginPassword.key"/></td>
 			<td><bean:message key="user.pinCode.key"/></td>
 			<td><bean:message key="user.mobileNumber.key"/></td>
+			<td><bean:message key="user.picture.key"/></td>
 			<td><bean:message key="user.language.key"/></td>
 			<td><bean:message key="user.title.key"/></td>
 			<td><bean:message key="user.name.key"/></td>
 			<td><bean:message key="user.alias.key"/></td>
-			<td><bean:message key="user.picture.key"/></td>
 			<td><bean:message key="user.email.key"/></td>
 			<td><bean:message key="user.fullName.key"/></td>
 			<td><bean:message key="user.homePhoneNumber.key"/></td>
@@ -180,11 +189,11 @@
 			<td><bean:write name="element_user" property="loginPassword"/></td>
 			<td><bean:write name="element_user" property="pinCode"/></td>
 			<td><bean:write name="element_user" property="mobileNumber"/></td>
+			<td><bean:write name="element_user" property="picture"/></td>
 			<td><bean:write name="element_user" property="language"/></td>
 			<td><bean:write name="element_user" property="title"/></td>
 			<td><bean:write name="element_user" property="name"/></td>
 			<td><bean:write name="element_user" property="alias"/></td>
-			<td><bean:write name="element_user" property="picture"/></td>
 			<td><bean:write name="element_user" property="email"/></td>
 			<td><bean:write name="element_user" property="fullName"/></td>
 			<td><bean:write name="element_user" property="homePhoneNumber"/></td>

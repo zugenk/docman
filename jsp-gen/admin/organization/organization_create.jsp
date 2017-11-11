@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -196,6 +196,16 @@
 
 
 		<tr>
+			<td width="150"><b><bean:message key="organization.securityLevel.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<html-el:select  name="organization" property="securityLevel" style="width:135"  value="${organization.securityLevel.id}">
+					<option value=""></option>
+					<html:options collection="securityLevelList" property="id" labelProperty="name"/>
+				</html-el:select>															
+			</td>
+		</tr>
+		<tr>
 			<td width="150"><b><bean:message key="organization.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
@@ -263,11 +273,11 @@
  	<td><b><bean:message key="user.loginPassword.key"/> <font color="#FF0000">*</font></b></td>
  	<td><b><bean:message key="user.pinCode.key"/></b></td>
  	<td><b><bean:message key="user.mobileNumber.key"/></b></td>
+ 	<td><b><bean:message key="user.picture.key"/></b></td>
  	<td><b><bean:message key="user.language.key"/></b></td>
  	<td><b><bean:message key="user.title.key"/></b></td>
  	<td><b><bean:message key="user.name.key"/> <font color="#FF0000">*</font></b></td>
  	<td><b><bean:message key="user.alias.key"/></b></td>
- 	<td><b><bean:message key="user.picture.key"/></b></td>
  	<td><b><bean:message key="user.email.key"/></b></td>
  	<td><b><bean:message key="user.fullName.key"/></b></td>
  	<td><b><bean:message key="user.homePhoneNumber.key"/></b></td>
@@ -315,6 +325,9 @@
 				<bean:write name="element_user" property="mobileNumber"/>
 			</td>
 			<td>
+				<bean:write name="element_user" property="picture"/>
+			</td>
+			<td>
 				<bean:write name="element_user" property="language"/>
 			</td>
 			<td>
@@ -325,9 +338,6 @@
 			</td>
 			<td>
 				<bean:write name="element_user" property="alias"/>
-			</td>
-			<td>
-				<bean:write name="element_user" property="picture"/>
 			</td>
 			<td>
 				<bean:write name="element_user" property="email"/>
@@ -432,6 +442,9 @@
 				<logic:messagesPresent property="user.mobileNumber">
 					<html:errors property="user.mobileNumber"/>
 				</logic:messagesPresent>			
+				<logic:messagesPresent property="user.picture">
+					<html:errors property="user.picture"/>
+				</logic:messagesPresent>			
 				<logic:messagesPresent property="user.language">
 					<html:errors property="user.language"/>
 				</logic:messagesPresent>			
@@ -443,9 +456,6 @@
 				</logic:messagesPresent>			
 				<logic:messagesPresent property="user.alias">
 					<html:errors property="user.alias"/>
-				</logic:messagesPresent>			
-				<logic:messagesPresent property="user.picture">
-					<html:errors property="user.picture"/>
 				</logic:messagesPresent>			
 				<logic:messagesPresent property="user.email">
 					<html:errors property="user.email"/>
@@ -538,6 +548,9 @@
 				<input type="text" name="mobileNumber_item" value="<bean:write name="user" property="mobileNumber"/>"/>
 			</td>
 			<td>
+				<input type="text" name="picture_item" value="<bean:write name="user" property="picture"/>"/>
+			</td>
+			<td>
 				<input type="text" name="language_item" value="<bean:write name="user" property="language"/>"/>
 			</td>
 			<td>
@@ -548,9 +561,6 @@
 			</td>
 			<td>
 				<input type="text" name="alias_item" value="<bean:write name="user" property="alias"/>"/>
-			</td>
-			<td>
-				<input type="text" name="picture_item" value="<bean:write name="user" property="picture"/>"/>
 			</td>
 			<td>
 				<input type="text" name="email_item" value="<bean:write name="user" property="email"/>"/>

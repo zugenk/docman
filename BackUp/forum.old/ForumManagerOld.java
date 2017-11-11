@@ -102,15 +102,14 @@ public class ForumManagerOld {
 		return list;
 	}	
 	
-	public static Boolean addForum(String code,String icon,String name, Lookup forumType, String address,Forum parentForum,String createdBy) {
+	public static Boolean addForum(String code,String icon,String name, Lookup forumType, String address,Forum parent,String createdBy) {
 		Forum forum=new Forum();
 		try {
 			forum.setCode(code);
 			forum.setIcon(icon);
 			forum.setName(name);
 			forum.setForumType(forumType);
-			forum.setAddress(address);
-			forum.setParentForum(parentForum);
+			forum.setParent(parent);
 			forum.setCreatedBy(createdBy);
 			forum.setCreatedDate(new Date());
 			

@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class UserHistoryActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.UserHistoryActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -95,6 +95,10 @@ public class UserHistoryActionBase extends Action{
 	    		forward = doProcessConfirm(mapping, form, request, response);
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		doProcessOk(mapping, form, request, response);
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		forward = doActivateConfirm(mapping, form, request, response);
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		doActivateOk(mapping, form, request, response);
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
@@ -107,6 +111,10 @@ public class UserHistoryActionBase extends Action{
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		forward = doBlockConfirm(mapping, form, request, response);
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		doBlockOk(mapping, form, request, response);
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		forward = doCancelConfirm(mapping, form, request, response);
 	    	}else if("cancel_ok".equalsIgnoreCase(action)){
@@ -213,14 +221,14 @@ public class UserHistoryActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("userHistory_pinCode_filter", param_userHistory_pinCode_filter);
-		String param_userHistory_mobileNumber_filter = "";
-		if(request.getParameter("userHistory_mobileNumber_filter")!=null){
-			param_userHistory_mobileNumber_filter = request.getParameter("userHistory_mobileNumber_filter");
-			if(param_userHistory_mobileNumber_filter.length() > 0 ){				
-				userHistory_filterSb.append("  AND userHistory.mobileNumber like '%"+param_userHistory_mobileNumber_filter+"%' ");
+		String param_userHistory_picture_filter = "";
+		if(request.getParameter("userHistory_picture_filter")!=null){
+			param_userHistory_picture_filter = request.getParameter("userHistory_picture_filter");
+			if(param_userHistory_picture_filter.length() > 0 ){				
+				userHistory_filterSb.append("  AND userHistory.picture like '%"+param_userHistory_picture_filter+"%' ");
 			}
 		}
-		request.getSession().setAttribute("userHistory_mobileNumber_filter", param_userHistory_mobileNumber_filter);
+		request.getSession().setAttribute("userHistory_picture_filter", param_userHistory_picture_filter);
 		String param_userHistory_language_filter = "";
 		if(request.getParameter("userHistory_language_filter")!=null){
 			param_userHistory_language_filter = request.getParameter("userHistory_language_filter");
@@ -253,14 +261,6 @@ public class UserHistoryActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("userHistory_alias_filter", param_userHistory_alias_filter);
-		String param_userHistory_picture_filter = "";
-		if(request.getParameter("userHistory_picture_filter")!=null){
-			param_userHistory_picture_filter = request.getParameter("userHistory_picture_filter");
-			if(param_userHistory_picture_filter.length() > 0 ){				
-				userHistory_filterSb.append("  AND userHistory.picture like '%"+param_userHistory_picture_filter+"%' ");
-			}
-		}
-		request.getSession().setAttribute("userHistory_picture_filter", param_userHistory_picture_filter);
 		String param_userHistory_email_filter = "";
 		if(request.getParameter("userHistory_email_filter")!=null){
 			param_userHistory_email_filter = request.getParameter("userHistory_email_filter");
@@ -1253,6 +1253,59 @@ public class UserHistoryActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doActivateConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		UserHistory userHistory = (UserHistory) request.getSession().getAttribute("userHistory");
+    		if (userHistory == null){
+	    		userHistory = UserHistoryService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("userHistory", userHistory);
+	    	}
+    		if(userHistory == null){
+    			response.sendRedirect("userHistory.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set roleSet = userHistory.getRoles();			
+			if(roleSet == null) roleSet = new HashSet();
+			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = userHistory.getFavoriteTopic();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
+
+    		forward = mapping.findForward("activate_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("userHistory.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doActivateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		UserHistory userHistory = (UserHistory) request.getSession().getAttribute("userHistory");
+    		if(userHistory == null){
+    			response.sendRedirect("userHistory.do?action=activate_confirm");
+    		}
+    		userHistory.setStatus(StatusService.getInstance().getByTypeandCode("UserHistory","activated"));
+			userHistory.setLastUpdatedDate(new Date());
+			userHistory.setLastUpdatedBy(_doneBy);
+    		UserHistoryService.getInstance().update(userHistory);
+    		response.sendRedirect("userHistory.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("userHistory.do?action=activate_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1412,6 +1465,59 @@ public class UserHistoryActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doBlockConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		UserHistory userHistory = (UserHistory) request.getSession().getAttribute("userHistory");
+    		if (userHistory == null){
+	    		userHistory = UserHistoryService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("userHistory", userHistory);
+	    	}
+    		if(userHistory == null){
+    			response.sendRedirect("userHistory.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set roleSet = userHistory.getRoles();			
+			if(roleSet == null) roleSet = new HashSet();
+			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = userHistory.getFavoriteTopic();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
+
+    		forward = mapping.findForward("block_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("userHistory.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doBlockOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		UserHistory userHistory = (UserHistory) request.getSession().getAttribute("userHistory");
+    		if(userHistory == null){
+    			response.sendRedirect("userHistory.do?action=block_confirm");
+    		}
+    		userHistory.setStatus(StatusService.getInstance().getByTypeandCode("UserHistory","blocked"));
+			userHistory.setLastUpdatedDate(new Date());
+			userHistory.setLastUpdatedBy(_doneBy);
+    		UserHistoryService.getInstance().update(userHistory);
+    		response.sendRedirect("userHistory.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("userHistory.do?action=block_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1512,8 +1618,8 @@ public class UserHistoryActionBase extends Action{
 			}
 			String pinCode = request.getParameter("pinCode");
 			userHistory.setPinCode(pinCode);
-			String mobileNumber = request.getParameter("mobileNumber");
-			userHistory.setMobileNumber(mobileNumber);
+			String picture = request.getParameter("picture");
+			userHistory.setPicture(picture);
 			String language = request.getParameter("language");
 			userHistory.setLanguage(language);
 			String title = request.getParameter("title");
@@ -1525,8 +1631,6 @@ public class UserHistoryActionBase extends Action{
 			}
 			String alias = request.getParameter("alias");
 			userHistory.setAlias(alias);
-			String picture = request.getParameter("picture");
-			userHistory.setPicture(picture);
 			String email = request.getParameter("email");
 			userHistory.setEmail(email);
 			String fullName = request.getParameter("fullName");

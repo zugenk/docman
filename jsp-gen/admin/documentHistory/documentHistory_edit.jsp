@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -284,29 +284,29 @@
 			</tr>
 		</logic:messagesPresent>
   <% */ %> 		<tr>
-			<td width="150"><b><bean:message key="documentHistory.parentFolder.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="documentHistory.folder.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="documentHistory" property="parentFolder" style="width:135"  value="${documentHistory.parentFolder.id}">
+				<html-el:select  name="documentHistory" property="folder" style="width:135"  value="${documentHistory.folder.id}">
 					<option value=""></option>
-					<html:options collection="parentFolderList" property="id" labelProperty="name"/>
+					<html:options collection="folderList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>
-		<logic:messagesPresent property="documentHistory.parentFolder">
+		<logic:messagesPresent property="documentHistory.folder">
 			<tr>
 				<td colspan="3">
-					<font color="red"><html:errors property="documentHistory.parentFolder"/></font>
+					<font color="red"><html:errors property="documentHistory.folder"/></font>
 				</td>
 			</tr>
 		</logic:messagesPresent>
 		<tr>
-			<td width="150"><b><bean:message key="documentHistory.parentDocument.key"/></b></td>
+			<td width="150"><b><bean:message key="documentHistory.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="documentHistory" property="parentDocument" style="width:135"  value="${documentHistory.parentDocument.id}">
+				<html-el:select  name="documentHistory" property="parent" style="width:135"  value="${documentHistory.parent.id}">
 					<option value=""></option>
-					<html:options collection="parentDocumentList" property="id" labelProperty="name"/>
+					<html:options collection="parentList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>

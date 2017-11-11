@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -65,8 +65,8 @@
 			document.forms.documentHistory.documentHistory_securityLevel_filter.value="";
 			document.forms.documentHistory.documentHistory_owner_filter.value="";
 			document.forms.documentHistory.documentHistory_status_filter.value="";
-			document.forms.documentHistory.documentHistory_parentFolder_filter.value="";
-			document.forms.documentHistory.documentHistory_parentDocument_filter.value="";
+			document.forms.documentHistory.documentHistory_folder_filter.value="";
+			document.forms.documentHistory.documentHistory_parent_filter.value="";
 			document.forms.documentHistory.submit();
 		}
 
@@ -324,8 +324,8 @@
 		<td><bean:message key="documentHistory.securityLevel.key"/></td>
 		<td><bean:message key="documentHistory.owner.key"/></td>
 		<td><bean:message key="documentHistory.status.key"/></td>
-		<td><bean:message key="documentHistory.parentFolder.key"/></td>
-		<td><bean:message key="documentHistory.parentDocument.key"/></td>
+		<td><bean:message key="documentHistory.folder.key"/></td>
+		<td><bean:message key="documentHistory.parent.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -373,14 +373,14 @@
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="parentFolder">								
-					<bean:write name="element" property="parentFolder.name"/>
+				<logic:notEmpty name="element"	property="folder">								
+					<bean:write name="element" property="folder.name"/>
 				</logic:notEmpty>	
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="parentDocument">								
-					<bean:write name="element" property="parentDocument.name"/>
+				<logic:notEmpty name="element"	property="parent">								
+					<bean:write name="element" property="parent.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -589,49 +589,49 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="documentHistory.parentFolder.key"/></td>
+			<td width="150"><bean:message key="documentHistory.folder.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  documentHistory_parentFolder_filter_value = (String)request.getSession().getAttribute("documentHistory_parentFolder_filter");
-					if("".equals(documentHistory_parentFolder_filter_value)) documentHistory_parentFolder_filter_value = "0";
+					String  documentHistory_folder_filter_value = (String)request.getSession().getAttribute("documentHistory_folder_filter");
+					if("".equals(documentHistory_folder_filter_value)) documentHistory_folder_filter_value = "0";
 				%>				
-				<select name="documentHistory_parentFolder_filter">
+				<select name="documentHistory_folder_filter">
 					<option value=""></option>
-					<logic:iterate id="parentFolderElement" name="parentFolderList"  type="com.app.docmgr.model.Folder">
+					<logic:iterate id="folderElement" name="folderList"  type="com.app.docmgr.model.Folder">
 						
-						<option value="<bean:write name="parentFolderElement" property="id"/>" 
+						<option value="<bean:write name="folderElement" property="id"/>" 
 							<%
-								Long documentHistory_parentFolder_id = parentFolderElement.getId();							
-								Long documentHistory_parentFolder_filter_value_c = new Long(documentHistory_parentFolder_filter_value);
-								if(documentHistory_parentFolder_filter_value_c.equals(documentHistory_parentFolder_id))out.print(" SELECTED ");
+								Long documentHistory_folder_id = folderElement.getId();							
+								Long documentHistory_folder_filter_value_c = new Long(documentHistory_folder_filter_value);
+								if(documentHistory_folder_filter_value_c.equals(documentHistory_folder_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="parentFolderElement" property="name"/></option>
+						<bean:write name="folderElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="documentHistory.parentDocument.key"/></td>
+			<td width="150"><bean:message key="documentHistory.parent.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  documentHistory_parentDocument_filter_value = (String)request.getSession().getAttribute("documentHistory_parentDocument_filter");
-					if("".equals(documentHistory_parentDocument_filter_value)) documentHistory_parentDocument_filter_value = "0";
+					String  documentHistory_parent_filter_value = (String)request.getSession().getAttribute("documentHistory_parent_filter");
+					if("".equals(documentHistory_parent_filter_value)) documentHistory_parent_filter_value = "0";
 				%>				
-				<select name="documentHistory_parentDocument_filter">
+				<select name="documentHistory_parent_filter">
 					<option value=""></option>
-					<logic:iterate id="parentDocumentElement" name="parentDocumentList"  type="com.app.docmgr.model.Document">
+					<logic:iterate id="parentElement" name="parentList"  type="com.app.docmgr.model.Document">
 						
-						<option value="<bean:write name="parentDocumentElement" property="id"/>" 
+						<option value="<bean:write name="parentElement" property="id"/>" 
 							<%
-								Long documentHistory_parentDocument_id = parentDocumentElement.getId();							
-								Long documentHistory_parentDocument_filter_value_c = new Long(documentHistory_parentDocument_filter_value);
-								if(documentHistory_parentDocument_filter_value_c.equals(documentHistory_parentDocument_id))out.print(" SELECTED ");
+								Long documentHistory_parent_id = parentElement.getId();							
+								Long documentHistory_parent_filter_value_c = new Long(documentHistory_parent_filter_value);
+								if(documentHistory_parent_filter_value_c.equals(documentHistory_parent_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="parentDocumentElement" property="name"/></option>
+						<bean:write name="parentElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

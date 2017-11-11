@@ -23,7 +23,7 @@ import com.app.docmgr.model.Folder;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-11-2017 00:08:53
+ * @createDate 12-11-2017 00:00:51
  */
 
 	/**
@@ -62,7 +62,7 @@ public class FolderServiceBase {
 			folder = (Folder) session.get(Folder.class, id);
 			Hibernate.initialize(folder.getFolderType());			
 			Hibernate.initialize(folder.getStatus());			
-			Hibernate.initialize(folder.getParentFolder());			
+			Hibernate.initialize(folder.getParent());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -99,7 +99,7 @@ public class FolderServiceBase {
 			if(folder!=null) {
 				Hibernate.initialize(folder.getFolderType());			
 				Hibernate.initialize(folder.getStatus());			
-				Hibernate.initialize(folder.getParentFolder());			
+				Hibernate.initialize(folder.getParent());			
 			}
 			return folder;
 		} catch (HibernateException e) {
@@ -299,7 +299,7 @@ public class FolderServiceBase {
 				com.app.docmgr.model.Folder folder = (com.app.docmgr.model.Folder)itr.next();
 				Hibernate.initialize(folder.getFolderType());			
 				Hibernate.initialize(folder.getStatus());			
-				Hibernate.initialize(folder.getParentFolder());			
+				Hibernate.initialize(folder.getParent());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -339,7 +339,7 @@ public class FolderServiceBase {
 			    com.app.docmgr.model.Folder folder = (com.app.docmgr.model.Folder)itr.next();
 			    Hibernate.initialize(folder.getFolderType());                    
 			    Hibernate.initialize(folder.getStatus());                    
-			    Hibernate.initialize(folder.getParentFolder());                    
+			    Hibernate.initialize(folder.getParent());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

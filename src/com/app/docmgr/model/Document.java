@@ -20,6 +20,7 @@ public class Document  implements java.io.Serializable {
      private String repositoryId;
      private String documentVersion;
      private String description;
+     private Integer priority;
      private Lookup securityLevel;
      private User owner;
      private Status status;
@@ -27,8 +28,8 @@ public class Document  implements java.io.Serializable {
      private String createdBy;
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
-     private Folder parentFolder;
-     private Document parentDocument;
+     private Folder folder;
+     private Document parent;
 
 
     // Constructors
@@ -138,6 +139,17 @@ public class Document  implements java.io.Serializable {
     /**
      * 
      */
+    public Integer getPriority() {
+        return this.priority;
+    }
+    
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    /**
+     * 
+     */
     public Lookup getSecurityLevel() {
         return this.securityLevel;
     }
@@ -215,23 +227,23 @@ public class Document  implements java.io.Serializable {
     /**
      * 
      */
-    public Folder getParentFolder() {
-        return this.parentFolder;
+    public Folder getFolder() {
+        return this.folder;
     }
     
-    public void setParentFolder(Folder parentFolder) {
-        this.parentFolder = parentFolder;
+    public void setFolder(Folder folder) {
+        this.folder = folder;
     }
 
     /**
      * 
      */
-    public Document getParentDocument() {
-        return this.parentDocument;
+    public Document getParent() {
+        return this.parent;
     }
     
-    public void setParentDocument(Document parentDocument) {
-        this.parentDocument = parentDocument;
+    public void setParent(Document parent) {
+        this.parent = parent;
     }
 
 

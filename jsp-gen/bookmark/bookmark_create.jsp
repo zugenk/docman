@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -90,34 +90,20 @@
 		</logic:messagesPresent>
 
 		<tr>
-			<td width="150"><b><bean:message key="bookmark.category.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="bookmark.category.key"/></b></td>
 			<td width="10">:</td>			
 			<td>
 				<html:text name="bookmark" property="category"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="bookmark.category">
-			<tr>
-				<td colspan="3">
-					<font color="red"><html:errors property="bookmark.category"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
 
 		<tr>
-			<td width="150"><b><bean:message key="bookmark.note.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="bookmark.note.key"/></b></td>
 			<td width="10">:</td>			
 			<td>
 				<html:text name="bookmark" property="note"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="bookmark.note">
-			<tr>
-				<td colspan="3">
-					<font color="red"><html:errors property="bookmark.note"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
 
  <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="bookmark.createdDate.key"/> <font color="#FF0000">*</font></b></td>
@@ -205,7 +191,7 @@
 			</tr>
 		</logic:messagesPresent>
 <% */ %> 		<tr>
-			<td width="150"><b><bean:message key="bookmark.owner.key"/></b></td>
+			<td width="150"><b><bean:message key="bookmark.owner.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
 			<td>				
 				<html-el:select  name="bookmark" property="owner" style="width:135"  value="${bookmark.owner.id}">
@@ -214,6 +200,13 @@
 				</html-el:select>															
 			</td>
 		</tr>
+		<logic:messagesPresent property="bookmark.owner">
+			<tr>
+				<td colspan="3">
+					<font color="red"><html:errors property="bookmark.owner"/></font>
+				</td>
+			</tr>
+		</logic:messagesPresent>
 		<tr>
 			<td width="150"></td>
 			<td width="10"></td>

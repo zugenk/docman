@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class SharedDocumentActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.SharedDocumentActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -95,6 +95,10 @@ public class SharedDocumentActionBase extends Action{
 	    		forward = doProcessConfirm(mapping, form, request, response);
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		doProcessOk(mapping, form, request, response);
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		forward = doActivateConfirm(mapping, form, request, response);
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		doActivateOk(mapping, form, request, response);
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
@@ -107,6 +111,10 @@ public class SharedDocumentActionBase extends Action{
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		forward = doBlockConfirm(mapping, form, request, response);
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		doBlockOk(mapping, form, request, response);
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		forward = doCancelConfirm(mapping, form, request, response);
 	    	}else if("cancel_ok".equalsIgnoreCase(action)){
@@ -838,6 +846,53 @@ public class SharedDocumentActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doActivateConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		SharedDocument sharedDocument = (SharedDocument) request.getSession().getAttribute("sharedDocument");
+    		if (sharedDocument == null){
+	    		sharedDocument = SharedDocumentService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("sharedDocument", sharedDocument);
+	    	}
+    		if(sharedDocument == null){
+    			response.sendRedirect("sharedDocument.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("activate_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("sharedDocument.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doActivateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		SharedDocument sharedDocument = (SharedDocument) request.getSession().getAttribute("sharedDocument");
+    		if(sharedDocument == null){
+    			response.sendRedirect("sharedDocument.do?action=activate_confirm");
+    		}
+    		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","activated"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
+    		SharedDocumentService.getInstance().update(sharedDocument);
+    		response.sendRedirect("sharedDocument.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("sharedDocument.do?action=activate_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -972,6 +1027,53 @@ public class SharedDocumentActionBase extends Action{
     	}catch(Exception ex){
     		try{
     			response.sendRedirect("sharedDocument.do?action=remove_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
+   	public ActionForward doBlockConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		SharedDocument sharedDocument = (SharedDocument) request.getSession().getAttribute("sharedDocument");
+    		if (sharedDocument == null){
+	    		sharedDocument = SharedDocumentService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("sharedDocument", sharedDocument);
+	    	}
+    		if(sharedDocument == null){
+    			response.sendRedirect("sharedDocument.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("block_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("sharedDocument.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doBlockOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		SharedDocument sharedDocument = (SharedDocument) request.getSession().getAttribute("sharedDocument");
+    		if(sharedDocument == null){
+    			response.sendRedirect("sharedDocument.do?action=block_confirm");
+    		}
+    		sharedDocument.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument","blocked"));
+			sharedDocument.setLastUpdatedDate(new Date());
+			sharedDocument.setLastUpdatedBy(_doneBy);
+    		SharedDocumentService.getInstance().update(sharedDocument);
+    		response.sendRedirect("sharedDocument.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("sharedDocument.do?action=block_confirm");
     		}catch(Exception rex){
     			rex.printStackTrace();
     		}

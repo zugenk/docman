@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class AnnouncementActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.AnnouncementActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -95,6 +95,10 @@ public class AnnouncementActionBase extends Action{
 	    		forward = doProcessConfirm(mapping, form, request, response);
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		doProcessOk(mapping, form, request, response);
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		forward = doActivateConfirm(mapping, form, request, response);
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		doActivateOk(mapping, form, request, response);
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
@@ -107,6 +111,10 @@ public class AnnouncementActionBase extends Action{
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		forward = doBlockConfirm(mapping, form, request, response);
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		doBlockOk(mapping, form, request, response);
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		forward = doCancelConfirm(mapping, form, request, response);
 	    	}else if("cancel_ok".equalsIgnoreCase(action)){
@@ -152,6 +160,14 @@ public class AnnouncementActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("announcement_content_filter", param_announcement_content_filter);
+		String param_announcement_subject_filter = "";
+		if(request.getParameter("announcement_subject_filter")!=null){
+			param_announcement_subject_filter = request.getParameter("announcement_subject_filter");
+			if(param_announcement_subject_filter.length() > 0 ){				
+				announcement_filterSb.append("  AND announcement.subject like '%"+param_announcement_subject_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("announcement_subject_filter", param_announcement_subject_filter);
 		String param_announcement_targetUsers_filter = "";
 		if(request.getParameter("announcement_targetUsers_filter")!=null){
 			param_announcement_targetUsers_filter = request.getParameter("announcement_targetUsers_filter");
@@ -808,6 +824,53 @@ public class AnnouncementActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doActivateConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Announcement announcement = (Announcement) request.getSession().getAttribute("announcement");
+    		if (announcement == null){
+	    		announcement = AnnouncementService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("announcement", announcement);
+	    	}
+    		if(announcement == null){
+    			response.sendRedirect("announcement.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("activate_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("announcement.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doActivateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Announcement announcement = (Announcement) request.getSession().getAttribute("announcement");
+    		if(announcement == null){
+    			response.sendRedirect("announcement.do?action=activate_confirm");
+    		}
+    		announcement.setStatus(StatusService.getInstance().getByTypeandCode("Announcement","activated"));
+			announcement.setLastUpdatedDate(new Date());
+			announcement.setLastUpdatedBy(_doneBy);
+    		AnnouncementService.getInstance().update(announcement);
+    		response.sendRedirect("announcement.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("announcement.do?action=activate_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -949,6 +1012,53 @@ public class AnnouncementActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doBlockConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Announcement announcement = (Announcement) request.getSession().getAttribute("announcement");
+    		if (announcement == null){
+	    		announcement = AnnouncementService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("announcement", announcement);
+	    	}
+    		if(announcement == null){
+    			response.sendRedirect("announcement.do?action=detail");
+    			return null;
+    		}
+    		    		
+
+    		forward = mapping.findForward("block_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("announcement.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doBlockOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Announcement announcement = (Announcement) request.getSession().getAttribute("announcement");
+    		if(announcement == null){
+    			response.sendRedirect("announcement.do?action=block_confirm");
+    		}
+    		announcement.setStatus(StatusService.getInstance().getByTypeandCode("Announcement","blocked"));
+			announcement.setLastUpdatedDate(new Date());
+			announcement.setLastUpdatedBy(_doneBy);
+    		AnnouncementService.getInstance().update(announcement);
+    		response.sendRedirect("announcement.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("announcement.do?action=block_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1004,6 +1114,8 @@ public class AnnouncementActionBase extends Action{
 			if(content==null || content.trim().length() == 0 ){
 				errors.add("announcement.content", new ActionError("error.announcement.content"));
 			}
+			String subject = request.getParameter("subject");
+			announcement.setSubject(subject);
 			String targetUsers = request.getParameter("targetUsers");
 			announcement.setTargetUsers(targetUsers);
 			String targetOrganizations = request.getParameter("targetOrganizations");

@@ -27,25 +27,22 @@
 			column="name"
 			type="string"
 			not-null="true"
-			length="100"
 		/>
 		<property
 			name="category"
 			column="category"
 			type="string"
-			not-null="true"
-			length="100"
+			not-null="false"
 		/>
 		<property
 			name="note"
 			column="note"
 			type="string"
-			not-null="true"
-			length="255"
+			not-null="false"
 		/>
 		<many-to-one
 			name="bookmarkType"
-			column="message_type"
+			column="bookmark_type"
 			class="com.app.docmgr.model.Lookup"
 			not-null="true"
 		>
@@ -89,7 +86,7 @@
 			name="owner"
 			column="owner"
 			class="com.app.docmgr.model.User"
-			not-null="false"
+			not-null="true"
 		>
 		</many-to-one>
 

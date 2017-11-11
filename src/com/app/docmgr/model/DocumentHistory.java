@@ -31,8 +31,8 @@ public class DocumentHistory  implements java.io.Serializable {
      private String createdBy;
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
-     private Folder parentFolder;
-     private Document parentDocument;
+     private Folder folder;
+     private Document parent;
 
 
     // Constructors
@@ -263,23 +263,23 @@ public class DocumentHistory  implements java.io.Serializable {
     /**
      * 
      */
-    public Folder getParentFolder() {
-        return this.parentFolder;
+    public Folder getFolder() {
+        return this.folder;
     }
     
-    public void setParentFolder(Folder parentFolder) {
-        this.parentFolder = parentFolder;
+    public void setFolder(Folder folder) {
+        this.folder = folder;
     }
 
     /**
      * 
      */
-    public Document getParentDocument() {
-        return this.parentDocument;
+    public Document getParent() {
+        return this.parent;
     }
     
-    public void setParentDocument(Document parentDocument) {
-        this.parentDocument = parentDocument;
+    public void setParent(Document parent) {
+        this.parent = parent;
     }
 
 

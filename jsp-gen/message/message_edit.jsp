@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -64,19 +64,12 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="message.content.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="message.content.key"/></b></td>
 			<td width="10">:</td>
 			<td>
 				<html:text name="message" property="content"/>
 			</td>
 		</tr>
-		<logic:messagesPresent property="message.content">
-			<tr>
-				<td colspan="2">
-					<font color="red"><html:errors property="message.content"/></font>
-				</td>
-			</tr>
-		</logic:messagesPresent>
   <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="message.createdDate.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>

@@ -30,6 +30,12 @@
 		>
 		</many-to-one>
 		<property
+			name="subject"
+			column="subject"
+			type="string"
+			not-null="false"
+		/>
+		<property
 			name="targetUsers"
 			column="target_users"
 			type="string"

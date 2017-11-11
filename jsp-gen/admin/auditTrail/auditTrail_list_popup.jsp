@@ -16,7 +16,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -49,7 +49,7 @@
 
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td class="titleHeader" colspan="17" align="left">
+		<td class="titleHeader" colspan="18" align="left">
 			<bean:message key="page.AuditTrail.ListPopup"/>
 		</td>
 	</tr>
@@ -66,10 +66,11 @@
 		<tr bgcolor="<% out.print(bgcolor); %>">
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="auditTime"/>');"><bean:write name="element" property="auditTime" format="dd MMM yyyy"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="entity"/>');"><bean:write name="element" property="entity"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="entityId"/>');"><bean:write name="element" property="entityId"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="doneBy"/>');"><bean:write name="element" property="doneBy"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="sessionId"/>');"><bean:write name="element" property="sessionId"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="approvedBy"/>');"><bean:write name="element" property="approvedBy"/></a></td>
-		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="actions"/>');"><bean:write name="element" property="actions"/></a></td>
+		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="action"/>');"><bean:write name="element" property="action"/></a></td>
 		<td><a href="#" onclick="doAddParent('<bean:write name="element" property="description"/>');"><bean:write name="element" property="description"/></a></td>
 		</tr>		
 	</logic:iterate> 

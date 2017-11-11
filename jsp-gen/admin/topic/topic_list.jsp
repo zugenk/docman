@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -58,7 +58,7 @@
 			document.forms.topic.topic_lastUpdatedBy_filter.value="";
 			document.forms.topic.topic_filterCode_filter.value="";
 			document.forms.topic.topic_status_filter.value="";
-			document.forms.topic.topic_parentForum_filter.value="";
+			document.forms.topic.topic_forum_filter.value="";
 			document.forms.topic.submit();
 		}
 
@@ -161,30 +161,30 @@
 		</td>
 		<td>			
 			<bean:message key="topic.numberOfLike.key"/>
-			<logic:equal name="topic_fieldOrder" value="number_of_like">
+			<logic:equal name="topic_fieldOrder" value="">
 				<logic:equal name="topic_orderType" value="ASC">
-					<a href="#" onclick="doOrder('number_of_like', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+					<a href="#" onclick="doOrder('', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
 				</logic:equal>
 				<logic:equal name="topic_orderType" value="DESC">
-					<a href="#" onclick="doOrder('number_of_like', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+					<a href="#" onclick="doOrder('', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 				</logic:equal>
 			</logic:equal>
-			<logic:notEqual name="topic_fieldOrder" value="number_of_like">
-				<a href="#" onclick="doOrder('number_of_like', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			<logic:notEqual name="topic_fieldOrder" value="">
+				<a href="#" onclick="doOrder('', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
 			<bean:message key="topic.numberOfPost.key"/>
-			<logic:equal name="topic_fieldOrder" value="number_of_post">
+			<logic:equal name="topic_fieldOrder" value="">
 				<logic:equal name="topic_orderType" value="ASC">
-					<a href="#" onclick="doOrder('number_of_post', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+					<a href="#" onclick="doOrder('', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
 				</logic:equal>
 				<logic:equal name="topic_orderType" value="DESC">
-					<a href="#" onclick="doOrder('number_of_post', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+					<a href="#" onclick="doOrder('', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 				</logic:equal>
 			</logic:equal>
-			<logic:notEqual name="topic_fieldOrder" value="number_of_post">
-				<a href="#" onclick="doOrder('number_of_post', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			<logic:notEqual name="topic_fieldOrder" value="">
+				<a href="#" onclick="doOrder('', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -258,7 +258,7 @@
 			</logic:notEqual>
 		</td>
 		<td><bean:message key="topic.status.key"/></td>
-		<td><bean:message key="topic.parentForum.key"/></td>
+		<td><bean:message key="topic.forum.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -290,8 +290,8 @@
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="parentForum">								
-					<bean:write name="element" property="parentForum.name"/>
+				<logic:notEmpty name="element"	property="forum">								
+					<bean:write name="element" property="forum.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -419,25 +419,25 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="topic.parentForum.key"/></td>
+			<td width="150"><bean:message key="topic.forum.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  topic_parentForum_filter_value = (String)request.getSession().getAttribute("topic_parentForum_filter");
-					if("".equals(topic_parentForum_filter_value)) topic_parentForum_filter_value = "0";
+					String  topic_forum_filter_value = (String)request.getSession().getAttribute("topic_forum_filter");
+					if("".equals(topic_forum_filter_value)) topic_forum_filter_value = "0";
 				%>				
-				<select name="topic_parentForum_filter">
+				<select name="topic_forum_filter">
 					<option value=""></option>
-					<logic:iterate id="parentForumElement" name="parentForumList"  type="com.app.docmgr.model.Forum">
+					<logic:iterate id="forumElement" name="forumList"  type="com.app.docmgr.model.Forum">
 						
-						<option value="<bean:write name="parentForumElement" property="id"/>" 
+						<option value="<bean:write name="forumElement" property="id"/>" 
 							<%
-								Long topic_parentForum_id = parentForumElement.getId();							
-								Long topic_parentForum_filter_value_c = new Long(topic_parentForum_filter_value);
-								if(topic_parentForum_filter_value_c.equals(topic_parentForum_id))out.print(" SELECTED ");
+								Long topic_forum_id = forumElement.getId();							
+								Long topic_forum_filter_value_c = new Long(topic_forum_filter_value);
+								if(topic_forum_filter_value_c.equals(topic_forum_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="parentForumElement" property="name"/></option>
+						<bean:write name="forumElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -53,6 +53,11 @@
 			<td width="150"><b><bean:message key="announcement.content.key"/></b></td>
 			<td width="10">:</td>
 			<td><bean:write name="announcement" property="content"/></td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="announcement.subject.key"/></b></td>
+			<td width="10">:</td>
+			<td><bean:write name="announcement" property="subject"/></td>
 		</tr>
 		<tr>
 			<td width="150"><b><bean:message key="announcement.targetUsers.key"/></b></td>
@@ -150,6 +155,12 @@
 				&nbsp;
 				<% 		}
 					} %>
+				<% if(com.app.docmgr.admin.action.AnnouncementAction.allowableAction.contains("activate")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:ANNOUNCEMENT_ACTIVATE")) { %>
+				<input type="button" value="<bean:message key="button.activate"/>" onclick="this.form.action.value='activate_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
 				<% if(com.app.docmgr.admin.action.AnnouncementAction.allowableAction.contains("close")) { 
 						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:ANNOUNCEMENT_CLOSE")) { %>
 				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
@@ -165,6 +176,12 @@
 				<% if(com.app.docmgr.admin.action.AnnouncementAction.allowableAction.contains("remove")) { 
 						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:ANNOUNCEMENT_REMOVE")) { %>
 				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.admin.action.AnnouncementAction.allowableAction.contains("block")) { 
+						if (com.app.docmgr.service.UserService.getInstance().hasPrivilege(loginUser,"ADMIN:ANNOUNCEMENT_BLOCK")) { %>
+				<input type="button" value="<bean:message key="button.block"/>" onclick="this.form.action.value='block_confirm';this.form.submit()" />
 				&nbsp;
 				<% 		}
 					} %>

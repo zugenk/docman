@@ -13,7 +13,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -149,20 +149,20 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="documentHistory.parentFolder.key"/></b></td>
+			<td width="150"><b><bean:message key="documentHistory.folder.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<logic:notEmpty name="documentHistory"	property="parentFolder">			
-					<bean:write name="documentHistory" property="parentFolder.id"/>
+				<logic:notEmpty name="documentHistory"	property="folder">			
+					<bean:write name="documentHistory" property="folder.id"/>
 				</logic:notEmpty>
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="documentHistory.parentDocument.key"/></b></td>
+			<td width="150"><b><bean:message key="documentHistory.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<logic:notEmpty name="documentHistory"	property="parentDocument">			
-					<bean:write name="documentHistory" property="parentDocument.id"/>
+				<logic:notEmpty name="documentHistory"	property="parent">			
+					<bean:write name="documentHistory" property="parent.id"/>
 				</logic:notEmpty>
 			</td>
 		</tr>

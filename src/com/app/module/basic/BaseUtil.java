@@ -186,10 +186,10 @@ public class BaseUtil {
 	}
 	
 	
-	public static void auditLog(Document passport,String actions,String entity,String description,String approvedBy) {
+	public static void auditLog(Document passport,String action,String entity,String description,String approvedBy) {
 		try {
 			AuditTrail auditTrail =new AuditTrail();
-			auditTrail.setActions(actions);
+			auditTrail.setAction(action);
 			auditTrail.setApprovedBy(approvedBy);
 			auditTrail.setAuditTime(new Date());
 			auditTrail.setDescription(description);

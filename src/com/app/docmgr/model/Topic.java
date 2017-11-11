@@ -25,7 +25,7 @@ public class Topic  implements java.io.Serializable {
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
      private String filterCode;
-     private Forum parentForum;
+     private Forum forum;
      private Set subscribers;
 
 
@@ -191,12 +191,12 @@ public class Topic  implements java.io.Serializable {
     /**
      * 
      */
-    public Forum getParentForum() {
-        return this.parentForum;
+    public Forum getForum() {
+        return this.forum;
     }
     
-    public void setParentForum(Forum parentForum) {
-        this.parentForum = parentForum;
+    public void setForum(Forum forum) {
+        this.forum = forum;
     }
 
     /**

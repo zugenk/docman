@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class UserActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.UserActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -95,6 +95,10 @@ public class UserActionBase extends Action{
 	    		forward = doProcessConfirm(mapping, form, request, response);
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		doProcessOk(mapping, form, request, response);
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		forward = doActivateConfirm(mapping, form, request, response);
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		doActivateOk(mapping, form, request, response);
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
@@ -107,6 +111,10 @@ public class UserActionBase extends Action{
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		forward = doBlockConfirm(mapping, form, request, response);
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		doBlockOk(mapping, form, request, response);
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		forward = doCancelConfirm(mapping, form, request, response);
 	    	}else if("cancel_ok".equalsIgnoreCase(action)){
@@ -185,6 +193,14 @@ public class UserActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("user_mobileNumber_filter", param_user_mobileNumber_filter);
+		String param_user_picture_filter = "";
+		if(request.getParameter("user_picture_filter")!=null){
+			param_user_picture_filter = request.getParameter("user_picture_filter");
+			if(param_user_picture_filter.length() > 0 ){				
+				user_filterSb.append("  AND user.picture like '%"+param_user_picture_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("user_picture_filter", param_user_picture_filter);
 		String param_user_language_filter = "";
 		if(request.getParameter("user_language_filter")!=null){
 			param_user_language_filter = request.getParameter("user_language_filter");
@@ -217,14 +233,6 @@ public class UserActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("user_alias_filter", param_user_alias_filter);
-		String param_user_picture_filter = "";
-		if(request.getParameter("user_picture_filter")!=null){
-			param_user_picture_filter = request.getParameter("user_picture_filter");
-			if(param_user_picture_filter.length() > 0 ){				
-				user_filterSb.append("  AND user.picture like '%"+param_user_picture_filter+"%' ");
-			}
-		}
-		request.getSession().setAttribute("user_picture_filter", param_user_picture_filter);
 		String param_user_email_filter = "";
 		if(request.getParameter("user_email_filter")!=null){
 			param_user_email_filter = request.getParameter("user_email_filter");
@@ -1217,6 +1225,59 @@ public class UserActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doActivateConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		User user = (User) request.getSession().getAttribute("user");
+    		if (user == null){
+	    		user = UserService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("user", user);
+	    	}
+    		if(user == null){
+    			response.sendRedirect("user.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set roleSet = user.getRoles();			
+			if(roleSet == null) roleSet = new HashSet();
+			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
+
+    		forward = mapping.findForward("activate_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("user.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doActivateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		User user = (User) request.getSession().getAttribute("user");
+    		if(user == null){
+    			response.sendRedirect("user.do?action=activate_confirm");
+    		}
+    		user.setStatus(StatusService.getInstance().getByTypeandCode("User","activated"));
+			user.setLastUpdatedDate(new Date());
+			user.setLastUpdatedBy(_doneBy);
+    		UserService.getInstance().update(user);
+    		response.sendRedirect("user.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("user.do?action=activate_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1376,6 +1437,59 @@ public class UserActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doBlockConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		User user = (User) request.getSession().getAttribute("user");
+    		if (user == null){
+	    		user = UserService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("user", user);
+	    	}
+    		if(user == null){
+    			response.sendRedirect("user.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set roleSet = user.getRoles();			
+			if(roleSet == null) roleSet = new HashSet();
+			request.setAttribute("roleSet", roleSet);			
+			Set topicSet = user.getFavoriteTopics();			
+			if(topicSet == null) topicSet = new HashSet();
+			request.setAttribute("topicSet", topicSet);			
+
+    		forward = mapping.findForward("block_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("user.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doBlockOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		User user = (User) request.getSession().getAttribute("user");
+    		if(user == null){
+    			response.sendRedirect("user.do?action=block_confirm");
+    		}
+    		user.setStatus(StatusService.getInstance().getByTypeandCode("User","blocked"));
+			user.setLastUpdatedDate(new Date());
+			user.setLastUpdatedBy(_doneBy);
+    		UserService.getInstance().update(user);
+    		response.sendRedirect("user.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("user.do?action=block_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1446,6 +1560,8 @@ public class UserActionBase extends Action{
 			user.setPinCode(pinCode);
 			String mobileNumber = request.getParameter("mobileNumber");
 			user.setMobileNumber(mobileNumber);
+			String picture = request.getParameter("picture");
+			user.setPicture(picture);
 			String language = request.getParameter("language");
 			user.setLanguage(language);
 			String title = request.getParameter("title");
@@ -1457,8 +1573,6 @@ public class UserActionBase extends Action{
 			}
 			String alias = request.getParameter("alias");
 			user.setAlias(alias);
-			String picture = request.getParameter("picture");
-			user.setPicture(picture);
 			String email = request.getParameter("email");
 			user.setEmail(email);
 			String fullName = request.getParameter("fullName");

@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -62,8 +62,8 @@
 			document.forms.document.document_securityLevel_filter.value="";
 			document.forms.document.document_owner_filter.value="";
 			document.forms.document.document_status_filter.value="";
-			document.forms.document.document_parentFolder_filter.value="";
-			document.forms.document.document_parentDocument_filter.value="";
+			document.forms.document.document_folder_filter.value="";
+			document.forms.document.document_parent_filter.value="";
 			document.forms.document.submit();
 		}
 
@@ -85,23 +85,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="21" align="right">
+		<td colspan="22" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="21" align="left">
+		<td class="titleHeader" colspan="22" align="left">
 			<bean:message key="page.Document.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="21" align="right">
+		<td colspan="22" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="21" align="right">
+		<td colspan="22" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -207,6 +207,20 @@
 			</logic:notEqual>
 		</td>
 		<td>			
+			<bean:message key="document.priority.key"/>
+			<logic:equal name="document_fieldOrder" value="priority">
+				<logic:equal name="document_orderType" value="ASC">
+					<a href="#" onclick="doOrder('priority', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="document_orderType" value="DESC">
+					<a href="#" onclick="doOrder('priority', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="document_fieldOrder" value="priority">
+				<a href="#" onclick="doOrder('priority', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
 			<bean:message key="document.createdDate.key"/>
 			<logic:equal name="document_fieldOrder" value="created_date">
 				<logic:equal name="document_orderType" value="ASC">
@@ -265,8 +279,8 @@
 		<td><bean:message key="document.securityLevel.key"/></td>
 		<td><bean:message key="document.owner.key"/></td>
 		<td><bean:message key="document.status.key"/></td>
-		<td><bean:message key="document.parentFolder.key"/></td>
-		<td><bean:message key="document.parentDocument.key"/></td>
+		<td><bean:message key="document.folder.key"/></td>
+		<td><bean:message key="document.parent.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -287,6 +301,7 @@
 		<td><bean:write name="element" property="repositoryId"/></td>
 		<td><bean:write name="element" property="documentVersion"/></td>
 		<td><bean:write name="element" property="description"/></td>
+		<td><bean:write name="element" property="priority"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="createdBy"/></td>
 		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
@@ -310,14 +325,14 @@
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="parentFolder">								
-					<bean:write name="element" property="parentFolder.name"/>
+				<logic:notEmpty name="element"	property="folder">								
+					<bean:write name="element" property="folder.name"/>
 				</logic:notEmpty>	
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="parentDocument">								
-					<bean:write name="element" property="parentDocument.name"/>
+				<logic:notEmpty name="element"	property="parent">								
+					<bean:write name="element" property="parent.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -330,12 +345,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="21" align="right">
+		<td colspan="22" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="21" align="right">
+		<td colspan="22" align="right">
 		<% if(com.app.docmgr.action.DocumentAction.allowableAction.contains("create")) { 
 				if (privilegeList.contains("DOCUMENT_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -503,49 +518,49 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="document.parentFolder.key"/></td>
+			<td width="150"><bean:message key="document.folder.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  document_parentFolder_filter_value = (String)request.getSession().getAttribute("document_parentFolder_filter");
-					if("".equals(document_parentFolder_filter_value)) document_parentFolder_filter_value = "0";
+					String  document_folder_filter_value = (String)request.getSession().getAttribute("document_folder_filter");
+					if("".equals(document_folder_filter_value)) document_folder_filter_value = "0";
 				%>				
-				<select name="document_parentFolder_filter">
+				<select name="document_folder_filter">
 					<option value=""></option>
-					<logic:iterate id="parentFolderElement" name="parentFolderList"  type="com.app.docmgr.model.Folder">
+					<logic:iterate id="folderElement" name="folderList"  type="com.app.docmgr.model.Folder">
 						
-						<option value="<bean:write name="parentFolderElement" property="id"/>" 
+						<option value="<bean:write name="folderElement" property="id"/>" 
 							<%
-								Long document_parentFolder_id = parentFolderElement.getId();							
-								Long document_parentFolder_filter_value_c = new Long(document_parentFolder_filter_value);
-								if(document_parentFolder_filter_value_c.equals(document_parentFolder_id))out.print(" SELECTED ");
+								Long document_folder_id = folderElement.getId();							
+								Long document_folder_filter_value_c = new Long(document_folder_filter_value);
+								if(document_folder_filter_value_c.equals(document_folder_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="parentFolderElement" property="name"/></option>
+						<bean:write name="folderElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="document.parentDocument.key"/></td>
+			<td width="150"><bean:message key="document.parent.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  document_parentDocument_filter_value = (String)request.getSession().getAttribute("document_parentDocument_filter");
-					if("".equals(document_parentDocument_filter_value)) document_parentDocument_filter_value = "0";
+					String  document_parent_filter_value = (String)request.getSession().getAttribute("document_parent_filter");
+					if("".equals(document_parent_filter_value)) document_parent_filter_value = "0";
 				%>				
-				<select name="document_parentDocument_filter">
+				<select name="document_parent_filter">
 					<option value=""></option>
-					<logic:iterate id="parentDocumentElement" name="parentDocumentList"  type="com.app.docmgr.model.Document">
+					<logic:iterate id="parentElement" name="parentList"  type="com.app.docmgr.model.Document">
 						
-						<option value="<bean:write name="parentDocumentElement" property="id"/>" 
+						<option value="<bean:write name="parentElement" property="id"/>" 
 							<%
-								Long document_parentDocument_id = parentDocumentElement.getId();							
-								Long document_parentDocument_filter_value_c = new Long(document_parentDocument_filter_value);
-								if(document_parentDocument_filter_value_c.equals(document_parentDocument_id))out.print(" SELECTED ");
+								Long document_parent_id = parentElement.getId();							
+								Long document_parent_filter_value_c = new Long(document_parent_filter_value);
+								if(document_parent_filter_value_c.equals(document_parent_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="parentDocumentElement" property="name"/></option>
+						<bean:write name="parentElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

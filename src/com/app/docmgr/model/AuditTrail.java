@@ -15,10 +15,11 @@ public class AuditTrail  implements java.io.Serializable {
      private Long id;
      private Date auditTime;
      private String entity;
+     private Long entityId;
      private String doneBy;
      private String sessionId;
      private String approvedBy;
-     private String actions;
+     private String action;
      private String description;
 
 
@@ -74,6 +75,17 @@ public class AuditTrail  implements java.io.Serializable {
     /**
      * 
      */
+    public Long getEntityId() {
+        return this.entityId;
+    }
+    
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
+    /**
+     * 
+     */
     public String getDoneBy() {
         return this.doneBy;
     }
@@ -107,12 +119,12 @@ public class AuditTrail  implements java.io.Serializable {
     /**
      * 
      */
-    public String getActions() {
-        return this.actions;
+    public String getAction() {
+        return this.action;
     }
     
-    public void setActions(String actions) {
-        this.actions = actions;
+    public void setAction(String action) {
+        this.action = action;
     }
 
     /**

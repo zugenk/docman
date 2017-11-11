@@ -49,8 +49,14 @@
 			column="mailing_list"
 			type="string"
 			not-null="false"
-			length="100"
 		/>
+		<many-to-one
+			name="securityLevel"
+			column="security_level"
+			class="com.app.docmgr.model.Lookup"
+			not-null="false"
+		>
+		</many-to-one>
 		<property
 			name="createdDate"
 			column="created_date"

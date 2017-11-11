@@ -58,11 +58,11 @@ public class FolderManager extends BaseUtil {
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
-	   " SELECT folder.id as id, folder.code,folder.name,folder.id||'' as tree, COALESCE(folder.parent_folder,0) as parent_folder, 0 AS level FROM folder "+
-	   ((startId==null||startId.length()==0)?" WHERE folder.parent_folder is null":" WHERE folder.id='"+startId+"' ")+
+	   " SELECT folder.id as id, folder.code,folder.name,folder.id||'' as tree, COALESCE(folder.parent,0) as parent, 0 AS level FROM folder "+
+	   ((startId==null||startId.length()==0)?" WHERE folder.parent is null":" WHERE folder.id='"+startId+"' ")+
 	   " UNION  ALL"+
-	   " SELECT f.id as id, f.code,f.name,(c.tree||'.'||f.id) as tree, COALESCE(f.parent_folder,0) as parent_folder, (c.level + 1) as level FROM frm  c "+
-	   " JOIN folder f ON f.parent_folder = c.id )"+
+	   " SELECT f.id as id, f.code,f.name,(c.tree||'.'||f.id) as tree, COALESCE(f.parent,0) as parent, (c.level + 1) as level FROM frm  c "+
+	   " JOIN folder f ON f.parent = c.id )"+
 	   " SELECT * FROM   frm ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("FolderTree", sqlQuery, null);
 		//log.debug(Utility.debug(list));
@@ -72,11 +72,11 @@ public class FolderManager extends BaseUtil {
 
 
 	public static List getDownline(String startId) throws Exception{
-		String sqlQuery = " WITH RECURSIVE q AS (  SELECT folder.id, folder.code,folder.name, folder.parent_folder, 1 as level FROM folder"+
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT folder.id, folder.code,folder.name, folder.parent, 1 as level FROM folder"+
 		  " WHERE folder.id='"+startId+"' "+
 		  " UNION ALL"+
-		  " SELECT x.id, x.code,x.name, x.parent_folder, (q.level+1) as level FROM folder  x"+
-		  " JOIN q ON q.id = x.parent_folder) "+ 
+		  " SELECT x.id, x.code,x.name, x.parent, (q.level+1) as level FROM folder  x"+
+		  " JOIN q ON q.id = x.parent) "+ 
 		  " SELECT * FROM q order by level ASC";
 		List list= DBQueryManager.getList("FolderDownline", sqlQuery, null); //new String[]{startId});
 		//log.debug(Utility.debug(list));
@@ -84,11 +84,11 @@ public class FolderManager extends BaseUtil {
 	}	
 
 	public static List getUpline(String startId) throws Exception{
-		String sqlQuery = " WITH RECURSIVE q AS (  SELECT folder.id, folder.code,folder.name, folder.parent_folder, 1 as level FROM folder"+
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT folder.id, folder.code,folder.name, folder.parent, 1 as level FROM folder"+
 		  " WHERE folder.id='"+startId+"' "+
 		  " UNION ALL"+
-		  " SELECT x.id, x.code,x.name, x.parent_folder, (q.level+1) as level FROM folder  x"+
-		  " JOIN q ON q.parent_folder = x.id) "+ 
+		  " SELECT x.id, x.code,x.name, x.parent, (q.level+1) as level FROM folder  x"+
+		  " JOIN q ON q.parent = x.id) "+ 
 		  " SELECT * FROM q order by level desc";
 		List list= DBQueryManager.getList("FolderUpline", sqlQuery, null);// new String[]{startId});
 		//log.debug(Utility.debug(list));
@@ -185,8 +185,8 @@ public class FolderManager extends BaseUtil {
 		obj.setName((String)data.get("name"));
 		if(!nvl(data.get("parentFolderId"))){
 			try {
-				Folder parentFolder= FolderService.getInstance().get(toLong(data.get("parentFolderId")));
-				if(parentFolder!=null)obj.setParentFolder(parentFolder);
+				Folder parent= FolderService.getInstance().get(toLong(data.get("parentFolderId")));
+				if(parent!=null)obj.setParent(parent);
 			} catch (Exception e) {
 				errors.add("error.invalid.parentFolder");
 			}
@@ -220,9 +220,9 @@ public class FolderManager extends BaseUtil {
 			doc.append("folderType", obj.getFolderType().getName());
 			doc.append("folderTypeIds", obj.getFolderType().getId());
 		}
-		if(obj.getParentFolder()!=null){
-			doc.append("parentFolder", obj.getParentFolder().getName());
-			doc.append("parentFolderId", obj.getParentFolder().getId());
+		if(obj.getParent()!=null){
+			doc.append("parent", obj.getParent().getName());
+			doc.append("parentId", obj.getParent().getId());
 		}
 		if(obj.getStatus()!=null){
 			doc.append("status", obj.getStatus().getName());

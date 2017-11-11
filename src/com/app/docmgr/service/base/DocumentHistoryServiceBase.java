@@ -23,7 +23,7 @@ import com.app.docmgr.model.DocumentHistory;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-11-2017 00:08:53
+ * @createDate 12-11-2017 00:00:51
  */
 
 	/**
@@ -63,8 +63,8 @@ public class DocumentHistoryServiceBase {
 			Hibernate.initialize(documentHistory.getSecurityLevel());			
 			Hibernate.initialize(documentHistory.getOwner());			
 			Hibernate.initialize(documentHistory.getStatus());			
-			Hibernate.initialize(documentHistory.getParentFolder());			
-			Hibernate.initialize(documentHistory.getParentDocument());			
+			Hibernate.initialize(documentHistory.getFolder());			
+			Hibernate.initialize(documentHistory.getParent());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -102,8 +102,8 @@ public class DocumentHistoryServiceBase {
 				Hibernate.initialize(documentHistory.getSecurityLevel());			
 				Hibernate.initialize(documentHistory.getOwner());			
 				Hibernate.initialize(documentHistory.getStatus());			
-				Hibernate.initialize(documentHistory.getParentFolder());			
-				Hibernate.initialize(documentHistory.getParentDocument());			
+				Hibernate.initialize(documentHistory.getFolder());			
+				Hibernate.initialize(documentHistory.getParent());			
 			}
 			return documentHistory;
 		} catch (HibernateException e) {
@@ -304,8 +304,8 @@ public class DocumentHistoryServiceBase {
 				Hibernate.initialize(documentHistory.getSecurityLevel());			
 				Hibernate.initialize(documentHistory.getOwner());			
 				Hibernate.initialize(documentHistory.getStatus());			
-				Hibernate.initialize(documentHistory.getParentFolder());			
-				Hibernate.initialize(documentHistory.getParentDocument());			
+				Hibernate.initialize(documentHistory.getFolder());			
+				Hibernate.initialize(documentHistory.getParent());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -346,8 +346,8 @@ public class DocumentHistoryServiceBase {
 			    Hibernate.initialize(documentHistory.getSecurityLevel());                    
 			    Hibernate.initialize(documentHistory.getOwner());                    
 			    Hibernate.initialize(documentHistory.getStatus());                    
-			    Hibernate.initialize(documentHistory.getParentFolder());                    
-			    Hibernate.initialize(documentHistory.getParentDocument());                    
+			    Hibernate.initialize(documentHistory.getFolder());                    
+			    Hibernate.initialize(documentHistory.getParent());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

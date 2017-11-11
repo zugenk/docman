@@ -23,7 +23,7 @@ import com.app.docmgr.model.Topic;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-11-2017 00:08:53
+ * @createDate 12-11-2017 00:00:51
  */
 
 	/**
@@ -62,7 +62,7 @@ public class TopicServiceBase {
 			topic = (Topic) session.get(Topic.class, id);
 			Hibernate.initialize(topic.getSubscribers());			
 			Hibernate.initialize(topic.getStatus());			
-			Hibernate.initialize(topic.getParentForum());			
+			Hibernate.initialize(topic.getForum());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -99,7 +99,7 @@ public class TopicServiceBase {
 			if(topic!=null) {
 				Hibernate.initialize(topic.getSubscribers());			
 				Hibernate.initialize(topic.getStatus());			
-				Hibernate.initialize(topic.getParentForum());			
+				Hibernate.initialize(topic.getForum());			
 			}
 			return topic;
 		} catch (HibernateException e) {
@@ -299,7 +299,7 @@ public class TopicServiceBase {
 				com.app.docmgr.model.Topic topic = (com.app.docmgr.model.Topic)itr.next();
 				Hibernate.initialize(topic.getSubscribers());			
 				Hibernate.initialize(topic.getStatus());			
-				Hibernate.initialize(topic.getParentForum());			
+				Hibernate.initialize(topic.getForum());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -339,7 +339,7 @@ public class TopicServiceBase {
 			    com.app.docmgr.model.Topic topic = (com.app.docmgr.model.Topic)itr.next();
 			    Hibernate.initialize(topic.getSubscribers());                   
 			    Hibernate.initialize(topic.getStatus());                    
-			    Hibernate.initialize(topic.getParentForum());                    
+			    Hibernate.initialize(topic.getForum());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

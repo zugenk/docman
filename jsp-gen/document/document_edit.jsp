@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -126,6 +126,11 @@
 				<html:text name="document" property="description"/>
 			</td>
 		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="document.priority.key"/></b></td>
+			<td width="10">:</td>
+			<td><html:text name="document" property="priority"/></td>
+		</tr>
   <% /* %> 		<tr>
 			<td width="150"><b><bean:message key="document.createdDate.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
@@ -226,29 +231,29 @@
 			</tr>
 		</logic:messagesPresent>
   <% */ %> 		<tr>
-			<td width="150"><b><bean:message key="document.parentFolder.key"/> <font color="#FF0000">*</font></b></td>
+			<td width="150"><b><bean:message key="document.folder.key"/> <font color="#FF0000">*</font></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="document" property="parentFolder" style="width:135"  value="${document.parentFolder.id}">
+				<html-el:select  name="document" property="folder" style="width:135"  value="${document.folder.id}">
 					<option value=""></option>
-					<html:options collection="parentFolderList" property="id" labelProperty="name"/>
+					<html:options collection="folderList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>
-		<logic:messagesPresent property="document.parentFolder">
+		<logic:messagesPresent property="document.folder">
 			<tr>
 				<td colspan="3">
-					<font color="red"><html:errors property="document.parentFolder"/></font>
+					<font color="red"><html:errors property="document.folder"/></font>
 				</td>
 			</tr>
 		</logic:messagesPresent>
 		<tr>
-			<td width="150"><b><bean:message key="document.parentDocument.key"/></b></td>
+			<td width="150"><b><bean:message key="document.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<html-el:select  name="document" property="parentDocument" style="width:135"  value="${document.parentDocument.id}">
+				<html-el:select  name="document" property="parent" style="width:135"  value="${document.parent.id}">
 					<option value=""></option>
-					<html:options collection="parentDocumentList" property="id" labelProperty="name"/>
+					<html:options collection="parentList" property="id" labelProperty="name"/>
 				</html-el:select>															
 			</td>
 		</tr>

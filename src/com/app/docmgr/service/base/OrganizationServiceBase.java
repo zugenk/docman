@@ -23,7 +23,7 @@ import com.app.docmgr.model.Organization;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-11-2017 00:08:53
+ * @createDate 12-11-2017 00:00:51
  */
 
 	/**
@@ -61,6 +61,7 @@ public class OrganizationServiceBase {
 		try {
 			organization = (Organization) session.get(Organization.class, id);
 			Hibernate.initialize(organization.getMembers());			
+			Hibernate.initialize(organization.getSecurityLevel());			
 			Hibernate.initialize(organization.getParent());			
 			Hibernate.initialize(organization.getOrganizationType());			
 			Hibernate.initialize(organization.getStatus());			
@@ -99,6 +100,7 @@ public class OrganizationServiceBase {
 			organization = (com.app.docmgr.model.Organization) query.uniqueResult();
 			if(organization!=null) {
 				Hibernate.initialize(organization.getMembers());			
+				Hibernate.initialize(organization.getSecurityLevel());			
 				Hibernate.initialize(organization.getParent());			
 				Hibernate.initialize(organization.getOrganizationType());			
 				Hibernate.initialize(organization.getStatus());			
@@ -300,6 +302,7 @@ public class OrganizationServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.Organization organization = (com.app.docmgr.model.Organization)itr.next();
 				Hibernate.initialize(organization.getMembers());			
+				Hibernate.initialize(organization.getSecurityLevel());			
 				Hibernate.initialize(organization.getParent());			
 				Hibernate.initialize(organization.getOrganizationType());			
 				Hibernate.initialize(organization.getStatus());			
@@ -341,6 +344,7 @@ public class OrganizationServiceBase {
 			while(itr.hasNext()){
 			    com.app.docmgr.model.Organization organization = (com.app.docmgr.model.Organization)itr.next();
 			    Hibernate.initialize(organization.getMembers());                    
+			    Hibernate.initialize(organization.getSecurityLevel());                    
 			    Hibernate.initialize(organization.getParent());                    
 			    Hibernate.initialize(organization.getOrganizationType());                    
 			    Hibernate.initialize(organization.getStatus());                    

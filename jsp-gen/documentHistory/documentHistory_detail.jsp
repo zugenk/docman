@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -152,20 +152,20 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="documentHistory.parentFolder.key"/></b></td>
+			<td width="150"><b><bean:message key="documentHistory.folder.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<logic:notEmpty name="documentHistory"	property="parentFolder">			
-					<bean:write name="documentHistory" property="parentFolder.name"/>
+				<logic:notEmpty name="documentHistory"	property="folder">			
+					<bean:write name="documentHistory" property="folder.name"/>
 				</logic:notEmpty>
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><b><bean:message key="documentHistory.parentDocument.key"/></b></td>
+			<td width="150"><b><bean:message key="documentHistory.parent.key"/></b></td>
 			<td width="10">:</td>
 			<td>				
-				<logic:notEmpty name="documentHistory"	property="parentDocument">			
-					<bean:write name="documentHistory" property="parentDocument.name"/>
+				<logic:notEmpty name="documentHistory"	property="parent">			
+					<bean:write name="documentHistory" property="parent.name"/>
 				</logic:notEmpty>
 			</td>
 		</tr>
@@ -217,6 +217,12 @@
 				&nbsp;
 				<% 		}
 					} %>
+				<% if(com.app.docmgr.action.DocumentHistoryAction.allowableAction.contains("activate")) { 
+						if (privilegeList.contains("DOCUMENT_HISTORY_ACTIVATE")) { %>
+				<input type="button" value="<bean:message key="button.activate"/>" onclick="this.form.action.value='activate_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
 				<% if(com.app.docmgr.action.DocumentHistoryAction.allowableAction.contains("close")) { 
 						if (privilegeList.contains("DOCUMENT_HISTORY_CLOSE")) { %>
 				<input type="button" value="<bean:message key="button.close"/>" onclick="this.form.action.value='close_confirm';this.form.submit()" />
@@ -232,6 +238,12 @@
 				<% if(com.app.docmgr.action.DocumentHistoryAction.allowableAction.contains("remove")) { 
 						if (privilegeList.contains("DOCUMENT_HISTORY_REMOVE")) { %>
 				<input type="button" value="<bean:message key="button.remove"/>" onclick="this.form.action.value='remove_confirm';this.form.submit()" />
+				&nbsp;
+				<% 		}
+					} %>
+				<% if(com.app.docmgr.action.DocumentHistoryAction.allowableAction.contains("block")) { 
+						if (privilegeList.contains("DOCUMENT_HISTORY_BLOCK")) { %>
+				<input type="button" value="<bean:message key="button.block"/>" onclick="this.form.action.value='block_confirm';this.form.submit()" />
 				&nbsp;
 				<% 		}
 					} %>

@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -50,7 +50,6 @@
 			document.forms.forum.forum_icon_filter.value="";
 			document.forms.forum.forum_name_filter.value="";
 			document.forms.forum.forum_description_filter.value="";
-			document.forms.forum.forum_address_filter.value="";
 			document.forms.forum.forum_createdDate_filter_start.value="";
 			document.forms.forum.forum_createdDate_filter_end.value="";
 			document.forms.forum.forum_createdBy_filter.value="";
@@ -60,7 +59,7 @@
 			document.forms.forum.forum_filterCode_filter.value="";
 			document.forms.forum.forum_status_filter.value="";
 			document.forms.forum.forum_forumType_filter.value="";
-			document.forms.forum.forum_parentForum_filter.value="";
+			document.forms.forum.forum_parent_filter.value="";
 			document.forms.forum.submit();
 		}
 
@@ -82,23 +81,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="20" align="right">
+		<td colspan="19" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="20" align="left">
+		<td class="titleHeader" colspan="19" align="left">
 			<bean:message key="page.Forum.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="20" align="right">
+		<td colspan="19" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="20" align="right">
+		<td colspan="19" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -159,20 +158,6 @@
 			</logic:equal>
 			<logic:notEqual name="forum_fieldOrder" value="description">
 				<a href="#" onclick="doOrder('description', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
-			</logic:notEqual>
-		</td>
-		<td>			
-			<bean:message key="forum.address.key"/>
-			<logic:equal name="forum_fieldOrder" value="address">
-				<logic:equal name="forum_orderType" value="ASC">
-					<a href="#" onclick="doOrder('address', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
-				</logic:equal>
-				<logic:equal name="forum_orderType" value="DESC">
-					<a href="#" onclick="doOrder('address', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
-				</logic:equal>
-			</logic:equal>
-			<logic:notEqual name="forum_fieldOrder" value="address">
-				<a href="#" onclick="doOrder('address', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -247,7 +232,7 @@
 		</td>
 		<td><bean:message key="forum.status.key"/></td>
 		<td><bean:message key="forum.forumType.key"/></td>
-		<td><bean:message key="forum.parentForum.key"/></td>
+		<td><bean:message key="forum.parent.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -265,7 +250,6 @@
 		<td><bean:write name="element" property="icon"/></td>
 		<td><bean:write name="element" property="name"/></td>
 		<td><bean:write name="element" property="description"/></td>
-		<td><bean:write name="element" property="address"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="createdBy"/></td>
 		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
@@ -284,8 +268,8 @@
 			
 		</td>
 		<td >
-				<logic:notEmpty name="element"	property="parentForum">								
-					<bean:write name="element" property="parentForum.name"/>
+				<logic:notEmpty name="element"	property="parent">								
+					<bean:write name="element" property="parent.name"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -298,12 +282,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="20" align="right">
+		<td colspan="19" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="20" align="right">
+		<td colspan="19" align="right">
 		<% if(com.app.docmgr.action.ForumAction.allowableAction.contains("create")) { 
 				if (privilegeList.contains("FORUM_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -336,11 +320,6 @@
 		<td width="150"><bean:message key="forum.description.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="forum_description_filter" value="<bean:write name="forum_description_filter"/>"></td>
-	</tr>
-	<tr>
-		<td width="150"><bean:message key="forum.address.key"/></td>
-		<td width="10">:</td>
-		<td><input type="text" name="forum_address_filter" value="<bean:write name="forum_address_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150" valign="top"><bean:message key="forum.createdDate.key"/></td>
@@ -442,25 +421,25 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="forum.parentForum.key"/></td>
+			<td width="150"><bean:message key="forum.parent.key"/></td>
 			<td width="10">:</td>
 			<td>
 				<%
-					String  forum_parentForum_filter_value = (String)request.getSession().getAttribute("forum_parentForum_filter");
-					if("".equals(forum_parentForum_filter_value)) forum_parentForum_filter_value = "0";
+					String  forum_parent_filter_value = (String)request.getSession().getAttribute("forum_parent_filter");
+					if("".equals(forum_parent_filter_value)) forum_parent_filter_value = "0";
 				%>				
-				<select name="forum_parentForum_filter">
+				<select name="forum_parent_filter">
 					<option value=""></option>
-					<logic:iterate id="parentForumElement" name="parentForumList"  type="com.app.docmgr.model.Forum">
+					<logic:iterate id="parentElement" name="parentList"  type="com.app.docmgr.model.Forum">
 						
-						<option value="<bean:write name="parentForumElement" property="id"/>" 
+						<option value="<bean:write name="parentElement" property="id"/>" 
 							<%
-								Long forum_parentForum_id = parentForumElement.getId();							
-								Long forum_parentForum_filter_value_c = new Long(forum_parentForum_filter_value);
-								if(forum_parentForum_filter_value_c.equals(forum_parentForum_id))out.print(" SELECTED ");
+								Long forum_parent_id = parentElement.getId();							
+								Long forum_parent_filter_value_c = new Long(forum_parent_filter_value);
+								if(forum_parent_filter_value_c.equals(forum_parent_id))out.print(" SELECTED ");
 							%>
 						>
-						<bean:write name="parentForumElement" property="name"/></option>
+						<bean:write name="parentElement" property="name"/></option>
 					</logic:iterate>
 				</select>
 			</td>

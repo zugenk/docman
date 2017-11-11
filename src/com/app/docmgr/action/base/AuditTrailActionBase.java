@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class AuditTrailActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.AuditTrailActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -162,14 +162,14 @@ public class AuditTrailActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("auditTrail_approvedBy_filter", param_auditTrail_approvedBy_filter);
-		String param_auditTrail_actions_filter = "";
-		if(request.getParameter("auditTrail_actions_filter")!=null){
-			param_auditTrail_actions_filter = request.getParameter("auditTrail_actions_filter");
-			if(param_auditTrail_actions_filter.length() > 0 ){				
-				auditTrail_filterSb.append("  AND auditTrail.actions like '%"+param_auditTrail_actions_filter+"%' ");
+		String param_auditTrail_action_filter = "";
+		if(request.getParameter("auditTrail_action_filter")!=null){
+			param_auditTrail_action_filter = request.getParameter("auditTrail_action_filter");
+			if(param_auditTrail_action_filter.length() > 0 ){				
+				auditTrail_filterSb.append("  AND auditTrail.action like '%"+param_auditTrail_action_filter+"%' ");
 			}
 		}
-		request.getSession().setAttribute("auditTrail_actions_filter", param_auditTrail_actions_filter);
+		request.getSession().setAttribute("auditTrail_action_filter", param_auditTrail_action_filter);
 		String param_auditTrail_description_filter = "";
 		if(request.getParameter("auditTrail_description_filter")!=null){
 			param_auditTrail_description_filter = request.getParameter("auditTrail_description_filter");
@@ -480,9 +480,10 @@ public class AuditTrailActionBase extends Action{
 			}
 			String entity = request.getParameter("entity");
 			auditTrail.setEntity(entity);
-			if(entity==null || entity.trim().length() == 0 ){
-				errors.add("auditTrail.entity", new ActionError("error.auditTrail.entity"));
-			}
+			String entityId = request.getParameter("entityId");
+			try{
+				auditTrail.setEntityId(new java.lang.Long(entityId));
+			}catch(Exception ex){}
 			String doneBy = request.getParameter("doneBy");
 			auditTrail.setDoneBy(doneBy);
 			if(doneBy==null || doneBy.trim().length() == 0 ){
@@ -495,10 +496,10 @@ public class AuditTrailActionBase extends Action{
 			}
 			String approvedBy = request.getParameter("approvedBy");
 			auditTrail.setApprovedBy(approvedBy);
-			String actions = request.getParameter("actions");
-			auditTrail.setActions(actions);
-			if(actions==null || actions.trim().length() == 0 ){
-				errors.add("auditTrail.actions", new ActionError("error.auditTrail.actions"));
+			String action = request.getParameter("action");
+			auditTrail.setAction(action);
+			if(action==null || action.trim().length() == 0 ){
+				errors.add("auditTrail.action", new ActionError("error.auditTrail.action"));
 			}
 			String description = request.getParameter("description");
 			auditTrail.setDescription(description);

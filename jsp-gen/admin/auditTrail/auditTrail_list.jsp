@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -52,7 +52,7 @@
 			document.forms.auditTrail.auditTrail_doneBy_filter.value="";
 			document.forms.auditTrail.auditTrail_sessionId_filter.value="";
 			document.forms.auditTrail.auditTrail_approvedBy_filter.value="";
-			document.forms.auditTrail.auditTrail_actions_filter.value="";
+			document.forms.auditTrail.auditTrail_action_filter.value="";
 			document.forms.auditTrail.auditTrail_description_filter.value="";
 			document.forms.auditTrail.submit();
 		}
@@ -75,23 +75,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="17" align="left">
+		<td class="titleHeader" colspan="18" align="left">
 			<bean:message key="page.AuditTrail.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -124,6 +124,20 @@
 			</logic:equal>
 			<logic:notEqual name="auditTrail_fieldOrder" value="entity">
 				<a href="#" onclick="doOrder('entity', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
+			<bean:message key="auditTrail.entityId.key"/>
+			<logic:equal name="auditTrail_fieldOrder" value="entity_id">
+				<logic:equal name="auditTrail_orderType" value="ASC">
+					<a href="#" onclick="doOrder('entity_id', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="auditTrail_orderType" value="DESC">
+					<a href="#" onclick="doOrder('entity_id', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="auditTrail_fieldOrder" value="entity_id">
+				<a href="#" onclick="doOrder('entity_id', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -169,17 +183,17 @@
 			</logic:notEqual>
 		</td>
 		<td>			
-			<bean:message key="auditTrail.actions.key"/>
-			<logic:equal name="auditTrail_fieldOrder" value="actions">
+			<bean:message key="auditTrail.action.key"/>
+			<logic:equal name="auditTrail_fieldOrder" value="action">
 				<logic:equal name="auditTrail_orderType" value="ASC">
-					<a href="#" onclick="doOrder('actions', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+					<a href="#" onclick="doOrder('action', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
 				</logic:equal>
 				<logic:equal name="auditTrail_orderType" value="DESC">
-					<a href="#" onclick="doOrder('actions', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+					<a href="#" onclick="doOrder('action', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 				</logic:equal>
 			</logic:equal>
-			<logic:notEqual name="auditTrail_fieldOrder" value="actions">
-				<a href="#" onclick="doOrder('actions', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			<logic:notEqual name="auditTrail_fieldOrder" value="action">
+				<a href="#" onclick="doOrder('action', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
 			</logic:notEqual>
 		</td>
 		<td>			
@@ -211,10 +225,11 @@
 		<tr bgcolor="<% out.print(bgcolor); %>">
 		<td><bean:write name="element" property="auditTime" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="entity"/></td>
+		<td><bean:write name="element" property="entityId"/></td>
 		<td><bean:write name="element" property="doneBy"/></td>
 		<td><bean:write name="element" property="sessionId"/></td>
 		<td><bean:write name="element" property="approvedBy"/></td>
-		<td><bean:write name="element" property="actions"/></td>
+		<td><bean:write name="element" property="action"/></td>
 		<td><bean:write name="element" property="description"/></td>
 
 			<td width="20">
@@ -225,12 +240,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="17" align="right">
+		<td colspan="18" align="right">
 		<% if(com.app.docmgr.admin.action.AuditTrailAction.allowableAction.contains("create")) { 
 				if (UserService.getInstance().hasPrivilege(loginUser,"ADMIN:AUDIT_TRAIL_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -283,9 +298,9 @@
 		<td><input type="text" name="auditTrail_approvedBy_filter" value="<bean:write name="auditTrail_approvedBy_filter"/>"></td>
 	</tr>
 	<tr>
-		<td width="150"><bean:message key="auditTrail.actions.key"/></td>
+		<td width="150"><bean:message key="auditTrail.action.key"/></td>
 		<td width="10">:</td>
-		<td><input type="text" name="auditTrail_actions_filter" value="<bean:write name="auditTrail_actions_filter"/>"></td>
+		<td><input type="text" name="auditTrail_action_filter" value="<bean:write name="auditTrail_action_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150"><bean:message key="auditTrail.description.key"/></td>

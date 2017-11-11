@@ -18,6 +18,7 @@ public class Organization  implements java.io.Serializable {
      private String name;
      private String address;
      private String mailingList;
+     private Lookup securityLevel;
      private Date createdDate;
      private String createdBy;
      private Date lastUpdatedDate;
@@ -109,6 +110,17 @@ public class Organization  implements java.io.Serializable {
     
     public void setMailingList(String mailingList) {
         this.mailingList = mailingList;
+    }
+
+    /**
+     * 
+     */
+    public Lookup getSecurityLevel() {
+        return this.securityLevel;
+    }
+    
+    public void setSecurityLevel(Lookup securityLevel) {
+        this.securityLevel = securityLevel;
     }
 
     /**

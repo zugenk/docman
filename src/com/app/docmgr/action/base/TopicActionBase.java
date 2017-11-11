@@ -30,14 +30,14 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 
 
 public class TopicActionBase extends Action{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.base.TopicActionBase");	
 	public  String _doneBy="guest";
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 	
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -95,6 +95,10 @@ public class TopicActionBase extends Action{
 	    		forward = doProcessConfirm(mapping, form, request, response);
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		doProcessOk(mapping, form, request, response);
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		forward = doActivateConfirm(mapping, form, request, response);
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		doActivateOk(mapping, form, request, response);
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		forward = doCloseConfirm(mapping, form, request, response);
 	    	}else if("close_ok".equalsIgnoreCase(action)){
@@ -107,6 +111,10 @@ public class TopicActionBase extends Action{
 	    		forward = doRemoveConfirm(mapping, form, request, response);
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		doRemoveOk(mapping, form, request, response);
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		forward = doBlockConfirm(mapping, form, request, response);
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		doBlockOk(mapping, form, request, response);
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		forward = doCancelConfirm(mapping, form, request, response);
 	    	}else if("cancel_ok".equalsIgnoreCase(action)){
@@ -137,9 +145,9 @@ public class TopicActionBase extends Action{
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Topic'  ", null);
 			request.setAttribute("statusList", statusList);
-			com.app.docmgr.service.ForumService parentForumService = com.app.docmgr.service.ForumService.getInstance();
-			List parentForumList = parentForumService.getList(null, null);
-			request.setAttribute("parentForumList", parentForumList);
+			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
+			List forumList = forumService.getList(null, null);
+			request.setAttribute("forumList", forumList);
 		}catch(Exception ex){
 		
 		}
@@ -264,14 +272,14 @@ public class TopicActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("topic_status_filter", param_topic_status_filter);
-		String param_topic_parentForum_filter = "";
-		if(request.getParameter("topic_parentForum_filter")!=null){
-			param_topic_parentForum_filter = request.getParameter("topic_parentForum_filter");
-			if(param_topic_parentForum_filter.length() > 0 ){				
-				topic_filterSb.append("  AND topic.parentForum = '"+param_topic_parentForum_filter+"' ");
+		String param_topic_forum_filter = "";
+		if(request.getParameter("topic_forum_filter")!=null){
+			param_topic_forum_filter = request.getParameter("topic_forum_filter");
+			if(param_topic_forum_filter.length() > 0 ){				
+				topic_filterSb.append("  AND topic.forum = '"+param_topic_forum_filter+"' ");
 			}
 		}		
-		request.getSession().setAttribute("topic_parentForum_filter", param_topic_parentForum_filter);
+		request.getSession().setAttribute("topic_forum_filter", param_topic_forum_filter);
 		
 		if(topic_fieldOrder!=null && topic_orderType != null )topic_filterSb.append(" ORDER BY "+topic_fieldOrder+" "+topic_orderType);
 		
@@ -397,9 +405,9 @@ public class TopicActionBase extends Action{
  /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Topic'  ", null);
 			request.setAttribute("statusList", statusList);
- */ 			com.app.docmgr.service.ForumService parentForumService = com.app.docmgr.service.ForumService.getInstance();
-			List parentForumList = parentForumService.getList(null, null);
-			request.setAttribute("parentForumList", parentForumList);
+ */ 			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
+			List forumList = forumService.getList(null, null);
+			request.setAttribute("forumList", forumList);
 
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
@@ -435,9 +443,9 @@ public class TopicActionBase extends Action{
 /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Topic'  ", null);
 			request.setAttribute("statusList", statusList);
-*/			com.app.docmgr.service.ForumService parentForumService = com.app.docmgr.service.ForumService.getInstance();
-			List parentForumList = parentForumService.getList(null, null);
-			request.setAttribute("parentForumList", parentForumList);
+*/			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
+			List forumList = forumService.getList(null, null);
+			request.setAttribute("forumList", forumList);
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
@@ -496,9 +504,9 @@ public class TopicActionBase extends Action{
 /* 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Topic'  ", null);
 			request.setAttribute("statusList", statusList);
-*/ 			com.app.docmgr.service.ForumService parentForumService = com.app.docmgr.service.ForumService.getInstance();
-			List parentForumList = parentForumService.getList(null, null);
-			request.setAttribute("parentForumList", parentForumList);
+*/ 			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
+			List forumList = forumService.getList(null, null);
+			request.setAttribute("forumList", forumList);
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
@@ -529,9 +537,9 @@ public class TopicActionBase extends Action{
  /*			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			List statusList = statusService.getList("  and status.type='Topic'  ", null);
 			request.setAttribute("statusList", statusList);
- */			com.app.docmgr.service.ForumService parentForumService = com.app.docmgr.service.ForumService.getInstance();
-			List parentForumList = parentForumService.getList(null, null);
-			request.setAttribute("parentForumList", parentForumList);
+ */			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
+			List forumList = forumService.getList(null, null);
+			request.setAttribute("forumList", forumList);
 
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
@@ -874,6 +882,56 @@ public class TopicActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doActivateConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Topic topic = (Topic) request.getSession().getAttribute("topic");
+    		if (topic == null){
+	    		topic = TopicService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("topic", topic);
+	    	}
+    		if(topic == null){
+    			response.sendRedirect("topic.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set userSet = topic.getSubscribers();			
+			if(userSet == null) userSet = new HashSet();
+			request.setAttribute("userSet", userSet);			
+
+    		forward = mapping.findForward("activate_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("topic.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doActivateOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Topic topic = (Topic) request.getSession().getAttribute("topic");
+    		if(topic == null){
+    			response.sendRedirect("topic.do?action=activate_confirm");
+    		}
+    		topic.setStatus(StatusService.getInstance().getByTypeandCode("Topic","activated"));
+			topic.setLastUpdatedDate(new Date());
+			topic.setLastUpdatedBy(_doneBy);
+    		TopicService.getInstance().update(topic);
+    		response.sendRedirect("topic.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("topic.do?action=activate_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCloseConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1024,6 +1082,56 @@ public class TopicActionBase extends Action{
     	}  
     }
 
+   	public ActionForward doBlockConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+    	ActionForward forward = null;
+    	try{
+    		Topic topic = (Topic) request.getSession().getAttribute("topic");
+    		if (topic == null){
+	    		topic = TopicService.getInstance().get(new Long(request.getParameter("id")));
+	    		request.getSession().setAttribute("topic", topic);
+	    	}
+    		if(topic == null){
+    			response.sendRedirect("topic.do?action=detail");
+    			return null;
+    		}
+    		    		
+			Set userSet = topic.getSubscribers();			
+			if(userSet == null) userSet = new HashSet();
+			request.setAttribute("userSet", userSet);			
+
+    		forward = mapping.findForward("block_confirm");
+    	}catch(Exception ex){
+	    	ex.printStackTrace();
+    		try{
+	    		response.sendRedirect("topic.do?action=detail");
+    			return null;
+    		}catch(Exception rex){
+    		}	
+    	}    	
+    	return forward;
+    }
+
+    public void doBlockOk(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+       	try{
+       		Topic topic = (Topic) request.getSession().getAttribute("topic");
+    		if(topic == null){
+    			response.sendRedirect("topic.do?action=block_confirm");
+    		}
+    		topic.setStatus(StatusService.getInstance().getByTypeandCode("Topic","blocked"));
+			topic.setLastUpdatedDate(new Date());
+			topic.setLastUpdatedBy(_doneBy);
+    		TopicService.getInstance().update(topic);
+    		response.sendRedirect("topic.do?action=detail");    		
+    	}catch(Exception ex){
+    		try{
+    			response.sendRedirect("topic.do?action=block_confirm");
+    		}catch(Exception rex){
+    			rex.printStackTrace();
+    		}
+    		ex.printStackTrace();
+    	}  
+    }
+
    	public ActionForward doCancelConfirm(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
     	ActionForward forward = null;
     	try{
@@ -1079,14 +1187,8 @@ public class TopicActionBase extends Action{
     	try{    		
 			String code = request.getParameter("code");
 			topic.setCode(code);
-			if(code==null || code.trim().length() == 0 ){
-				errors.add("topic.code", new ActionError("error.topic.code"));
-			}
 			String icon = request.getParameter("icon");
 			topic.setIcon(icon);
-			if(icon==null || icon.trim().length() == 0 ){
-				errors.add("topic.icon", new ActionError("error.topic.icon"));
-			}
 			String name = request.getParameter("name");
 			topic.setName(name);
 			if(name==null || name.trim().length() == 0 ){
@@ -1150,18 +1252,21 @@ public class TopicActionBase extends Action{
 			if(statusObj==null){
 				errors.add("topic.status", new ActionError("error.topic.status"));
 			}
-*/ 			com.app.docmgr.model.Forum  parentForumObj =null;
-			com.app.docmgr.service.ForumService parentForumService = com.app.docmgr.service.ForumService.getInstance();
+*/ 			com.app.docmgr.model.Forum  forumObj =null;
+			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
 			try{
-				String parentForumStr = request.getParameter("parentForum");
+				String forumStr = request.getParameter("forum");
 				
-				if(parentForumStr == null || parentForumStr.trim().length() == 0 ){
-					topic.setParentForum(null);
+				if(forumStr == null || forumStr.trim().length() == 0 ){
+					topic.setForum(null);
 				}else{			
-					parentForumObj = parentForumService.get(new Long(parentForumStr));
-					topic.setParentForum(parentForumObj);
+					forumObj = forumService.get(new Long(forumStr));
+					topic.setForum(forumObj);
 				}
 			}catch(Exception ex){}	
+			if(forumObj==null){
+				errors.add("topic.forum", new ActionError("error.topic.forum"));
+			}
 
 			Set userSet = new HashSet();
 			String[] _selectedUser=request.getParameterValues("selected_user");

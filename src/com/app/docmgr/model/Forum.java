@@ -19,13 +19,12 @@ public class Forum  implements java.io.Serializable {
      private String description;
      private Status status;
      private Lookup forumType;
-     private String address;
      private Date createdDate;
      private String createdBy;
      private Date lastUpdatedDate;
      private String lastUpdatedBy;
      private String filterCode;
-     private Forum parentForum;
+     private Forum parent;
 
 
     // Constructors
@@ -124,17 +123,6 @@ public class Forum  implements java.io.Serializable {
     /**
      * 
      */
-    public String getAddress() {
-        return this.address;
-    }
-    
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    /**
-     * 
-     */
     public Date getCreatedDate() {
         return this.createdDate;
     }
@@ -190,12 +178,12 @@ public class Forum  implements java.io.Serializable {
     /**
      * 
      */
-    public Forum getParentForum() {
-        return this.parentForum;
+    public Forum getParent() {
+        return this.parent;
     }
     
-    public void setParentForum(Forum parentForum) {
-        this.parentForum = parentForum;
+    public void setParent(Forum parent) {
+        this.parent = parent;
     }
 
 

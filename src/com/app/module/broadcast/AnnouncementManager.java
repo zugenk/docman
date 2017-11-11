@@ -137,9 +137,11 @@ public class AnnouncementManager extends BaseUtil {
 		Document doc=new Document();
 		//doc.append("",obj.get
 		doc.append("modelClass", obj.getClass().getName());
-		doc.append("name",obj.getAnnouncementType().getName());
-		doc.append("content",obj.getContent());
 		doc.append("id",obj.getId());
+		doc.append("content",obj.getContent());
+		doc.append("createdBy",obj.getCreatedBy());
+		doc.append("createdDate",obj.getCreatedDate());
+		doc.append("subject",obj.getSubject());
 		
 		doc.append("targetOrganization",obj.getTargetOrganizations());
 		doc.append("targetUsers",obj.getTargetUsers());

@@ -23,7 +23,7 @@ import com.app.docmgr.model.Forum;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-11-2017 00:08:53
+ * @createDate 12-11-2017 00:00:51
  */
 
 	/**
@@ -62,7 +62,7 @@ public class ForumServiceBase {
 			forum = (Forum) session.get(Forum.class, id);
 			Hibernate.initialize(forum.getStatus());			
 			Hibernate.initialize(forum.getForumType());			
-			Hibernate.initialize(forum.getParentForum());			
+			Hibernate.initialize(forum.getParent());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -99,7 +99,7 @@ public class ForumServiceBase {
 			if(forum!=null) {
 				Hibernate.initialize(forum.getStatus());			
 				Hibernate.initialize(forum.getForumType());			
-				Hibernate.initialize(forum.getParentForum());			
+				Hibernate.initialize(forum.getParent());			
 			}
 			return forum;
 		} catch (HibernateException e) {
@@ -294,13 +294,12 @@ public class ForumServiceBase {
 			query.setFirstResult(start);
 			query.setMaxResults(count);			
 			result.addAll(query.list());	
-			System.out.println("Sampai sini msh oke dong ");
 			java.util.Iterator itr = result.iterator();
 			while(itr.hasNext()){
 				com.app.docmgr.model.Forum forum = (com.app.docmgr.model.Forum)itr.next();
 				Hibernate.initialize(forum.getStatus());			
 				Hibernate.initialize(forum.getForumType());			
-				Hibernate.initialize(forum.getParentForum());			
+				Hibernate.initialize(forum.getParent());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -340,7 +339,7 @@ public class ForumServiceBase {
 			    com.app.docmgr.model.Forum forum = (com.app.docmgr.model.Forum)itr.next();
 			    Hibernate.initialize(forum.getStatus());                    
 			    Hibernate.initialize(forum.getForumType());                    
-			    Hibernate.initialize(forum.getParentForum());                    
+			    Hibernate.initialize(forum.getParent());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

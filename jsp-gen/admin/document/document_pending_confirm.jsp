@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 15:05:21
+ * @createDate 12-11-2017 00:00:51
  */
 -->
 </HEAD>
@@ -82,6 +82,11 @@
 			<td><bean:write name="document" property="description"/></td>
 		</tr>
 		<tr>
+			<td width="150"><bean:message key="document.priority.key"/></td>
+			<td width="10">:</td>
+			<td><bean:write name="document" property="priority"/></td>
+		</tr>
+		<tr>
 			<td width="150"><bean:message key="document.createdDate.key"/></td>
 			<td width="10">:</td>
 			<td ><bean:write name="document" property="createdDate" format="dd MMM yyyy"/></td>
@@ -129,20 +134,20 @@
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="document.parentFolder.key"/></td>
+			<td width="150"><bean:message key="document.folder.key"/></td>
 			<td width="10">:</td>
 			<td>				
-				<logic:notEmpty name="document" property="parentFolder">			
-					<bean:write name="document" property="parentFolder.name"/>
+				<logic:notEmpty name="document" property="folder">			
+					<bean:write name="document" property="folder.name"/>
 				</logic:notEmpty>
 			</td>
 		</tr>
 		<tr>
-			<td width="150"><bean:message key="document.parentDocument.key"/></td>
+			<td width="150"><bean:message key="document.parent.key"/></td>
 			<td width="10">:</td>
 			<td>				
-				<logic:notEmpty name="document" property="parentDocument">			
-					<bean:write name="document" property="parentDocument.name"/>
+				<logic:notEmpty name="document" property="parent">			
+					<bean:write name="document" property="parent.name"/>
 				</logic:notEmpty>
 			</td>
 		</tr>
