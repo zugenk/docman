@@ -50,7 +50,6 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.getTree(startId));
 			return reply(response);  
@@ -60,6 +59,23 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 		return reply(response);  
 	}
 	
+	@RequestMapping(value = "/{ID}/fullTree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getFullTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Document response=new Document();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",FolderManager.getFullTree(startId));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+
 	@RequestMapping(value = "/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,

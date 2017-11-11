@@ -64,6 +64,14 @@ public class ForumManager extends BaseUtil{
 		return list;
 	}	
 	
+	public static List getFullTree(String startId) throws Exception {
+		List upList=getUpline(startId);
+		if (upList.isEmpty()) return upList;
+		Map root=(Map) upList.get(0);
+		return getTree(toString(root.get("id")));
+	}
+	
+	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create Forum :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
@@ -103,7 +111,7 @@ public class ForumManager extends BaseUtil{
 		ForumService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String objId) throws Exception {
+	public static Document detail(Document passport,String objId) throws Exception {
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		long usrId= Long.parseLong(objId);
 		Forum obj=ForumService.getInstance().get(usrId);

@@ -61,7 +61,25 @@ public class OrganizationController  extends BaseUtil{
 		}
 		return reply(response);  
 	}
-		
+	
+	@RequestMapping(value = "{ID}/fullTree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getFullTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Document response=new Document();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",OrganizationManager.getFullTree(startId));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+	
+	
 	@RequestMapping(value = "{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,

@@ -20,6 +20,7 @@ import com.app.docmgr.service.RoleService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.TopicService;
 import com.app.module.basic.BaseUtil;
+import com.app.module.basic.DBQueryManager;
 import com.app.docmgr.service.MessageService;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
@@ -27,6 +28,52 @@ import com.simas.webservice.Utility;
 
 public class MessageManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(MessageManager.class);
+	
+	public static List<Map> getTree(String startId)  throws Exception{
+		String sqlQuery = " WITH RECURSIVE frm AS ("+
+	   " SELECT message.id as id, message.id||'' as tree, COALESCE(message.parent,0) as parent, 0 AS level FROM message "+
+	   ((startId==null||startId.length()==0)?" WHERE message.parent is null":" WHERE message.id='"+startId+"' ")+
+	   " UNION  ALL"+
+	   " SELECT f.id as id, (c.tree||'.'||f.id) as tree, COALESCE(f.parent,0) as parent, (c.level + 1) as level FROM frm  c "+
+	   " JOIN message f ON f.parent = c.id )"+
+	   " SELECT * FROM   frm ORDER  BY  frm.tree";
+		List list= DBQueryManager.getList("MessageTree", sqlQuery, null);
+		//log.debug(Utility.debug(list));
+		return constructTreeList(list);
+	}	
+	
+	public static List getDownline(String startId) throws Exception{
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT message.id, message.parent, 1 as level FROM message"+
+		  " WHERE message.id='"+startId+"' "+
+		  " UNION ALL"+
+		  " SELECT x.id, x.parent, (q.level+1) as level FROM message  x"+
+		  " JOIN q ON q.id = x.parent) "+ 
+		  " SELECT * FROM q order by level ASC";
+		List list= DBQueryManager.getList("MessageDownline", sqlQuery, null); //new String[]{startId});
+		//log.debug(Utility.debug(list));
+		return list;
+	}	
+
+	public static List getUpline(String startId) throws Exception{
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT message.id, message.parent, 1 as level FROM message"+
+		  " WHERE message.id='"+startId+"' "+
+		  " UNION ALL"+
+		  " SELECT x.id, x.parent, (q.level+1) as level FROM message  x"+
+		  " JOIN q ON q.parent = x.id) "+ 
+		  " SELECT * FROM q order by level desc";
+		List list= DBQueryManager.getList("MessageUpline", sqlQuery, null);// new String[]{startId});
+		//log.debug(Utility.debug(list));
+		return list;
+	}	
+	
+	
+	public static List getFullTree(String startId) throws Exception {
+		List upList=getUpline(startId);
+		if (upList.isEmpty()) return upList;
+		Map root=(Map) upList.get(0);
+		return getTree(toString(root.get("id")));
+	}
+	
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create Message :/n/r"+Utility.debug(data));

@@ -85,7 +85,14 @@ public class DocumentManager extends BaseUtil {
 		//log.debug(Utility.debug(list));
 		return list;
 	}	
-
+	
+	public static List getFullTree(String startId) throws Exception {
+		List upList=getUpline(startId);
+		if (upList.isEmpty()) return upList;
+		Map root=(Map) upList.get(0);
+		return getTree(toString(root.get("id")));
+	}
+	
 	
 	public static org.bson.Document create(org.bson.Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create Document :/n/r"+Utility.debug(data));
@@ -127,7 +134,7 @@ public class DocumentManager extends BaseUtil {
 		DocumentService.getInstance().update(obj);
 	}
 
-	public static org.bson.Document read(org.bson.Document passport,String objId) throws Exception {
+	public static org.bson.Document detail(org.bson.Document passport,String objId) throws Exception {
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		long usrId= Long.parseLong(objId);
 		Document obj=DocumentService.getInstance().get(usrId);
@@ -177,6 +184,38 @@ public class DocumentManager extends BaseUtil {
 		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
+	}
+	
+	private void getByRepoId() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	private void updateRepoId() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	private static String getNewVersion(Document obj){
+		//TODO:
+		if(nvl(obj.getDocumentVersion())) return "1.0.0";
+		return obj.getDocumentVersion();
+/*		String[] vArr=obj.getDocumentVersion().split(".");
+		int level=vArr.length-1;
+		int x=toInt(vArr[level]);
+		String version="";
+		if (x<99) { 
+			x++;
+			for (int i = 0; i < level-1; i++) {
+				version+=vArr[i]+".";
+			}
+			version+="."+x;
+			return version;
+		} else {
+			level--;
+			 x=toInt(vArr[level]);
+		}
+		*/
 	}
 	
 	

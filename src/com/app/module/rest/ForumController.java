@@ -57,6 +57,23 @@ public class ForumController extends BaseUtil{
 		return reply(response); 
 	}
 	
+	@RequestMapping(value = "{ID}/fullTree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getFullTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Document response=new Document();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",ForumManager.getFullTree(startId));
+			return reply(response); 
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response); 
+	}
+	
 	@RequestMapping(value = "{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
@@ -145,7 +162,7 @@ public class ForumController extends BaseUtil{
 	}
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> read(
+	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String forumId) {
@@ -153,7 +170,7 @@ public class ForumController extends BaseUtil{
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.read(iPass, forumId));
+			response.put("result",ForumManager.detail(iPass, forumId));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
