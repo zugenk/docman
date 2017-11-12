@@ -66,8 +66,7 @@ public class UserServiceBase {
 			Hibernate.initialize(user.getPosition());			
 			Hibernate.initialize(user.getStatus());			
 			Hibernate.initialize(user.getOrganization());			
-			Hibernate.initialize(user.getSecurityLevel());	              
-		    Hibernate.initialize(user.getFavoriteTopics());        		
+			Hibernate.initialize(user.getSecurityLevel());	       		
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -108,8 +107,7 @@ public class UserServiceBase {
 				Hibernate.initialize(user.getPosition());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
-				Hibernate.initialize(user.getSecurityLevel());	              
-			    Hibernate.initialize(user.getFavoriteTopics());     		
+				Hibernate.initialize(user.getSecurityLevel());	   		
 			}
 			return user;
 		} catch (HibernateException e) {
@@ -313,8 +311,7 @@ public class UserServiceBase {
 				Hibernate.initialize(user.getPosition());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
-				Hibernate.initialize(user.getSecurityLevel());	              
-			    Hibernate.initialize(user.getFavoriteTopics());     
+				Hibernate.initialize(user.getSecurityLevel());	    
 				
 			}			
 		} catch(HibernateException he) {
@@ -359,8 +356,7 @@ public class UserServiceBase {
 			    Hibernate.initialize(user.getPosition());                    
 			    Hibernate.initialize(user.getStatus());                    
 			    Hibernate.initialize(user.getOrganization());                    
-			    Hibernate.initialize(user.getSecurityLevel());                   
-			    Hibernate.initialize(user.getFavoriteTopics());                     
+			    Hibernate.initialize(user.getSecurityLevel());                       
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
