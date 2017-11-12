@@ -66,7 +66,8 @@ public class UserServiceBase {
 			Hibernate.initialize(user.getPosition());			
 			Hibernate.initialize(user.getStatus());			
 			Hibernate.initialize(user.getOrganization());			
-			Hibernate.initialize(user.getSecurityLevel());			
+			Hibernate.initialize(user.getSecurityLevel());	              
+		    Hibernate.initialize(user.getFavoriteTopics());        		
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -107,7 +108,8 @@ public class UserServiceBase {
 				Hibernate.initialize(user.getPosition());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
-				Hibernate.initialize(user.getSecurityLevel());			
+				Hibernate.initialize(user.getSecurityLevel());	              
+			    Hibernate.initialize(user.getFavoriteTopics());     		
 			}
 			return user;
 		} catch (HibernateException e) {
@@ -311,7 +313,9 @@ public class UserServiceBase {
 				Hibernate.initialize(user.getPosition());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
-				Hibernate.initialize(user.getSecurityLevel());			
+				Hibernate.initialize(user.getSecurityLevel());	              
+			    Hibernate.initialize(user.getFavoriteTopics());     
+				
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -355,7 +359,8 @@ public class UserServiceBase {
 			    Hibernate.initialize(user.getPosition());                    
 			    Hibernate.initialize(user.getStatus());                    
 			    Hibernate.initialize(user.getOrganization());                    
-			    Hibernate.initialize(user.getSecurityLevel());                    
+			    Hibernate.initialize(user.getSecurityLevel());                   
+			    Hibernate.initialize(user.getFavoriteTopics());                     
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
