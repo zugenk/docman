@@ -44,7 +44,7 @@ public class BookmarkManager extends BaseUtil{
 		List<String> errors=new LinkedList<String>();
 		Bookmark obj= BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if (!isAdmin(passport) || !isOwner(obj, passport)) throw new Exception("error.unauthorized");
+		if (!isAdmin(passport) && !isOwner(obj, passport)) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -57,28 +57,29 @@ public class BookmarkManager extends BaseUtil{
 		log.debug("Deleting Bookmark["+objId+" by "+passport.getString("loginName"));
 		Bookmark obj=BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if (!isAdmin(passport) || !isOwner(obj, passport)) throw new Exception("error.unauthorized");
+		if (!isAdmin(passport) && !isOwner(obj, passport)) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		BookmarkService.getInstance().update(obj);
 	}
 
-	private static boolean isOwner(Bookmark obj,Document passport) {
-		String owner= obj.getCreatedBy();
-		if(!nvl(obj.getOwner()))  owner= obj.getOwner().getLoginName();
-		return passport.getString("loginName").equals(owner);
+	private static boolean isOwner(Bookmark obj,org.bson.Document passport) {
+		if(!nvl(obj.getOwner())) return passport.getLong("userId")==obj.getOwner().getId();
+		return passport.getString("loginName").equals(obj.getCreatedBy());
 	}
 	
 	public static Document detail(Document passport,String objId) throws Exception {
 		log.debug("Detail Bookmark["+objId+" "+passport.getString("loginName"));
 		Bookmark obj=BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if (!isAdmin(passport) && !isOwner(obj, passport)) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
 	public static PartialList list(Document passport,Map data) throws Exception{
 		String filterParam=null;
+		if(!isAdmin(passport)) filterParam+=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
 		int start=0;
 		if(data!=null && !data.isEmpty()) {

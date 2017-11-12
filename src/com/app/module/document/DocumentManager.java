@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.app.docmgr.model.Bookmark;
 import com.app.docmgr.model.Document;
 import com.app.docmgr.model.Folder;
 import com.app.docmgr.model.Lookup;
@@ -177,23 +178,49 @@ public class DocumentManager extends BaseUtil {
 		return result;
 	}
 	
+	public static PartialList myList(org.bson.Document passport,int start) throws Exception{
+		return ownBy(passport, passport.getLong("userId"),start);
+	}
 	
-	public static PartialList listByOwner(org.bson.Document passport,int start) throws Exception{
-		String filterParam=" AND document.owner.id='"+passport.getLong("userId")+"' ";
+	public static PartialList ownBy(org.bson.Document passport,long userId,int start) throws Exception{
+		String filterParam=" AND document.owner.id='"+userId+"' ";
 		String orderParam=" document.contentType ASC, document.name ASC ";
 		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
 		toDocList(result);
 		return result;
 	}
 	
-	private void getByRepoId() {
-		// TODO Auto-generated method stub
-
+	public static org.bson.Document getByRepoId(org.bson.Document passport, String fileId) throws Exception{
+		String filterParam="AND document.repositoryId='"+fileId+"' ";
+		Document obj=DocumentService.getInstance().getBy(filterParam);
+		if (obj==null) throw new Exception("error.object.notfound");
+		return toDocument(obj);
 	}
 	
-	private void updateRepoId() {
-		// TODO Auto-generated method stub
-
+	public static org.bson.Document getByDocNumber(org.bson.Document passport, String docNumber) throws Exception{
+		String filterParam="AND document.documentNumber='"+docNumber+"' ";
+		Document obj=DocumentService.getInstance().getBy(filterParam);
+		if (obj==null) throw new Exception("error.object.notfound");
+		return toDocument(obj);
+	}
+	
+	public static org.bson.Document updateRepoId(org.bson.Document passport,Map data,String objId) throws Exception{
+		//log.debug("Create Document :/n/r"+Utility.debug(data));
+		List<String> errors=new LinkedList<String>();
+		Document obj= DocumentService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		if (!isAdmin(passport) && !isOwner(obj, passport)) throw new Exception("error.unauthorized");
+		if(!nvl(obj.getRepositoryId()) && !obj.getRepositoryId().equals(data.get("newRepositoryId"))) throw new Exception("error.repositoryId.mismatch");
+		obj.setRepositoryId(toString(data.get("newRepositoryId")));
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
+		DocumentService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	private static boolean isOwner(Document obj,org.bson.Document passport) {
+		if(!nvl(obj.getOwner())) return passport.getLong("userId")==obj.getOwner().getId();
+		return passport.getString("loginName").equals(obj.getCreatedBy());
 	}
 	
 	private static String getNewVersion(Document obj){
