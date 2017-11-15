@@ -23,6 +23,7 @@ import com.app.docmgr.service.RoleService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.NotificationService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
@@ -30,16 +31,14 @@ import com.simas.webservice.Utility;
 
 public class NotificationManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(NotificationManager.class);
-	
+	private static String ACL_MODE="PRIVATE";
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create Notification :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
 		Notification obj= new Notification();
 		updateFromMap(obj, data,errors);
-//		obj.setCreatedBy(passport.getString("loginName"));
-//		obj.setCreatedDate(new Date());
-//		obj.setStatus(StatusService.getInstance().getByTypeandCode("Notification", "new"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		NotificationService.getInstance().add(obj);
 		return toDocument(obj);
@@ -51,10 +50,8 @@ public class NotificationManager extends BaseUtil {
 		long uid=Long.parseLong(objId);
 		Notification obj= NotificationService.getInstance().get(uid);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
-//		obj.setLastUpdatedBy(passport.getString("loginName"));
-//		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Notification", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		NotificationService.getInstance().update(obj);
 		return toDocument(obj);
@@ -65,9 +62,7 @@ public class NotificationManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Notification obj=NotificationService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-//		obj.setStatus(StatusService.getInstance().getByTypeandCode("Notification", "deleted"));
-//		obj.setLastUpdatedDate(new Date());
-//		obj.setLastUpdatedBy(passport.getString("loginName"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		NotificationService.getInstance().update(obj);
 	}
 
@@ -76,11 +71,23 @@ public class NotificationManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Notification obj=NotificationService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		return toDocument(obj);
+	}
+	public static Document markRead(Document passport,String objId) throws Exception {
+		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
+		long usrId= Long.parseLong(objId);
+		Notification obj=NotificationService.getInstance().get(usrId);
+		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "markRead", toDocument(obj))) throw new Exception("error.unauthorized");
+		obj.setFlag("READ");
+		NotificationService.getInstance().update(obj);
 		return toDocument(obj);
 	}
 	
 	public static PartialList list(Document passport,Map data) throws Exception{
 		String filterParam=null;
+		if("PRIVATE".equals(ACL_MODE) && !isAdmin(passport)) filterParam+=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
 		int start=0;
 		if(data!=null && !data.isEmpty()) {
@@ -146,7 +153,7 @@ public class NotificationManager extends BaseUtil {
 	
 	
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
-		String filterParam=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";
+		String filterParam=" AND notification.subscriber.id='"+passport.getLong("userId")+"' AND notification.flag is null";
 		String orderParam=" notification.id DESC";
 		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
 		toDocList(result);
@@ -155,11 +162,9 @@ public class NotificationManager extends BaseUtil {
 	
 	public static Document toDocument(Notification obj) {
 		Document doc=new Document();
-		doc.append("modelClass", obj.getClass().getName());
-		doc.append("flag", obj.getFlag());
+		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		//doc.append("message", obj.getPostMessage());
-		//doc.append("subsriber", obj.getSubscriber());
+		doc.append("flag", obj.getFlag());
 		if(obj.getNotificationType()!=null) {
 			doc.append("notificationType", obj.getNotificationType().getName());
 			doc.append("notificationTypeId", obj.getNotificationType().getId());

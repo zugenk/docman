@@ -90,8 +90,8 @@
      <root>
         <priority value="trace"/> 
          <appender-ref ref="console" />  
+         <appender-ref ref="rootfile" />
         <!-- 
-        <appender-ref ref="rootfile" />
         -->  
      </root> 
     

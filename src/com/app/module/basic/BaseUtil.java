@@ -3,6 +3,7 @@ package com.app.module.basic;
 import java.io.FileInputStream;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,10 @@ public class BaseUtil {
 	final static int MAX_WRONG_PASSWD_ATTEMPT=3;
 	public static Status BLOCKED_USER_STATUS=null; //StatusService.getInstance().getByTypeandCode("User", "Blocked");
 	private static boolean inited=false;
-	
+	public static String REPO_BASE_URL="http://52.187.54.220:8081/PHIDataEngine/file";
+	public static String REPO_API_KEY="c02ae64c-fd69-42eb-975b-0a3607c388a7";
+	public static Map<String, Document> REPO_FOLDER_MAP=new HashMap<>(); 
+	public static String REPO_ROOT_FOLDER_ID=null;
 	
 	public static void init(){
 		if (inited) return;
@@ -177,6 +181,7 @@ public class BaseUtil {
 	}
 	
 	public static ResponseEntity<Document> reply(Document response) {
+		if(response==null)  new ResponseEntity<Document>(new Document("errorMessage","error.object.notFound"),HttpStatus.BAD_REQUEST);
 		if(!nvl(response.getString("errorMessage"))) {
 			//System.out.println(response.getString("errorMessage") +" ====>>> "+response.getString("errorMessage").equals("error.unauthorized"));
 			if (response.getString("errorMessage").contains("error.unauthorized")) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
@@ -186,23 +191,6 @@ public class BaseUtil {
 	}
 	
 	
-	public static void auditLog(Document passport,String action,String entity,String description,String approvedBy) {
-		try {
-			AuditTrail auditTrail =new AuditTrail();
-			auditTrail.setAction(action);
-			auditTrail.setApprovedBy(approvedBy);
-			auditTrail.setAuditTime(new Date());
-			auditTrail.setDescription(description);
-			auditTrail.setDoneBy(passport.getString("loginName"));
-			auditTrail.setSessionId(passport.getString("ipassport"));
-			auditTrail.setEntity(entity);
-			AuditTrailService.getInstance().add(auditTrail);
-		} catch (Exception e) {
-			//log.error("Error logging AuditTrail",e);
-			e.printStackTrace();
-		}
-	}
-	
 	public static String genRandomText(int len) {
 		return RandomStringUtils.randomAlphanumeric(len);
 	}
@@ -210,7 +198,7 @@ public class BaseUtil {
 	public static void main2(String[] args) {
 		//0#Terverifikasi#
 		try{
-			FileInputStream fis=new FileInputStream("/Users/it.atsbanksinarmas.com/Documents/EKTP-R/Susiana.txt");
+			FileInputStream fis=new FileInputStream("test.txt");
 			byte[] b=new byte[1024];
 			int l=0;
 			String data="";

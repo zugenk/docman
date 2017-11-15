@@ -56,6 +56,14 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			if(user.getSecurityLevel()!=null) {
 				iPass.put("securityLevel", user.getSecurityLevel().getName());
 				iPass.put("securityLevelId", user.getSecurityLevel().getId());
+			} 
+			if(user.getOrganization()!=null){
+				iPass.put("organization", user.getOrganization().getName());
+				iPass.put("organizationId", user.getOrganization().getId());
+				if(iPass.get("securityLevel")==null){
+					iPass.put("securityLevel", user.getOrganization().getSecurityLevel().getName());
+					iPass.put("securityLevelId", user.getOrganization().getSecurityLevel().getId());
+				}
 			}
 			iPass.put("lastAccess", System.currentTimeMillis());
 			createNewPassport(iPass);

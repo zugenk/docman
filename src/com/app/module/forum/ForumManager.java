@@ -17,6 +17,7 @@ import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.RoleService;
 import com.app.docmgr.service.StatusService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.docmgr.service.ForumService;
@@ -26,6 +27,7 @@ import com.simas.webservice.Utility;
 
 public class ForumManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(ForumManager.class);
+	private static String ACL_MODE="SYSTEM"; 
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
@@ -65,6 +67,7 @@ public class ForumManager extends BaseUtil{
 	}	
 	
 	public static List getFullTree(String startId) throws Exception {
+		//if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		List upList=getUpline(startId);
 		if (upList.isEmpty()) return upList;
 		Map root=(Map) upList.get(0);
@@ -80,6 +83,7 @@ public class ForumManager extends BaseUtil{
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "new"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		ForumService.getInstance().add(obj);
 		return toDocument(obj);
@@ -88,9 +92,10 @@ public class ForumManager extends BaseUtil{
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 		//log.debug("Create Forum :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		Forum obj= ForumService.getInstance().get(uid);
+		//long uid=Long.parseLong(objId);
+		Forum obj= ForumService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -101,10 +106,11 @@ public class ForumManager extends BaseUtil{
 	}
 	
 	public static void delete(Document passport,String objId) throws Exception {
-		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Forum obj=ForumService.getInstance().get(usrId);
+//		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
+//		long usrId= Long.parseLong(objId);
+		Forum obj=ForumService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -112,10 +118,11 @@ public class ForumManager extends BaseUtil{
 	}
 
 	public static Document detail(Document passport,String objId) throws Exception {
-		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Forum obj=ForumService.getInstance().get(usrId);
+//		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
+//		long usrId= Long.parseLong(objId);
+		Forum obj=ForumService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -188,12 +195,13 @@ public class ForumManager extends BaseUtil{
 	
 	public static Document toDocument(Forum obj) {
 		Document doc=new Document();
-		doc.append("modelClass", obj.getClass().getName());
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
 		doc.append("code", obj.getCode());
 		doc.append("description", obj.getDescription());
 		doc.append("filterCode", obj.getFilterCode());
 		doc.append("icon", obj.getIcon());
-		doc.append("id", obj.getId());
 		doc.append("name", obj.getName());
 		if(obj.getForumType()!=null) {
 			doc.append("forumType", obj.getForumType().getName());

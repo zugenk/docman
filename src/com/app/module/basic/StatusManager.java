@@ -16,12 +16,14 @@ import com.simas.webservice.Utility;
 
 public class StatusManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(StatusManager.class);
+	private static String ACL_MODE="SYSTEM";
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		log.debug("Creating Status : "+Utility.debug(data)+" by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		Status obj= new Status();
 		updateFromMap(obj, data,errors);
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		StatusService.getInstance().add(obj);
 		return toDocument(obj);
@@ -33,6 +35,7 @@ public class StatusManager extends BaseUtil{
 		long uid=Long.parseLong(objId);
 		Status obj= StatusService.getInstance().get(uid);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Status", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
@@ -45,6 +48,7 @@ public class StatusManager extends BaseUtil{
 		long usrId= Long.parseLong(objId);
 		Status obj=StatusService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		StatusService.getInstance().update(obj);
 	}
 
@@ -53,6 +57,7 @@ public class StatusManager extends BaseUtil{
 		long usrId= Long.parseLong(objId);
 		Status obj=StatusService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -103,7 +108,7 @@ public class StatusManager extends BaseUtil{
 	
 	public static Document toDocument(Status obj) {
 		Document doc=new Document();
-		doc.append("modelClass", obj.getClass().getName());
+		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
 		doc.append("name", obj.getName());
 		doc.append("code", obj.getCode());

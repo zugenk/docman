@@ -29,6 +29,7 @@ import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.module.basic.LoginManager;
@@ -40,22 +41,8 @@ import com.simas.webservice.Utility;
 
 public class FolderManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(FolderManager.class);
-	
-/*
-	public static PartialList getFolderList(int start){
-		PartialList resultList=null;
-		try {
-			String filterParam=null; 
-			String orderParam=" ORDER BY folder.id ASC ";
-			resultList= FolderService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
-			//if(!resultList.isEmpty()) return true;
-		} catch (Exception e) {
-//			e.printStackTrace();
-		}
-		return resultList;
-	}
-*/
-	
+	private static String ACL_MODE="PUBLIC";
+
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
 	   " SELECT folder.id as id, folder.code,folder.name,folder.id||'' as tree, COALESCE(folder.parent,0) as parent, 0 AS level FROM folder "+
@@ -69,8 +56,6 @@ public class FolderManager extends BaseUtil {
 		return constructTreeList(list);
 	}	
 	
-
-
 	public static List getDownline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT folder.id, folder.code,folder.name, folder.parent, 1 as level FROM folder"+
 		  " WHERE folder.id='"+startId+"' "+
@@ -111,6 +96,7 @@ public class FolderManager extends BaseUtil {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "new"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		FolderService.getInstance().add(obj);
 		return toDocument(obj);
@@ -119,9 +105,10 @@ public class FolderManager extends BaseUtil {
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 		//log.debug("Create Folder :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		Folder obj= FolderService.getInstance().get(uid);
+		//long uid=Long.parseLong(objId);
+		Folder obj= FolderService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -132,10 +119,11 @@ public class FolderManager extends BaseUtil {
 	}
 	
 	public static void delete(Document passport,String objId) throws Exception {
-		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Folder obj=FolderService.getInstance().get(usrId);
+		//log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
+		//long usrId= Long.parseLong(objId);
+		Folder obj=FolderService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -143,10 +131,11 @@ public class FolderManager extends BaseUtil {
 	}
 
 	public static Document read(Document passport,String objId) throws Exception {
-		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Folder obj=FolderService.getInstance().get(usrId);
+		//log.debug("Read obj["+objId+" "+passport.getString("loginName"));
+		//long usrId= Long.parseLong(objId);
+		Folder obj=FolderService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	

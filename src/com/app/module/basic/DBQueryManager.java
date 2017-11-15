@@ -23,7 +23,7 @@ public class DBQueryManager {
 //		return PS_MAP.get(qName);
 //	}
 	
-	public static List getList(String qName,String sqlQuery,String... params)  throws Exception{
+	public static List<Map<String, Object>> getList(String qName,String sqlQuery,String... params)  throws Exception{
 		Session session = null;
 		PreparedStatement ps;
 		ResultSet rs=null;

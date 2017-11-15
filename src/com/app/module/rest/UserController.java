@@ -45,13 +45,13 @@ public class UserController extends BaseUtil{
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.update(iPass, dataMap, userId));
+			response.put("result",UserManager.update(iPass, dataMap, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -64,14 +64,14 @@ public class UserController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-//			response.put("result",UserManager.delete(iPass, userId));
-			UserManager.delete(iPass, userId);
+//			response.put("result",UserManager.delete(iPass, objId));
+			UserManager.delete(iPass, objId);
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -84,14 +84,14 @@ public class UserController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug("Detail User id["+userId+"]  by "+iPass.getString("loginName") );
+			//log.debug("Detail User id["+objId+"]  by "+iPass.getString("loginName") );
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.detail(iPass, userId));
+			response.put("result",UserManager.detail(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -108,7 +108,7 @@ public class UserController extends BaseUtil{
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug("List User by "+iPass.getString("loginName") );
+			//log.debug("List User by "+iPass.getString("loginName") );
 			
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", UserManager.list(iPass, dataMap));
@@ -158,7 +158,7 @@ public class UserController extends BaseUtil{
 	}
 	
 	@RequestMapping(value = "chgMyPwd",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Document> changeMyPasswd(
+	public @ResponseBody ResponseEntity<Document> chgMyPwd(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap) {
@@ -166,7 +166,7 @@ public class UserController extends BaseUtil{
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.updateMyPassword(iPass, dataMap));
+			response.put("result",UserManager.chgMyPwd(iPass, dataMap));
 			return reply(response);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -174,15 +174,34 @@ public class UserController extends BaseUtil{
 		return reply(response);  
 	}
 	
-	@RequestMapping(value = "rstMyPwd",produces = "application/json", method = RequestMethod.POST)
+	@RequestMapping(value = "{ID}/rstPwd",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> resetMyPasswd(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.resetMyPassword(iPass));
+			response.put("result",UserManager.resetPassword(iPass,objId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+	
+	@RequestMapping(value = "resetPwd/{loginName}",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> resetMyPasswd(
+			//@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			//@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="loginName") String loginName) {
+		Document response=new Document();
+		try {
+			//Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			//response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",UserManager.resetPassword(loginName));
 			return reply(response);  
 			
 		} catch (Exception e) {

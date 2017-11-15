@@ -26,6 +26,7 @@ import com.simas.webservice.Utility;
 
 public class OrganizationManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(OrganizationManager.class);
+	private static String ACL_MODE="SYSTEM";
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
@@ -75,50 +76,53 @@ public class OrganizationManager extends BaseUtil {
 	
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
-		//log.debug("Create Organization :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		Organization organization= new Organization();
-		updateFromMap(organization, data,errors);
-		organization.setCreatedBy(passport.getString("loginName"));
-		organization.setCreatedDate(new Date());
-		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
+		Organization obj= new Organization();
+		updateFromMap(obj, data,errors);
+		obj.setCreatedBy(passport.getString("loginName"));
+		obj.setCreatedDate(new Date());
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
-		OrganizationService.getInstance().add(organization);
-		return toDocument(organization);
+		OrganizationService.getInstance().add(obj);
+		return toDocument(obj);
 	}
 	
-	public static Document update(Document passport,Map data,String organizationId) throws Exception{
+	public static Document update(Document passport,Map data,String objId) throws Exception{
 		//log.debug("Create Organization :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(organizationId);
-		Organization organization= OrganizationService.getInstance().get(uid);
-		if (organization==null) throw new Exception("error.object.notfound");
-		updateFromMap(organization,data,errors) ;
-		organization.setLastUpdatedBy(passport.getString("loginName"));
-		organization.setLastUpdatedDate(new Date());
+		//long uid=Long.parseLong(organizationId);
+		Organization obj= OrganizationService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		updateFromMap(obj,data,errors) ;
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
 		//organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
-		OrganizationService.getInstance().update(organization);
-		return toDocument(organization);
+		OrganizationService.getInstance().update(obj);
+		return toDocument(obj);
 	}
 	
-	public static void delete(Document passport,String organizationId) throws Exception {
-		log.debug("Deleting organization["+organizationId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(organizationId);
-		Organization organization=OrganizationService.getInstance().get(usrId);
-		if (organization==null) throw new Exception("error.object.notfound");
-		organization.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "deleted"));
-		organization.setLastUpdatedDate(new Date());
-		organization.setLastUpdatedBy(passport.getString("loginName"));
-		OrganizationService.getInstance().update(organization);
+	public static void delete(Document passport,String objId) throws Exception {
+//		long usrId= Long.parseLong(objId);
+		Organization obj=OrganizationService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "deleted"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		OrganizationService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String organizationId) throws Exception {
-		log.debug("Read organization["+organizationId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(organizationId);
-		Organization organization=OrganizationService.getInstance().get(usrId);
-		if (organization==null) throw new Exception("error.object.notfound");
-		return toDocument(organization);
+	public static Document read(Document passport,String objId) throws Exception {
+//		log.debug("Read organization["+objId+" "+passport.getString("loginName"));
+//		long usrId= Long.parseLong(objId);
+		Organization obj=OrganizationService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		return toDocument(obj);
 	}
 	
 	public static PartialList list(Document passport,Map data) throws Exception{
@@ -202,11 +206,12 @@ public class OrganizationManager extends BaseUtil {
 	
 	public static Document toDocument(Organization obj) {
 		Document doc=new Document();
-		doc.append("modelClass", obj.getClass().getName());
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
 		doc.append("address", obj.getAddress());
 		doc.append("code", obj.getCode());
 		doc.append("filterCode", obj.getFilterCode());
-		doc.append("id", obj.getId());
 		doc.append("mailingList", obj.getMailingList());
 		doc.append("mnemonic", obj.getMnemonic());
 		doc.append("name", obj.getName());

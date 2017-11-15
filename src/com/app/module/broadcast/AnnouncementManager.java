@@ -19,12 +19,14 @@ import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
 public class AnnouncementManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(AnnouncementManager.class);
+	private static String ACL_MODE="PUBLIC";
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create Announcement :/n/r"+Utility.debug(data));
@@ -34,6 +36,7 @@ public class AnnouncementManager extends BaseUtil {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "new"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().add(obj);
 		blastEmail(obj);
@@ -43,9 +46,10 @@ public class AnnouncementManager extends BaseUtil {
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 		//log.debug("Create Announcement :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		Announcement obj= AnnouncementService.getInstance().get(uid);
+//		long uid=Long.parseLong(objId);
+		Announcement obj= AnnouncementService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -56,10 +60,11 @@ public class AnnouncementManager extends BaseUtil {
 	}
 	
 	public static void delete(Document passport,String objId) throws Exception {
-		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Announcement obj=AnnouncementService.getInstance().get(usrId);
+//		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
+//		long usrId= Long.parseLong(objId);
+		Announcement obj=AnnouncementService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -67,10 +72,11 @@ public class AnnouncementManager extends BaseUtil {
 	}
 
 	public static Document read(Document passport,String objId) throws Exception {
-		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Announcement obj=AnnouncementService.getInstance().get(usrId);
+		//log.debug("Read obj["+objId+" "+passport.getString("loginName"));
+		//long usrId= Long.parseLong(objId);
+		Announcement obj=AnnouncementService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -135,12 +141,11 @@ public class AnnouncementManager extends BaseUtil {
 	
 	public static Document toDocument(Announcement obj) {
 		Document doc=new Document();
-		//doc.append("",obj.get
-		doc.append("modelClass", obj.getClass().getName());
-		doc.append("id",obj.getId());
-		doc.append("content",obj.getContent());
-		doc.append("createdBy",obj.getCreatedBy());
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
 		doc.append("createdDate",obj.getCreatedDate());
+		doc.append("content",obj.getContent());
 		doc.append("subject",obj.getSubject());
 		
 		doc.append("targetOrganization",obj.getTargetOrganizations());
@@ -167,9 +172,10 @@ public class AnnouncementManager extends BaseUtil {
 	
 	private static boolean blastEmail(Announcement ann) {
 //		String message=ApplicationFactory.applyTemplate(emailContext, emailTemplate)
-		String subject="Announcement Blast ";
+//		String subject="Announcement Blast ";
 		ann.getAnnouncementType();
 		String message=ann.getContent();
+		String subject=ann.getSubject();
 		ann.getCreatedBy();
 		ann.getCreatedDate();
 		ann.getStatus();

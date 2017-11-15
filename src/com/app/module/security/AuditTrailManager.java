@@ -1,5 +1,6 @@
 package com.app.module.security;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,10 +100,29 @@ public class AuditTrailManager extends BaseUtil{
 		obj.setDescription((String)data.get("description"));
 		obj.setDoneBy((String)data.get("doneBy"));
 		obj.setEntity((String)data.get("entity"));
+		obj.setEntityId((Long)data.get("entityId"));
 		obj.setSessionId((String)data.get("sessionId"));
 	}
 	
-	
+	public static void auditLog(Document passport,String action,Document entity,String description,String approvedBy) {
+		try {
+			AuditTrail at =new AuditTrail();
+			at.setAction(action);
+			at.setApprovedBy(approvedBy);
+			at.setAuditTime(new Date());
+			at.setDescription(description);
+			at.setDoneBy(passport.getString("loginName"));
+			at.setSessionId(passport.getString("ipassport"));
+			at.setEntity(entity.getString("modelClass"));
+			at.setEntityId(entity.getLong("id"));
+			log.debug("Audit to "+at.getAction()+" "+at.getEntity()+(at.getEntityId()!=null?"["+at.getEntityId()+"]":"")+
+					" done by"+at.getDoneBy()+":"+ description );
+			AuditTrailService.getInstance().add(at);
+		} catch (Exception e) {
+			//log.error("Error logging AuditTrail",e);
+			e.printStackTrace();
+		}
+	}
 	
 	public static Document toDocument(AuditTrail obj) {
 		Document doc=new Document();

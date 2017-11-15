@@ -19,6 +19,7 @@ import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.RoleService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.TopicService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.docmgr.service.MessageService;
@@ -28,6 +29,7 @@ import com.simas.webservice.Utility;
 
 public class MessageManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(MessageManager.class);
+	private static String ACL_MODE="PUBLIC";
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
@@ -82,6 +84,7 @@ public class MessageManager extends BaseUtil{
 		updateFromMap(obj, data,errors);
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Message", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		MessageService.getInstance().add(obj);
@@ -92,9 +95,10 @@ public class MessageManager extends BaseUtil{
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 		//log.debug("Create Message :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		Message obj= MessageService.getInstance().get(uid);
+//		long uid=Long.parseLong(objId);
+		Message obj= MessageService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -105,10 +109,11 @@ public class MessageManager extends BaseUtil{
 	}
 	
 	public static void delete(Document passport,String objId) throws Exception {
-		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Message obj=MessageService.getInstance().get(usrId);
+//		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
+//		long usrId= Long.parseLong(objId);
+		Message obj=MessageService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Message", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -116,10 +121,11 @@ public class MessageManager extends BaseUtil{
 	}
 
 	public static Document read(Document passport,String objId) throws Exception {
-		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		Message obj=MessageService.getInstance().get(usrId);
+//		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
+//		long usrId= Long.parseLong(objId);
+		Message obj=MessageService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -199,11 +205,11 @@ public class MessageManager extends BaseUtil{
 	
 	public static Document toDocument(Message obj) {
 		Document doc=new Document();
-		doc.append("modelClass", obj.getClass().getName());
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
 		doc.append("content", obj.getContent());
 		doc.append("filterCode", obj.getFilterCode());
-		doc.append("id", obj.getId());
-		doc.append("createBy", obj.getCreatedBy());
 		
 		if(obj.getPostType()!=null) {
 			doc.append("postType", obj.getPostType().getName());

@@ -19,6 +19,7 @@ import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.module.basic.UserManager;
@@ -34,6 +35,7 @@ import org.apache.log4j.Logger;
 
 public class DocumentManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(DocumentManager.class);
+	private static String ACL_MODE="PUBLIC";
 
 	public static PartialList getDocumentList(int start){
 		PartialList resultList=null;
@@ -104,6 +106,7 @@ public class DocumentManager extends BaseUtil {
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		DocumentService.getInstance().add(obj);
 		return toDocument(obj);
@@ -115,6 +118,7 @@ public class DocumentManager extends BaseUtil {
 		long uid=Long.parseLong(objId);
 		Document obj= DocumentService.getInstance().get(uid);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -129,6 +133,7 @@ public class DocumentManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Document obj=DocumentService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -140,6 +145,7 @@ public class DocumentManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Document obj=DocumentService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -194,13 +200,21 @@ public class DocumentManager extends BaseUtil {
 		String filterParam="AND document.repositoryId='"+fileId+"' ";
 		Document obj=DocumentService.getInstance().getBy(filterParam);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
-	
+	public static org.bson.Document downByRepoId(org.bson.Document passport, String fileId) throws Exception{
+		String filterParam="AND document.repositoryId='"+fileId+"' ";
+		Document obj=DocumentService.getInstance().getBy(filterParam);
+		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "downloadRepo", toDocument(obj))) throw new Exception("error.unauthorized");
+		return toDocument(obj);
+	}
 	public static org.bson.Document getByDocNumber(org.bson.Document passport, String docNumber) throws Exception{
 		String filterParam="AND document.documentNumber='"+docNumber+"' ";
 		Document obj=DocumentService.getInstance().getBy(filterParam);
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -209,7 +223,7 @@ public class DocumentManager extends BaseUtil {
 		List<String> errors=new LinkedList<String>();
 		Document obj= DocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if (!isAdmin(passport) && !isOwner(obj, passport)) throw new Exception("error.unauthorized");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "updateRepoId", toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!nvl(obj.getRepositoryId()) && !obj.getRepositoryId().equals(data.get("newRepositoryId"))) throw new Exception("error.repositoryId.mismatch");
 		obj.setRepositoryId(toString(data.get("newRepositoryId")));
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -218,10 +232,10 @@ public class DocumentManager extends BaseUtil {
 		return toDocument(obj);
 	}
 	
-	private static boolean isOwner(Document obj,org.bson.Document passport) {
+/*	private static boolean isOwner(Document obj,org.bson.Document passport) {
 		if(!nvl(obj.getOwner())) return passport.getLong("userId")==obj.getOwner().getId();
 		return passport.getString("loginName").equals(obj.getCreatedBy());
-	}
+	}*/
 	
 	private static String getNewVersion(Document obj){
 		//TODO:
@@ -283,15 +297,15 @@ public class DocumentManager extends BaseUtil {
 	}
 	public static org.bson.Document toDocument(Document obj) {
 		org.bson.Document doc=new org.bson.Document();
-		//doc.append("", obj.get);
-		doc.append("modelClass", obj.getClass().getName());
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
 		doc.append("contentType", obj.getContentType());
 		doc.append("description", obj.getDescription());
 		doc.append("documentNumber", obj.getDocumentNumber());
 		doc.append("documentType", obj.getDocumentType());
 		doc.append("documentVersion", obj.getDocumentVersion());
 		doc.append("repositoryId", obj.getRepositoryId());
-		doc.append("id", obj.getId());
 		doc.append("priority", obj.getPriority());
 		doc.append("name", obj.getName());
 		if(obj.getOwner()!=null) {

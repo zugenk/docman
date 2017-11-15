@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +40,8 @@ import com.simas.webservice.Utility;
 @RequestMapping("/v1/document")
 public class DocumentController extends BaseUtil{
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(DocumentController.class);
+	
+	  
 
 	@Bean(name = "multipartResolver")
 	public CommonsMultipartResolver multipartResolver() {
@@ -174,46 +178,6 @@ public class DocumentController extends BaseUtil{
 		return reply(response);  
 	}
 	
-	@RequestMapping(value = "byRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> byRepo(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="fileId") String fileId) {
-		Document response=new Document();
-		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
-			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));
-			return reply(response);  
-			
-		} catch (Exception e) {
-			response.put("errorMessage", e.getMessage());
-			log.error("Error geting Document-byRepoId",e);
-		}
-		return reply(response);  
-	}
-	
-	@RequestMapping(value = "getRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> getRepo(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="fileId") String fileId) {
-		Document response=new Document();
-		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
-			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));
-			return reply(response);  
-			
-		} catch (Exception e) {
-			response.put("errorMessage", e.getMessage());
-			log.error("Error geting Document-byRepoId",e);
-		}
-		return reply(response);  
-	}
-	
 	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> create(
@@ -301,9 +265,10 @@ public class DocumentController extends BaseUtil{
 		return reply(response); 
 	}
 
+
 	
-	static String UPLOAD_FOLDER="./UPLOADED/";
-	RestTemplate restTemplate= new RestTemplate();
+//	static String UPLOAD_FOLDER="./UPLOADED/";
+//	RestTemplate restTemplate= new RestTemplate();
 	/*		
 	@RequestMapping(value="download", method=RequestMethod.GET)
 	public void getDownload(HttpServletResponse response) {
@@ -320,7 +285,7 @@ public class DocumentController extends BaseUtil{
 		response.flushBuffer();
 	}*/
 	
-	String targetBaseUrl="http://52.187.54.220:8081/PHIDataEngine/file";
+
 //			+ "/file/ajax_get_directory_tree";
 			
 /*
@@ -339,14 +304,8 @@ public class DocumentController extends BaseUtil{
 	}
 */
 	
-	@RequestMapping(value = "/restProxy/{restUrlPath}", method = RequestMethod.GET)
-	public @ResponseBody String restProxyPost(@PathVariable("restUrlPath") String restUrlPath, @RequestBody String body, @RequestParam MultiValueMap<String,String> params) {
-        System.out.println("====>>> proxy POST :"+restUrlPath+": "+Utility.debug(params));
-//	    ResponseEntity<String> response= 
-//	    return	restTemplate.postForEntity(targetBaseUrl + "/" + restUrlPath, (params!=null?params:body),String.class);
-        return	restTemplate.postForObject(targetBaseUrl + "/" + restUrlPath, (params!=null?params:body),String.class);
-	}
-	
+
+/*	
     @RequestMapping(value="/upload", method=RequestMethod.POST )
     public @ResponseBody String singleSave(@RequestParam("file") MultipartFile file, @RequestParam("desc") String desc ){
     	log.debug("Masuk kok ke sini Upload!!");
@@ -403,5 +362,102 @@ public class DocumentController extends BaseUtil{
             return "Unable to upload. File is empty.";
         }
     }
-		
+  */  
+    
+    @RequestMapping(value = "/repoFolder/{folderName}", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> repoFolder(@PathVariable("folderName") String folderName) {
+    	RestTemplate restTemplate= new RestTemplate();
+    	if(REPO_FOLDER_MAP.isEmpty()) {
+    		List folderList=restTemplate.getForObject( REPO_BASE_URL+ "/file/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
+        	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
+    			Document folder = (Document) iterator.next();
+    			REPO_FOLDER_MAP.put(folder.getString("text"),folder);
+    			if("\\".equals(folder.getString("text"))) REPO_ROOT_FOLDER_ID=folder.getString("id");
+    		}
+    	}
+    	if (REPO_FOLDER_MAP.containsKey(folderName)) return reply(REPO_FOLDER_MAP.get(folderName));
+		Map resp=restTemplate.getForObject( REPO_BASE_URL+ "/ajax_file_operation?action=new_folder&destination="+REPO_ROOT_FOLDER_ID+"&folder_name="+folderName+"&api_key="+REPO_API_KEY,Map.class);
+	    if("success".equals(resp.get("status"))){
+	    	List folderList=restTemplate.getForObject(REPO_BASE_URL+ "/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
+	    	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
+				Document folder = (Document) iterator.next();
+				REPO_FOLDER_MAP.put(folder.getString("text"),folder);
+			}
+	    }
+		if (REPO_FOLDER_MAP.containsKey(folderName)) return reply(REPO_FOLDER_MAP.get(folderName));
+		return reply(null);
+	}
+    
+	@RequestMapping(value = "/repoDl/{fileId}", method = RequestMethod.GET)
+	//public @ResponseBody ResponseEntity<String> repoDl(@PathVariable("fileId") String fileId) {
+	public @ResponseBody ResponseEntity<String> repoDl(
+		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+		@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+		@PathVariable(value="fileId") String fileId) {	
+		String errorMessage="";
+		try {
+		RestTemplate restTemplate= new RestTemplate();
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			DocumentManager.downByRepoId(iPass, fileId);
+	        return	restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
+		} catch (Exception e) {
+			errorMessage=e.getMessage();
+			log.error("Error geting Document-byRepoId",e);
+		}
+		//return new ResponseEntity<String>(errorMessage,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>(errorMessage,HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "byRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> byRepo(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="fileId") String fileId) {
+		Document response=new Document();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			log.error("Error geting Document-byRepoId",e);
+		}
+		return reply(response);  
+	}
+/*	
+	@RequestMapping(value = "getRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getRepo(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="fileId") String fileId) {
+		Document response=new Document();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			log.error("Error geting Document-byRepoId",e);
+		}
+		return reply(response);  
+	}
+	*/
+
+	
+/*	   
+    @RequestMapping(value = "/download/{fileId}", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<String> downloadRepo(@PathVariable("fileId") String fileId,@RequestParam MultiValueMap<String,String> params) {
+//	    ResponseEntity<String> response= 
+//	    return	restTemplate.postForEntity(targetBaseUrl + "/" + restUrlPath, (params!=null?params:body),String.class);
+    	restTemplate.getForEntity(url, responseType, urlVariables)
+        return	restTemplate.getForEntity(targetBaseUrl + "/ajax_file_operation?fileid="+fileId+"&action=download" + restUrlPath, String.class);
+	}
+*/	
+ 
 }

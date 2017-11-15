@@ -20,6 +20,7 @@ import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.SharedDocumentService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
@@ -27,6 +28,7 @@ import com.app.shared.PartialList;
 
 public class SharedDocumentManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(SharedDocumentManager.class);
+	private static String ACL_MODE="PRIVATE";
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create SharedDocument :/n/r"+Utility.debug(data));
@@ -36,6 +38,7 @@ public class SharedDocumentManager extends BaseUtil{
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "new"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		SharedDocumentService.getInstance().add(obj);
 		return toDocument(obj);
@@ -44,9 +47,10 @@ public class SharedDocumentManager extends BaseUtil{
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 		//log.debug("Create SharedDocument :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		SharedDocument obj= SharedDocumentService.getInstance().get(uid);
+		//long uid=Long.parseLong(objId);
+		SharedDocument obj= SharedDocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -58,9 +62,10 @@ public class SharedDocumentManager extends BaseUtil{
 	
 	public static void delete(Document passport,String objId) throws Exception {
 		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		SharedDocument obj=SharedDocumentService.getInstance().get(usrId);
+		//long usrId= Long.parseLong(objId);
+		SharedDocument obj=SharedDocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -69,9 +74,10 @@ public class SharedDocumentManager extends BaseUtil{
 
 	public static Document read(Document passport,String objId) throws Exception {
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
-		long usrId= Long.parseLong(objId);
-		SharedDocument obj=SharedDocumentService.getInstance().get(usrId);
+		//long usrId= Long.parseLong(objId);
+		SharedDocument obj=SharedDocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -150,7 +156,9 @@ public class SharedDocumentManager extends BaseUtil{
 	
 	public static Document toDocument(SharedDocument obj) {
 		Document doc=new Document();
-		doc.append("modelClass", obj.getClass().getName());	
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
 		doc.append("grantAction", obj.getGrantAction());
 		if (obj.getDocument()!=null) {
 			doc.append("document", obj.getDocument().getName());

@@ -27,6 +27,7 @@ import com.app.docmgr.service.RoleService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.TopicService;
 import com.app.docmgr.service.UserService;
+import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.UserManager;
 import com.app.shared.ApplicationFactory;
@@ -35,6 +36,7 @@ import com.simas.webservice.Utility;
 
 public class TopicManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(TopicManager.class);
+	private static String ACL_MODE="PUBLIC"; 
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
 		//log.debug("Create Topic :/n/r"+Utility.debug(data));
@@ -44,6 +46,7 @@ public class TopicManager extends BaseUtil{
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "new"));
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		TopicService.getInstance().add(obj);
 		return toDocument(obj);
@@ -54,6 +57,7 @@ public class TopicManager extends BaseUtil{
 		List<String> errors=new LinkedList<String>();
 		Topic obj= TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -67,6 +71,7 @@ public class TopicManager extends BaseUtil{
 		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
 		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -77,6 +82,7 @@ public class TopicManager extends BaseUtil{
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		return toDocument(obj);
 	}
 	
@@ -122,6 +128,7 @@ public class TopicManager extends BaseUtil{
 		log.debug("Subscribe to topic["+objId+"] by "+passport.getString("loginName"));
 		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "subscribe", toDocument(obj))) throw new Exception("error.unauthorized");
 		User subscriber=UserService.getInstance().get(passport.getLong("userId"));
 		obj.getSubscribers().add(subscriber);
 		TopicService.getInstance().update(obj);
@@ -132,6 +139,7 @@ public class TopicManager extends BaseUtil{
 		log.debug("Unsubscribe from topic["+objId+"] by "+passport.getString("loginName"));
 		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "unSubscribe", toDocument(obj))) throw new Exception("error.unauthorized");
 		User subscriber=UserService.getInstance().get(passport.getLong("userId"));
 		obj.getSubscribers().remove(subscriber);
 		TopicService.getInstance().update(obj);
@@ -151,6 +159,7 @@ public class TopicManager extends BaseUtil{
 		log.debug("Like the topic["+objId+"] by "+passport.getString("loginName"));
 		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "like", toDocument(obj))) throw new Exception("error.unauthorized");
 		User loginUser=UserService.getInstance().get(passport.getLong("userId"));
 		loginUser.getFavoriteTopics().add(obj);
 		UserService.getInstance().update(loginUser);
@@ -163,6 +172,7 @@ public class TopicManager extends BaseUtil{
 		log.debug("Unlike the topic["+objId+"] by "+passport.getString("loginName"));
 		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "unLike", toDocument(obj))) throw new Exception("error.unauthorized");
 		User loginUser=UserService.getInstance().get(passport.getLong("userId"));
 		loginUser.getFavoriteTopics().remove(obj);
 		UserService.getInstance().update(loginUser);
@@ -253,13 +263,15 @@ public class TopicManager extends BaseUtil{
 	
 	public static Document toDocument(Topic obj) {
 		Document doc=new Document();
-		doc.append("modelClass", obj.getClass().getName());
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
+		
 		doc.append("code", obj.getCode());
 		doc.append("description", obj.getDescription());
 		doc.append("filterCode", obj.getFilterCode());
 		
 		doc.append("icon", obj.getIcon());
-		doc.append("id", obj.getId());
 		doc.append("name", obj.getName());
 		doc.append("numberOfLike", obj.getNumberOfLike());
 		doc.append("numberOfPost", obj.getNumberOfPost());
