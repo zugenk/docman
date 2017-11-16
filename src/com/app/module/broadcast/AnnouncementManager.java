@@ -29,7 +29,6 @@ public class AnnouncementManager extends BaseUtil {
 	private static String ACL_MODE="PUBLIC";
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
-		//log.debug("Create Announcement :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
 		Announcement obj= new Announcement();
 		updateFromMap(obj, data,errors);
@@ -37,6 +36,7 @@ public class AnnouncementManager extends BaseUtil {
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "new"));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().add(obj);
 		blastEmail(obj);
@@ -44,16 +44,14 @@ public class AnnouncementManager extends BaseUtil {
 	}
 	
 	public static Document update(Document passport,Map data,String objId) throws Exception{
-		//log.debug("Create Announcement :/n/r"+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
-//		long uid=Long.parseLong(objId);
 		Announcement obj= AnnouncementService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-	//	obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "new"));
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().update(obj);
 		return toDocument(obj);
@@ -96,7 +94,7 @@ public class AnnouncementManager extends BaseUtil {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND announcement."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("announcement",key,filterMap.get(key))); //filterBuff.append(" AND announcement."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -111,7 +109,7 @@ public class AnnouncementManager extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=AnnouncementService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=AnnouncementService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -232,6 +230,11 @@ public class AnnouncementManager extends BaseUtil {
 		}
 	
 		return false;
+	}
+	
+	public static void checkValidity(Announcement obj,List errors) {
+		if (obj.getAnnouncementType()==null) errors.add("error.announcementType.null");
+		if (obj.getContent()==null) errors.add("error.content.null");
 	}
 	
 }

@@ -45,8 +45,11 @@ public class LoginManager extends BaseUtil{
 	 		throw new Exception("error.login.password");
 	 	} 
 	 	Document iPass=PassportManager.issuePassport(loginUser);
-	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
-	 	iPass.put("loginHistId",lhId);
+	 	if(iPass.get("_id")==null){
+	 	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
+		 	//iPass.put("loginHistId",lhId);
+		 	PassportManager.savePassport(iPass,new Document("loginHistId", lhId));
+	 	}
 	 	//iPass.put("loginUser",loginUser);
 	 	return iPass;
 	}

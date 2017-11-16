@@ -30,7 +30,7 @@ public class LookupManager extends BaseUtil{
 		log.debug("Creating Lookup : "+Utility.debug(data)+" by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		Lookup obj= new Lookup();
-		
+						
 		updateFromMap(obj, data,errors);
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Lookup", "new"));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
@@ -101,7 +101,7 @@ public class LookupManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=LookupService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=LookupService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}

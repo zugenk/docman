@@ -17,31 +17,61 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import com.app.docmgr.model.AuditTrail;
 import com.app.docmgr.model.Status;
-import com.app.docmgr.service.AuditTrailService;
+import com.app.docmgr.model.SystemParameter;
 import com.app.docmgr.service.StatusService;
+import com.app.shared.ApplicationConstant;
 import com.app.shared.PartialList;
+import com.mongodb.client.model.IndexOptions;
+import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
-import com.thoughtworks.xstream.io.xml.DocumentReader;
 
 public class BaseUtil {
-	public static String ADMIN_ROLE="GOD"; //"ADMIN";
-	public static int itemPerPage=20;
-	final static int MAX_WRONG_PASSWD_ATTEMPT=3;
+//	public static String ADMIN_ROLE="GOD"; //"ADMIN";
+	public static int ITEM_PER_PAGE=20;
+	public static int MAX_WRONG_PASSWD_ATTEMPT=3;
 	public static Status BLOCKED_USER_STATUS=null; //StatusService.getInstance().getByTypeandCode("User", "Blocked");
 	private static boolean inited=false;
+//	public static String DOCMAN_BASE_URL="http://128.199.128.32:8080/DocumentManager/rest/v1";
+	public static String SERVER_BASE_URL="http://localhost:8080/DocumentManager/rest/v1";
+	
+//	public static String REPO_BASE_URL="http://localhost:8081/PHIDataEngine/file";
 	public static String REPO_BASE_URL="http://52.187.54.220:8081/PHIDataEngine/file";
+	public static String RESOURCE_URL="http://52.187.54.220:8082/PHIDataEngine/file";
 	public static String REPO_API_KEY="c02ae64c-fd69-42eb-975b-0a3607c388a7";
 	public static Map<String, Document> REPO_FOLDER_MAP=new HashMap<>(); 
 	public static String REPO_ROOT_FOLDER_ID=null;
 	
-	public static void init(){
-		if (inited) return;
+	
+	static String IPASSPORT_COLLECTION="IPassportData";
+	static String MONGO_DB_CFG="DEFAULT|mongo-docman|27017|DOCMAN";
+	//static String DB_CFG="DEFAULT|localhost|27017|DOCMAN";
+	//private static boolean inited=false;
+
+	static long SESSION_TIMEOUT_PERIOD=600000; //10 Mins
+	
+	public static void init() {
+		if(inited) return;
 		try {
-			BLOCKED_USER_STATUS=StatusService.getInstance().getByTypeandCode("User", "blocked");
-			inited=true;
+			ApplicationConstant.reset();
+			Map<String, SystemParameter> coreParam=ApplicationConstant.getSystemParamMap("CORE");
+		    ITEM_PER_PAGE=toInt(coreParam.get("ITEM_PER_PAGE").getSvalue());
+			MAX_WRONG_PASSWD_ATTEMPT=toInt(coreParam.get("MAX_WRONG_PASSWD_ATTEMPT").getSvalue());
+			SERVER_BASE_URL=coreParam.get("SERVER_BASE_URL").getSvalue();
+			IPASSPORT_COLLECTION=coreParam.get("IPASSPORT_COLLECTION").getSvalue();
+			MONGO_DB_CFG=coreParam.get("MONGO_DB_CFG").getSvalue();
+			SESSION_TIMEOUT_PERIOD=toLong(coreParam.get("SESSION_TIMEOUT_PERIOD").getSvalue());
+			
+			Map<String, SystemParameter> repoParam=ApplicationConstant.getSystemParamMap("REPOSITORY");
+			REPO_BASE_URL=repoParam.get("REPO_BASE_URL").getSvalue();
+			RESOURCE_URL=repoParam.get("RESOURCE_URL").getSvalue(); 
+			REPO_API_KEY=repoParam.get("REPO_API_KEY").getSvalue(); 
+			MongoManager.init(MONGO_DB_CFG);
+		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
+		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
+
+			BLOCKED_USER_STATUS=ApplicationConstant.getStatus("User", "blocked");	
+		    inited=true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -130,6 +160,24 @@ public class BaseUtil {
 		return treeList;
 	}
 	
+	public static String constructQuery(String objName,String key,Object objValue) throws Exception{
+		String query=" AND "+objName+"."+key;
+		String value=toString(objValue);
+		if(value==null) return query+" ISNULL";
+		value=value.trim();
+		if (value.contains("=")) throw new Exception("error.filter.invalidChar");
+		if(value.startsWith("$EQ|")) return query+" = '"+value.substring(4)+"' ";
+		if(value.startsWith("$GT|")) return query+" > '"+value.substring(4)+"' ";
+		if(value.startsWith("$GE|")) return query+" >= '"+value.substring(4)+"' ";
+		if(value.startsWith("$LT|")) return query+" < '"+value.substring(4)+"' ";
+		if(value.startsWith("$LE|")) return query+" <= '"+value.substring(4)+"' ";
+		if(value.startsWith("$LK|")) return query+" LIKE '"+value.substring(4)+"' ";
+		if(value.startsWith("$BT|")) {
+			String[] vArr=value.split("\\|");
+			if (vArr.length==3)  return query+" >= '"+vArr[1]+"' "+query+" < '"+vArr[2]+"' ";
+		}
+		return query+" LIKE '%"+value+"%'";
+	}
 	
 	public static String listToString(List<String> list) {
 		StringBuffer result=new StringBuffer("");
@@ -185,6 +233,8 @@ public class BaseUtil {
 		if(!nvl(response.getString("errorMessage"))) {
 			//System.out.println(response.getString("errorMessage") +" ====>>> "+response.getString("errorMessage").equals("error.unauthorized"));
 			if (response.getString("errorMessage").contains("error.unauthorized")) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
+			//if (response.getString("errorMessage").contains("error.login.password")||response.getString("errorMessage").contains("error.login.failed")) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
+			//error.session.invalid
 			return new ResponseEntity<Document>(response,HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<Document>(response,HttpStatus.OK);
@@ -196,7 +246,6 @@ public class BaseUtil {
 	}
 	
 	public static void main2(String[] args) {
-		//0#Terverifikasi#
 		try{
 			FileInputStream fis=new FileInputStream("test.txt");
 			byte[] b=new byte[1024];
@@ -229,7 +278,7 @@ public class BaseUtil {
 			
 		//	long x=Long.parseLong((String) test);
 	//		System.out.println(""+toLong(test)/2); 
-			
+			init();
 			Document response=new Document("errorMessage","error.unauthorized");
 			ResponseEntity<Document> reply=reply(response);
 			System.out.println(Utility.debug(reply.getHeaders()));

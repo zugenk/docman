@@ -1,5 +1,6 @@
 package com.app.module.forum;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,6 +48,7 @@ public class TopicManager extends BaseUtil{
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "new"));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		TopicService.getInstance().add(obj);
 		return toDocument(obj);
@@ -61,6 +63,7 @@ public class TopicManager extends BaseUtil{
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
+		checkValidity(obj, errors);
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		TopicService.getInstance().update(obj);
@@ -68,7 +71,7 @@ public class TopicManager extends BaseUtil{
 	}
 	
 	public static void delete(Document passport,String objId) throws Exception {
-		log.debug("Deleting obj["+objId+" "+passport.getString("loginName"));
+		log.debug("Deleting obj["+objId+"] "+passport.getString("loginName"));
 		Topic obj=TopicService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
@@ -76,6 +79,29 @@ public class TopicManager extends BaseUtil{
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		TopicService.getInstance().update(obj);
+	}
+	
+	public static void close(Document passport,String objId) throws Exception {
+		log.debug("Closing obj["+objId+"] "+passport.getString("loginName"));
+		Topic obj=TopicService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CLOSE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "closed"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		TopicService.getInstance().update(obj);
+	}
+	
+	public static void archive(Document passport,String objId) throws Exception {
+		log.debug("Archiving obj["+objId+"] "+passport.getString("loginName"));
+		Topic obj=TopicService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_ARCHIVE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Topic", "archived"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		TopicService.getInstance().update(obj);
+		//TODO: ARCHIVE TOPIC to file;
 	}
 
 	public static Document read(Document passport,String objId) throws Exception {
@@ -102,7 +128,7 @@ public class TopicManager extends BaseUtil{
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND topic."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("topic",key,filterMap.get(key))); //filterBuff.append(" AND topic."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -118,7 +144,7 @@ public class TopicManager extends BaseUtil{
 		}
 		System.out.println("filterParam=["+(filterParam!=null?filterParam.toString():null)+"]");
 		System.out.println("orderParam"+ orderParam);
-		PartialList result=TopicService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=TopicService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -210,7 +236,7 @@ public class TopicManager extends BaseUtil{
 		PartialList resultList=null;
 		String filterParam=null; 
 		String orderParam=" ORDER BY topic.id ASC ";
-		resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+		resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, ITEM_PER_PAGE);
 		toDocList(resultList);
 		return resultList;
 	}
@@ -219,7 +245,7 @@ public class TopicManager extends BaseUtil{
 		PartialList resultList=null;
 		String filterParam=" AND topic.forum="+forum.getId(); 
 		String orderParam=" ORDER BY topic.id ASC ";
-		resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+		resultList= TopicService.getInstance().getPartialList(filterParam, orderParam, 0, ITEM_PER_PAGE);
 		toDocList(resultList);
 		return resultList;
 	}
@@ -262,10 +288,13 @@ public class TopicManager extends BaseUtil{
 	}
 	
 	public static Document toDocument(Topic obj) {
+		SimpleDateFormat sdf= new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
 		doc.append("createdBy", obj.getCreatedBy());
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
 		
 		doc.append("code", obj.getCode());
 		doc.append("description", obj.getDescription());
@@ -305,6 +334,11 @@ public class TopicManager extends BaseUtil{
 			list.add(toDocument(obj));
 		}
 		return list;
+	}
+	
+	public static void checkValidity(Topic obj,List errors) {
+		if (obj.getForum()==null) errors.add("error.forum.null");
+		if (obj.getName()==null) errors.add("error.name.null");
 	}
 
 }

@@ -19,7 +19,7 @@
 			name="code"
 			column="code"
 			type="string"
-			not-null="true"
+			not-null="false"
 			length="20"
 		/>
 		<property
@@ -33,7 +33,8 @@
 			name="folderRepoId"
 			column="folder_repo_id"
 			type="string"
-			not-null="true"
+			not-null="false"
+			unique-key="unique-repoFolderId"
 			length="100"
 		/>
 		<many-to-one

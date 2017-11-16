@@ -35,9 +35,11 @@ public class UserManager extends BaseUtil{
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
 		obj.setLoginName((String) data.get("loginName"));
-		obj.setLoginPassword(ApplicationFactory.encrypt((String) data.get("loginPassword")));
+		//obj.setLoginPassword(ApplicationFactory.encrypt((String) data.get("loginPassword")));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj,errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		assignNewPassword(obj);
 		UserService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -51,7 +53,7 @@ public class UserManager extends BaseUtil{
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
+		checkValidity(obj,errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		UserService.getInstance().update(obj);
 		return toDocument(obj);
@@ -119,14 +121,10 @@ public class UserManager extends BaseUtil{
 		User obj= UserService.getInstance().get(toLong(objId)); //passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj))) throw new Exception("error.unauthorized");
-		String newPwd=genRandomText(12);
-		String encriptedPassword=ApplicationFactory.encrypt(newPwd);
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		obj.setLoginPassword(encriptedPassword);
-		//if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		assignNewPassword(obj);
 		UserService.getInstance().update(obj);
-		//TODO: Send Email to user.email for new password;
 		return toDocument(obj);
 	}
 	
@@ -136,25 +134,28 @@ public class UserManager extends BaseUtil{
 		User obj= UserService.getInstance().getBy(" AND user.email='"+loginName+"' "); //passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		if(!ACLManager.isAuthorize(null,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj))) throw new Exception("error.unauthorized");
-		String newPwd=genRandomText(12);
-		String encriptedPassword=ApplicationFactory.encrypt(newPwd);
 		obj.setLastUpdatedBy("SYSTEM");
 		obj.setLastUpdatedDate(new Date());
-		obj.setLoginPassword(encriptedPassword);
-		//if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		assignNewPassword(obj);
 		UserService.getInstance().update(obj);
-		//TODO: Send Email to user.email for new password;
 		return toDocument(obj);
 	}
 	
-private void sendNewPwd(User user,String newPwd) {
+	private static void assignNewPassword(User obj) throws Exception{
+		String newPwd=genRandomText(12);
+		String encriptedPassword=ApplicationFactory.encrypt(newPwd);
+		obj.setLoginPassword(encriptedPassword);
+		sendNewPwd(obj,newPwd);
+	}
+	
+	public static void sendNewPwd(User user,String newPwd) {
 	if(user==null || user.getEmail()==null) {
 		log.error("Error sending new Password to email, user or email null");
 		return;
 	}
-	String message="Password Reset event has been called for your user\n\r\t\tHere is your newly generated password \""+newPwd+"\"";
+	String message="Password Create/Reset event has been called for your user\n\r\t\tHere is your newly generated password \""+newPwd+"\"";
 	String subject="New system generated Password";
-	String from="EMAIL_SENDER";
+	String from=ApplicationFactory.getCustomerServiceEmail();
 	List<String> toAddress=new LinkedList<>();
 	toAddress.add(user.getEmail());
 	try {
@@ -216,7 +217,7 @@ private void sendNewPwd(User user,String newPwd) {
 				}
 			}
 		}
-		PartialList result=UserService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=UserService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -395,7 +396,11 @@ private void sendNewPwd(User user,String newPwd) {
 		if (user==null) return false;
 		return "admin".equals(user.getUserLevel().getCode());
 	}
-
-
 	
+	public static void checkValidity(User obj,List errors) {
+		//login_name,login_password,userLevel,name
+		if (obj.getLoginName()==null) errors.add("error.loginName.null");
+		if (obj.getUserLevel()==null) errors.add("error.userLevel.null");
+		if (obj.getName()==null) errors.add("error.name.null");
+	}
 }

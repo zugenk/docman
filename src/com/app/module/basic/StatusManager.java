@@ -91,7 +91,7 @@ public class StatusManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=StatusService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=StatusService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}

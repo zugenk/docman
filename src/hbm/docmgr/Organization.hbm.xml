@@ -19,14 +19,14 @@
 			name="code"
 			column="code"
 			type="string"
-			not-null="true"
+			not-null="false"
 			length="20"
 		/>
 		<property
 			name="mnemonic"
 			column="mnemonic"
 			type="string"
-			not-null="true"
+			not-null="false"
 			length="20"
 		/>
 		<property

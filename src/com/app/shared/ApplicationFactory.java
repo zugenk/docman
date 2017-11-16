@@ -145,34 +145,19 @@ public class ApplicationFactory {
 //		password=ApplicationConstant.getSystemParam("EMAIL", "EMAIL_USER_PASSWORD");
 		
 
-/*        List emailParams=(List) ApplicationConstant.systemParameter.get("EMAIL");
-    	//if (emailParams==null) {
-    		//return;
-    	//}
-        Iterator itrParams=emailParams.iterator();
-        while (itrParams.hasNext()) {
-			SystemParameter iparam = (SystemParameter) itrParams.next();
-			log.debug(iparam.getParameter()+":"+iparam.getSvalue());
-			//System.out.println(iparam.getParameter()+":"+iparam.getSvalue());
-			if ("SMTP_GATEWAY".equals(iparam.getParameter()) ){
-				ipSmtp=iparam.getSvalue();
-			} else if ("SYSTEM_ADMIN_EMAIL".equals(iparam.getParameter()) ){
-				adminEmail=iparam.getSvalue();				
-			} else if ("SYSTEM_CUST_SERVICE_EMAIL".equals(iparam.getParameter()) ){
-				customerServiceEmail=iparam.getSvalue();				
-			} else if ("NEED_SMTP_AUTH".equals(iparam.getParameter()) ){
-				needSMTPAuth="true".equalsIgnoreCase(iparam.getSvalue());				
-			} else if ("EMAIL_USER".equals(iparam.getParameter()) ){
-				username=iparam.getSvalue();
-			} else if ("EMAIL_USER_PASSWORD".equals(iparam.getParameter()) ){
-				password=iparam.getSvalue();
-			}
-        }
-*/        
+        Map<String,SystemParameter> emailParam= ApplicationConstant.getSystemParamMap("EMAIL");
+        ipSmtp=emailParam.get("SMTP_GATEWAY").getSvalue();
+    	adminEmail=emailParam.get("SYSTEM_ADMIN_EMAIL").getSvalue();				
+    	customerServiceEmail=emailParam.get("SYSTEM_CUST_SERVICE_EMAIL").getSvalue();			
+    	needSMTPAuth="true".equalsIgnoreCase(emailParam.get("NEED_SMTP_AUTH").getSvalue());				
+    	username=emailParam.get("EMAIL_USER").getSvalue();;
+    	password=emailParam.get("EMAIL_USER_PASSWORD").getSvalue();
+  
+/*        
 		if (ipSmtp==null || ipSmtp.length()==0)ipSmtp="mail.amsconsult.com";
 		if (adminEmail==null || adminEmail.length()==0) adminEmail="admin@amsconsult.com";
 		if (customerServiceEmail==null || customerServiceEmail.length()==0) customerServiceEmail="customerservice@amsconsult.com";
-
+*/
     }
     
 /*    public static void sendMail(String emailType,String from,List toAddress,String subject,String emailTemplate,VelocityContext emailContext) throws Exception{
@@ -315,7 +300,7 @@ public class ApplicationFactory {
     }*/
     
   public static List sendMail(String from,List toAddress,String subject,String message) throws Exception {
-	  init();
+	init();
 	if (toAddress==null || toAddress.isEmpty()) {
 		log.error("Send Email failed, email has no to_address !");
 		return null; //new LinkedList();

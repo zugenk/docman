@@ -31,24 +31,11 @@ public class ACLManager extends BaseUtil{
 	public static String ACTION_TREE="tree";
 	public static String ACTION_SEARCH="search";
 	public static String ACTION_SHARE="share";
+	public static String ACTION_CLOSE="close";
+	public static String ACTION_ARCHIVE="archived";
 	
 	
 	/*
-	static List<String> actionList=null;
-	static boolean inited=false;
-	public static void init(){
-		if (inited) return;
-		actionList=new LinkedList<String>();
-		actionList.add("READ");
-		actionList.add("UPDATE");
-		actionList.add("DELETE");
-		actionList.add("CREATE");
-		actionList.add("LIST");
-		actionList.add("SEARCH");
-		actionList.add("SHARE");
-//		actionList.add("");
-//		actionList.add("");
-	}
 	
 	
 	public static boolean isAuthorized(String toAction,Object targetObj,User actor){
@@ -98,20 +85,6 @@ public class ACLManager extends BaseUtil{
 		return guest.getOrganization().getId()==owner.getUserLevel().getId();
 	}
 	
-	private void isSuperior(Organization refOrg, Organization guestOrg) {
-		// TODO Auto-generated method stub
-//		WITH RECURSIVE q AS (SELECT forum.id, forum.code,forum.name, forum.parent_forum
-//                FROM forum
-//               WHERE forum.id=6 --parent_forum is null
-//               UNION ALL
-//              SELECT x.id, x.code,x.name, x.parent_forum
-//                FROM forum  x
-//                JOIN q ON q.id = x.parent_forum)
-// SELECT * FROM q
-		
-
-	}
-	
 	public static boolean isDownlineOf(Long orgId, Long targetOrgId) {
 		String sqlQuery="WITH RECURSIVE q AS (  SELECT organization.id, organization.code,organization.name, organization.parent, 1 as level FROM organization "
 		   + " WHERE organization.id="+targetOrgId
@@ -154,11 +127,6 @@ public class ACLManager extends BaseUtil{
 		return null;
 	}
 	
-//	private void hasPrivilege() {
-//		// TODO Auto-generated method stub
-//
-//	}
-	
 //	private static boolean isOwner(Document passport,String createdBy, User owner) {
 //		if(!nvl(owner)) return passport.getLong("userId")==owner.getId();
 //		return passport.getString("loginName").equals(createdBy);
@@ -186,11 +154,11 @@ public class ACLManager extends BaseUtil{
 				description="Authorized as Admin";
 				return true;
 			} 
-			if("Topic".equals(entity.getString("modelClass")) && subAction!=null){
-				description="Authorized tp "+subAction+" to/from Topic Resource";
+			if("Topic".equals(entity.getString("modelClass")) && "update".equals(action)  &&  subAction!=null){
+				description="No Restriction to "+subAction+" to/from Topic Resource";
 				return true;
 			}
-
+			
 			if ("PUBLIC".equals(aclMode)){
 				if (isExecutive) {
 					description="Authorized as Executive on Public Resource";

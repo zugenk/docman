@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
+import org.springframework.web.client.RestTemplate;
 
 
 public class DocumentManager extends BaseUtil {
@@ -42,7 +43,7 @@ public class DocumentManager extends BaseUtil {
 		try {
 			String filterParam=null; 
 			String orderParam=" ORDER BY document.id ASC ";
-			resultList= DocumentService.getInstance().getPartialList(filterParam, orderParam, 0, itemPerPage);
+			resultList= DocumentService.getInstance().getPartialList(filterParam, orderParam, 0, ITEM_PER_PAGE);
 			//if(!resultList.isEmpty()) return true;
 		} catch (Exception e) {
 //			e.printStackTrace();
@@ -107,6 +108,7 @@ public class DocumentManager extends BaseUtil {
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		DocumentService.getInstance().add(obj);
 		return toDocument(obj);
@@ -122,7 +124,7 @@ public class DocumentManager extends BaseUtil {
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		DocumentService.getInstance().update(obj);
 		return toDocument(obj);
@@ -165,7 +167,7 @@ public class DocumentManager extends BaseUtil {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND document."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("document",key,filterMap.get(key))); //filterBuff.append(" AND document."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -179,7 +181,7 @@ public class DocumentManager extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=DocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=DocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -191,7 +193,7 @@ public class DocumentManager extends BaseUtil {
 	public static PartialList ownBy(org.bson.Document passport,long userId,int start) throws Exception{
 		String filterParam=" AND document.owner.id='"+userId+"' ";
 		String orderParam=" document.contentType ASC, document.name ASC ";
-		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
+		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -236,6 +238,29 @@ public class DocumentManager extends BaseUtil {
 		if(!nvl(obj.getOwner())) return passport.getLong("userId")==obj.getOwner().getId();
 		return passport.getString("loginName").equals(obj.getCreatedBy());
 	}*/
+	
+	public static org.bson.Document getRepoFolder(org.bson.Document passport,String folderName) throws Exception{
+		RestTemplate restTemplate= new RestTemplate();
+    	if(REPO_FOLDER_MAP.isEmpty()) {
+    		List folderList=RepositoryManager.getTree(); //  restTemplate.getForObject( REPO_BASE_URL+ "/file/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
+        	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
+        		org.bson.Document folder = (org.bson.Document) iterator.next();
+    			REPO_FOLDER_MAP.put(folder.getString("text"),folder);
+    			if("\\".equals(folder.getString("text"))) REPO_ROOT_FOLDER_ID=folder.getString("id");
+    		}
+    	}
+    	if (REPO_FOLDER_MAP.containsKey(folderName)) return REPO_FOLDER_MAP.get(folderName);
+		Map resp=RepositoryManager.createFolder(folderName, REPO_ROOT_FOLDER_ID);  //restTemplate.getForObject( REPO_BASE_URL+ "/ajax_file_operation?action=new_folder&destination="+REPO_ROOT_FOLDER_ID+"&folder_name="+folderName+"&api_key="+REPO_API_KEY,Map.class);
+	    if("success".equals(resp.get("status"))){
+	    	List folderList= RepositoryManager.getTree(); // restTemplate.getForObject(REPO_BASE_URL+ "/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
+	    	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
+	    		org.bson.Document folder = (org.bson.Document) iterator.next();
+				REPO_FOLDER_MAP.put(folder.getString("text"),folder);
+			}
+	    }
+		if (REPO_FOLDER_MAP.containsKey(folderName)) return REPO_FOLDER_MAP.get(folderName);
+		throw new Exception("error.folderName.invalid");
+	}
 	
 	private static String getNewVersion(Document obj){
 		//TODO:
@@ -339,5 +364,7 @@ public class DocumentManager extends BaseUtil {
 			list.set(i, toDocument(obj));
 		}
 	}
-	
+	public static void checkValidity(Document obj,List errors) {
+		if (obj.getOwner()==null) errors.add("error.owner.null");
+	}
 }

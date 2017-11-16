@@ -25,8 +25,8 @@
 		<property
 			name="documentType"
 			column="document_type"
-				type="string"
-			not-null="true"
+			type="string"
+			not-null="false"
 			length="50"
 		/>
 		<property
@@ -48,6 +48,7 @@
 			column="repository_id"
 			type="string"
 			not-null="false"
+			unique-key="unique-repoId"
 			length="30"
 		/>
 		<property
@@ -122,7 +123,7 @@
 			name="folder"
 			column="folder"
 			class="com.app.docmgr.model.Folder"
-			not-null="true"
+			not-null="false"
 		>
 		</many-to-one>
 		<many-to-one

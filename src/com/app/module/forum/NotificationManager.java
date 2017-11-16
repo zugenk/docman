@@ -39,6 +39,7 @@ public class NotificationManager extends BaseUtil {
 		Notification obj= new Notification();
 		updateFromMap(obj, data,errors);
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		NotificationService.getInstance().add(obj);
 		return toDocument(obj);
@@ -52,6 +53,7 @@ public class NotificationManager extends BaseUtil {
 		if (obj==null) throw new Exception("error.object.notfound");
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		updateFromMap(obj,data,errors) ;
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		NotificationService.getInstance().update(obj);
 		return toDocument(obj);
@@ -102,7 +104,7 @@ public class NotificationManager extends BaseUtil {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND notification."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("notification",key,filterMap.get(key))); //filterBuff.append(" AND notification."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -115,7 +117,7 @@ public class NotificationManager extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=NotificationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=NotificationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -155,7 +157,7 @@ public class NotificationManager extends BaseUtil {
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
 		String filterParam=" AND notification.subscriber.id='"+passport.getLong("userId")+"' AND notification.flag is null";
 		String orderParam=" notification.id DESC";
-		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
+		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -188,5 +190,10 @@ public class NotificationManager extends BaseUtil {
 			list.set(i, toDocument(obj));
 		}
 	}
-
+	
+	public static void checkValidity(Notification obj,List errors) {
+		if (obj.getNotificationType()==null) errors.add("error.notificationType.null");
+		if (obj.getPostMessage()==null) errors.add("error.postMessage.null");
+		if (obj.getSubscriber()==null) errors.add("error.subscriber.null");
+	}
 }

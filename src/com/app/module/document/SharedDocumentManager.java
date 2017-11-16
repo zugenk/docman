@@ -39,6 +39,7 @@ public class SharedDocumentManager extends BaseUtil{
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "new"));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		SharedDocumentService.getInstance().add(obj);
 		return toDocument(obj);
@@ -54,7 +55,7 @@ public class SharedDocumentManager extends BaseUtil{
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "new"));
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		SharedDocumentService.getInstance().update(obj);
 		return toDocument(obj);
@@ -97,7 +98,7 @@ public class SharedDocumentManager extends BaseUtil{
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND sharedDocument."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("sharedDocument",key,filterMap.get(key))); //filterBuff.append(" AND sharedDocument."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -112,7 +113,7 @@ public class SharedDocumentManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=SharedDocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=SharedDocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -188,4 +189,7 @@ public class SharedDocumentManager extends BaseUtil{
 		}
 	}
 
+	public static void checkValidity(SharedDocument obj,List errors) {
+		if (obj.getDocument()==null) errors.add("error.document.null");
+	}
 }

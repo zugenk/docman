@@ -97,6 +97,7 @@ public class FolderManager extends BaseUtil {
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "new"));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		FolderService.getInstance().add(obj);
 		return toDocument(obj);
@@ -112,7 +113,7 @@ public class FolderManager extends BaseUtil {
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Folder", "new"));
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		FolderService.getInstance().update(obj);
 		return toDocument(obj);
@@ -155,7 +156,7 @@ public class FolderManager extends BaseUtil {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND folder."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("folder",key,filterMap.get(key))); //filterBuff.append(" AND folder."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -170,7 +171,7 @@ public class FolderManager extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=FolderService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=FolderService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}			
@@ -235,6 +236,10 @@ public class FolderManager extends BaseUtil {
 			list.set(i, toDocument(obj));
 		}
 	}
-
+	
+	public static void checkValidity(Folder obj,List errors) {
+		if (obj.getName()==null) errors.add("error.name.null");
+	}
+	
 }
 

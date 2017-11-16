@@ -32,6 +32,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.document.DocumentManager;
+import com.app.module.document.RepositoryManager;
 import com.simas.webservice.Utility;
 
 
@@ -41,8 +42,6 @@ import com.simas.webservice.Utility;
 public class DocumentController extends BaseUtil{
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(DocumentController.class);
 	
-	  
-
 	@Bean(name = "multipartResolver")
 	public CommonsMultipartResolver multipartResolver() {
 	    CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
@@ -365,27 +364,21 @@ public class DocumentController extends BaseUtil{
   */  
     
     @RequestMapping(value = "/repoFolder/{folderName}", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> repoFolder(@PathVariable("folderName") String folderName) {
-    	RestTemplate restTemplate= new RestTemplate();
-    	if(REPO_FOLDER_MAP.isEmpty()) {
-    		List folderList=restTemplate.getForObject( REPO_BASE_URL+ "/file/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
-        	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
-    			Document folder = (Document) iterator.next();
-    			REPO_FOLDER_MAP.put(folder.getString("text"),folder);
-    			if("\\".equals(folder.getString("text"))) REPO_ROOT_FOLDER_ID=folder.getString("id");
-    		}
-    	}
-    	if (REPO_FOLDER_MAP.containsKey(folderName)) return reply(REPO_FOLDER_MAP.get(folderName));
-		Map resp=restTemplate.getForObject( REPO_BASE_URL+ "/ajax_file_operation?action=new_folder&destination="+REPO_ROOT_FOLDER_ID+"&folder_name="+folderName+"&api_key="+REPO_API_KEY,Map.class);
-	    if("success".equals(resp.get("status"))){
-	    	List folderList=restTemplate.getForObject(REPO_BASE_URL+ "/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
-	    	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
-				Document folder = (Document) iterator.next();
-				REPO_FOLDER_MAP.put(folder.getString("text"),folder);
-			}
-	    }
-		if (REPO_FOLDER_MAP.containsKey(folderName)) return reply(REPO_FOLDER_MAP.get(folderName));
-		return reply(null);
+	public @ResponseBody ResponseEntity<Document> repoFolder(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable("folderName") String folderName) {
+    	Document response=new Document();
+    	try {
+    		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response=DocumentManager.getRepoFolder(iPass, folderName);
+	        return reply(response);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			log.error("Error geting my Document List",e);
+		}		
+    	return reply(response);
+
 	}
     
 	@RequestMapping(value = "/repoDl/{fileId}", method = RequestMethod.GET)
@@ -399,7 +392,7 @@ public class DocumentController extends BaseUtil{
 		RestTemplate restTemplate= new RestTemplate();
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			DocumentManager.downByRepoId(iPass, fileId);
-	        return	restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
+	        return	RepositoryManager.downloadFile(fileId); //restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
 		} catch (Exception e) {
 			errorMessage=e.getMessage();
 			log.error("Error geting Document-byRepoId",e);

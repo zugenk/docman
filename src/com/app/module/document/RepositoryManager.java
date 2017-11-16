@@ -32,7 +32,7 @@ import com.simas.webservice.Utility;
 public class RepositoryManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(RepositoryManager.class.getName());
 //	public static String REPO_ENDPOINT_URL="http://52.187.54.220:8081/PHIDataEngine";
-	public static String REPO_ENDPOINT_URL="http://127.0.0.1:8081/PHIDataEngine";
+//	public static String REPO_ENDPOINT_URL="http://127.0.0.1:8081/PHIDataEngine";
 	
 //	public static String REPO_ENDPOINT_URL="http://128.199.128.32:8080/DocumentManager/rest/v1";
 //	public static String REPO_ENDPOINT_URL="http://localhost:8080/DocumentManager/rest/v1";
@@ -78,22 +78,25 @@ public class RepositoryManager extends BaseUtil{
 		HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
 		                    map, headers);
 		ResponseEntity<Document> result = restTemplate.exchange(
-		                    REPO_ENDPOINT_URL + servicePath, HttpMethod.POST, requestEntity,
+		                    REPO_BASE_URL + servicePath, HttpMethod.POST, requestEntity,
 		                    Document.class);
 		System.out.println(Utility.debug(result));
 		return result.getBody();
 //		return null;
 	}
 	
-	public static Document downloadFile(String fileId) {
-		String servicePath="/file/ajax_file_operation?action=download&fileid="+fileId;
-		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
+	public static ResponseEntity<String> downloadFile(String fileId) {
+		RestTemplate restTemplate = new RestTemplate();
+		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&action=download&fileid="+fileId;
+		//String servicePath="/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId
+		//return restExchange(null, servicePath, HttpMethod.GET, null, ContentType);
+		return restTemplate.getForEntity(REPO_BASE_URL +servicePath ,String.class);
 	}
 
 	
 	
 	public static Document renameFile(String newFileName, String fileId) {
-		String servicePath="/file/ajax_file_operation?action=new_folder&folder_name="+newFileName+"&destination="+fileId;
+		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&action=new_folder&folder_name="+newFileName+"&destination="+fileId;
 		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
 	}
 	
@@ -104,7 +107,7 @@ public class RepositoryManager extends BaseUtil{
 			params.append("&item["+i+"][filename]="+fileArr[i].get("name"));
 		}
 		params.append("&item_count="+fileArr.length);
-		String servicePath="/file/ajax_file_operation?&origin="+sourceFolderId+"&destination="+destinationFolderId+params.toString();
+		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&origin="+sourceFolderId+"&destination="+destinationFolderId+params.toString();
 		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
 	}
 	
@@ -115,11 +118,11 @@ public class RepositoryManager extends BaseUtil{
 			params.append("&item["+i+"][filename]="+fileArr[i].get("name"));
 		}
 		params.append("&item_count="+fileArr.length);
-		String servicePath="/file/ajax_file_operation?&origin="+sourceFolderId+"&destination="+destinationFolderId+params.toString();
+		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&origin="+sourceFolderId+"&destination="+destinationFolderId+params.toString();
 		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
 	}
 	public static Document deleteFile(Map[] fileArr) {
-		StringBuffer params=new StringBuffer("&action=delete");
+		StringBuffer params=new StringBuffer("api_key="+REPO_API_KEY+"&action=delete");
 		for (int i = 0; i < fileArr.length; i++) {
 			params.append("&item["+i+"][id]="+fileArr[i].get("id"));
 			params.append("&item["+i+"][filename]="+fileArr[i].get("name"));
@@ -131,14 +134,21 @@ public class RepositoryManager extends BaseUtil{
 	
 		
 	public static Document search(String keyword) {
-		String servicePath="/search/query?querytext="+keyword;
+		String servicePath="/search/query?api_key="+REPO_API_KEY+"&querytext="+keyword;
 		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
 	}
 	
 	public static Document advanceSearch(String keyword) {
-		String servicePath="/search/query?querytext="+keyword;
+		String servicePath="/search/query?api_key="+REPO_API_KEY+"&querytext="+keyword;
 		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
 	}
+	
+	public static Document addMeta(String fileId,String metaData) {
+		String servicePath="/file/ajax_meta_operation?action=addmeta&api_key="+REPO_API_KEY+"&item_id="+fileId+"&meta_string="+metaData;
+		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
+	}
+	
+	
 	
 	
 	public static void login() {
@@ -157,7 +167,7 @@ public class RepositoryManager extends BaseUtil{
 	  	ResponseEntity<Document> response=null;
     	try{
 	    	HttpEntity httpEntity = new HttpEntity(toMultiValueMap(request),headers);
-	    	response=restTemplate.exchange(REPO_ENDPOINT_URL+servicePath, method, httpEntity, Document.class);
+	    	response=restTemplate.exchange(SERVER_BASE_URL+servicePath, method, httpEntity, Document.class);
 	    	System.out.println(Utility.debug(response));
 	  	} catch (Exception e) {
 			e.printStackTrace();
@@ -172,7 +182,7 @@ public class RepositoryManager extends BaseUtil{
     	ResponseEntity<Document> response=null;
     	try{
 	    	HttpEntity httpEntity = new HttpEntity(toMultiValueMap(request),headers);
-	    	response=restTemplate.exchange(REPO_ENDPOINT_URL+servicePath, method, httpEntity, Document.class);
+	    	response=restTemplate.exchange(REPO_BASE_URL+servicePath, method, httpEntity, Document.class);
 	  	} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -187,7 +197,7 @@ public class RepositoryManager extends BaseUtil{
     	log.debug("REST["+method.toString()+"] to ["+servicePath+"]");
 //    	try{
 	    	HttpEntity httpEntity = new HttpEntity(toMultiValueMap(request),headers);
-	    	ResponseEntity<List> response=restTemplate.exchange(REPO_ENDPOINT_URL+servicePath, method, httpEntity, List.class);
+	    	ResponseEntity<List> response=restTemplate.exchange(REPO_BASE_URL+servicePath, method, httpEntity, List.class);
 //      	} catch (Exception e) {
 //    		e.printStackTrace();
 //    	}

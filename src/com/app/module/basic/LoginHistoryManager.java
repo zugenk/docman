@@ -107,7 +107,7 @@ public class LoginHistoryManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=LoginHistoryService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=LoginHistoryService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}

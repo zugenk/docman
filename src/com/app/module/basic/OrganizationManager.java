@@ -13,6 +13,7 @@ import org.bson.Document;
 import com.app.docmgr.model.Lookup;
 import com.app.docmgr.model.Organization;
 import com.app.docmgr.model.Status;
+import com.app.docmgr.model.User;
 import com.app.docmgr.model.Organization;
 import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.OrganizationService;
@@ -141,7 +142,7 @@ public class OrganizationManager extends BaseUtil {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND organization."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("organization",key,filterMap.get(key))); //" AND organization."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -155,10 +156,12 @@ public class OrganizationManager extends BaseUtil {
 				}
 			}
 		}
-		PartialList result=OrganizationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		
+		PartialList result=OrganizationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
+	
 	
 	private static void updateFromMap(Organization obj, Map data,List<String> errors) {
 		obj.setAddress((String) data.get("address"));
@@ -209,6 +212,7 @@ public class OrganizationManager extends BaseUtil {
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
 		doc.append("createdBy", obj.getCreatedBy());
+		//doc.append("createdDate", obj.getCreatedDate());
 		doc.append("address", obj.getAddress());
 		doc.append("code", obj.getCode());
 		doc.append("filterCode", obj.getFilterCode());
@@ -243,5 +247,13 @@ public class OrganizationManager extends BaseUtil {
 			list.set(i, toDocument(organization));
 		}
 	}
+	
+	public static void checkValidity(User obj,List errors) {
+		//login_name,login_password,userLevel,name
+		if (obj.getLoginName()==null) errors.add("error.loginName.null");
+		if (obj.getUserLevel()==null) errors.add("error.userLevel.null");
+		if (obj.getName()==null) errors.add("error.name.null");
+	}
+
 	
 }

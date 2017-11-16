@@ -36,6 +36,7 @@ public class BookmarkManager extends BaseUtil{
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		BookmarkService.getInstance().add(obj);
 		return toDocument(obj);
@@ -53,6 +54,7 @@ public class BookmarkManager extends BaseUtil{
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		BookmarkService.getInstance().update(obj);
 		return toDocument(obj);
@@ -115,7 +117,7 @@ public class BookmarkManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=BookmarkService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -123,7 +125,7 @@ public class BookmarkManager extends BaseUtil{
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
 		String filterParam=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=" bookmark.category ASC, bookmark.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, itemPerPage);
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -185,5 +187,13 @@ public class BookmarkManager extends BaseUtil{
 			list.set(i, toDocument(obj));
 		}
 	}
+	
+	public static void checkValidity(Bookmark obj,List errors) {
+		if (obj.getBookmarkType()==null) errors.add("error.bookmarkType.null");
+		if (obj.getUrl()==null) errors.add("error.url.null");
+		if (obj.getOwner()==null) errors.add("error.owner.null");
+		if (obj.getName()==null) errors.add("error.name.null");
+	}
+	
 
 }

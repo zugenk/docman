@@ -84,6 +84,7 @@ public class ForumManager extends BaseUtil{
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "new"));
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		ForumService.getInstance().add(obj);
 		return toDocument(obj);
@@ -99,7 +100,7 @@ public class ForumManager extends BaseUtil{
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "new"));
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		ForumService.getInstance().update(obj);
 		return toDocument(obj);
@@ -142,7 +143,7 @@ public class ForumManager extends BaseUtil{
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND forum."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("forum",key,filterMap.get(key))); //filterBuff.append(" AND forum."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -156,7 +157,7 @@ public class ForumManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=ForumService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=ForumService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -225,6 +226,11 @@ public class ForumManager extends BaseUtil{
 			Forum obj = (Forum) list.get(i);
 			list.set(i, toDocument(obj));
 		}
+	}
+	
+	public static void checkValidity(Forum obj,List errors) {
+		if (obj.getForumType()==null) errors.add("error.forumType.null");
+		if (obj.getName()==null) errors.add("error.name.null");
 	}
 
 }

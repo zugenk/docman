@@ -88,7 +88,7 @@ public class AuditTrailManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=AuditTrailService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=AuditTrailService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}

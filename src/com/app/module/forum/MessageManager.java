@@ -86,6 +86,7 @@ public class MessageManager extends BaseUtil{
 		obj.setCreatedDate(new Date());
 		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Message", "new"));
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		MessageService.getInstance().add(obj);
 		TopicManager.generateNotification(obj);
@@ -102,7 +103,7 @@ public class MessageManager extends BaseUtil{
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Message", "new"));
+		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		MessageService.getInstance().update(obj);
 		return toDocument(obj);
@@ -145,7 +146,7 @@ public class MessageManager extends BaseUtil{
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND message."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("message",key,filterMap.get(key))); //filterBuff.append(" AND message."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -159,7 +160,7 @@ public class MessageManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=MessageService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, itemPerPage);
+		PartialList result=MessageService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -237,6 +238,11 @@ public class MessageManager extends BaseUtil{
 			Message obj = (Message) list.get(i);
 			list.set(i, toDocument(obj));
 		}
+	}
+	
+	public static void checkValidity(Message obj,List errors) {
+		if (obj.getPostType()==null) errors.add("error.postType.null");
+		if (obj.getTopic()==null) errors.add("error.topic.null");
 	}
 
 }
