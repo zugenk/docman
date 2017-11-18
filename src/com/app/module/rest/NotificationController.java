@@ -20,6 +20,7 @@ import com.app.module.basic.BaseUtil;
 import com.app.module.basic.BookmarkManager;
 import com.app.module.basic.LoginManager;
 import com.app.module.forum.NotificationManager;
+import com.simas.webservice.Utility;
 
 @Controller
 @RequestMapping("/v1/notification")
@@ -85,12 +86,13 @@ public class NotificationController  extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String notificationId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",NotificationManager.read(iPass, notificationId));
+			response.put("result",NotificationManager.read(iPass, objId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -106,6 +108,7 @@ public class NotificationController  extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", NotificationManager.list(iPass, dataMap));
@@ -124,6 +127,7 @@ public class NotificationController  extends BaseUtil{
 			@RequestParam(value = "start", required = false) String start) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/myList ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug(" My Notification list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));

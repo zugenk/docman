@@ -61,7 +61,7 @@
 	</category>
 	
 	<category name="com.app">
-		<priority value="debug" />
+		<priority value="trace" />
 		<appender-ref ref="appfile" />
 	</category>
 	<!--  

@@ -20,6 +20,7 @@ import com.app.docmgr.service.StatusService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.basic.StatusManager;
+import com.simas.webservice.Utility;
  
 @Controller
 @RequestMapping("/v1/status")
@@ -53,7 +54,7 @@ public class StatusController extends BaseUtil{
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
@@ -61,7 +62,7 @@ public class StatusController extends BaseUtil{
 			
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",StatusManager.update(iPass, dataMap, userId));
+			response.put("result",StatusManager.update(iPass, dataMap, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -74,7 +75,7 @@ public class StatusController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
@@ -82,8 +83,8 @@ public class StatusController extends BaseUtil{
 			
 			response.put("ipassport",iPass.get("ipassport"));
 			
-//			response.put("result",StatusManager.delete(iPass, userId));
-			StatusManager.delete(iPass, userId);
+//			response.put("result",StatusManager.delete(iPass, objId));
+			StatusManager.delete(iPass, objId);
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -97,15 +98,13 @@ public class StatusController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/status/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			List<String> roles= (List)iPass.get("roleNames");
-//			
-			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",StatusManager.read(iPass, userId));
+			response.put("result",StatusManager.read(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -122,10 +121,9 @@ public class StatusController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/status/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
-			//
-			
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", StatusManager.list(iPass, dataMap));
 			return reply(response);  
@@ -144,6 +142,7 @@ public class StatusController extends BaseUtil{
 			@PathVariable(value="type") String type) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/status/list/"+type+" ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			List result=StatusService.getInstance().findbyType(type);
@@ -165,6 +164,7 @@ public class StatusController extends BaseUtil{
 			@PathVariable(value="code") String code) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/status/list/"+type+"/"+code+" ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",StatusManager.toDocument(StatusService.getInstance().getByTypeandCode(type, code)));

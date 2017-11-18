@@ -36,7 +36,7 @@ public class UserManager extends BaseUtil{
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
 		obj.setLoginName((String) data.get("loginName"));
 		//obj.setLoginPassword(ApplicationFactory.encrypt((String) data.get("loginPassword")));
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj,errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		assignNewPassword(obj);
@@ -46,10 +46,9 @@ public class UserManager extends BaseUtil{
 	
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 		List<String> errors=new LinkedList<String>();
-		long uid=Long.parseLong(objId);
-		User obj= UserService.getInstance().get(uid);
+		User obj= UserService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -64,7 +63,7 @@ public class UserManager extends BaseUtil{
 		List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "updateMe", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "updateMe", toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -77,17 +76,15 @@ public class UserManager extends BaseUtil{
 	public static Document chgMyPwd(Document passport,Map data) throws Exception{
 //		log.trace("Update MyPassword "+Utility.debug(data)+" by "+passport.getString("loginName"));
 //		log.debug("Update MyPassword  by "+passport.getString("loginName"));
-		//if (!isAdmin(passport)) throw new Exception("error.unauthorized");
 		List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "chgMyPwd", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "chgMyPwd", toDocument(obj));
 		String encriptedPassword=ApplicationFactory.encrypt((String) data.get("loginPassword"));
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 	
 		if(!encriptedPassword.equals(obj.getLoginPassword())){
-	 		//TODO: AuditTrails
 	 		incrementLoginCounter(obj);
 	 		throw new Exception("error.login.password");
 	 	}  
@@ -99,10 +96,10 @@ public class UserManager extends BaseUtil{
 	
 	public static List myFavTopics(Document passport) throws Exception{
 //		log.debug("Update MyPassword  by "+passport.getString("loginName"));
-//		if (!isAdmin(passport)) throw new Exception("error.unauthorized");
+//		if (!isAdmin(passport);
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFavTopics", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFavTopics", toDocument(obj));
 		return TopicManager.toDocList((Set<Topic>) obj.getFavoriteTopics());
 	}
 	
@@ -111,7 +108,7 @@ public class UserManager extends BaseUtil{
 		//List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myself", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myself", toDocument(obj));
 		return toDocument(obj);
 	}
 	
@@ -120,7 +117,7 @@ public class UserManager extends BaseUtil{
 		//List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(toLong(objId)); //passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj));
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
 		assignNewPassword(obj);
@@ -128,12 +125,11 @@ public class UserManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
-	public static Document resetPassword(String loginName) throws Exception{
-		//log.debug("Reset MyPassword  by "+passport.getString("loginName"));
-		//List<String> errors=new LinkedList<String>();
-		User obj= UserService.getInstance().getBy(" AND user.email='"+loginName+"' "); //passport.getLong("userId"));
+	public static Document resetPassword(Document data) throws Exception{
+		if(nvl(data.get("loginName"))) throw new Exception("error.loginName.invalid");
+		User obj= UserService.getInstance().getBy(" AND user.loginName='"+ data.getString("loginName")+"'  AND user.email='"+ data.getString("email")+"' "); 
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(null,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(null,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj));
 		obj.setLastUpdatedBy("SYSTEM");
 		obj.setLastUpdatedDate(new Date());
 		assignNewPassword(obj);
@@ -158,20 +154,16 @@ public class UserManager extends BaseUtil{
 	String from=ApplicationFactory.getCustomerServiceEmail();
 	List<String> toAddress=new LinkedList<>();
 	toAddress.add(user.getEmail());
-	try {
-		ApplicationFactory.sendMail(from, toAddress, subject, message);
-	} catch (Exception e) {
-		log.error("Error Sending Password Reset Email",e);
-	}
+	EmailManager.sendMail(from, toAddress, subject, message);
 }
 	
 	public static void delete(Document passport,String objId) throws Exception {
 //		log.debug("Deleting User["+objId+" by "+passport.getString("loginName"));
-//		if (!isAdmin(passport)) throw new Exception("error.unauthorized");
+//		if (!isAdmin(passport);
 	//	long usrId= Long.parseLong(objId);
 		User obj=UserService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -183,27 +175,24 @@ public class UserManager extends BaseUtil{
 		//long usrId= Long.parseLong(objId);
 		User obj=UserService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
 		String filterParam=null;
 		String orderParam=null;
 		int start=0;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND user."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("user",key,filterMap.get(key))); //filterBuff.append(" AND user."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -216,6 +205,16 @@ public class UserManager extends BaseUtil{
 					else orderParam+=", user."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
+		}
+		if("ALL".equals(mode)){
+			List result=UserService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
+			List result=UserService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
 		}
 		PartialList result=UserService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
@@ -311,7 +310,21 @@ public class UserManager extends BaseUtil{
 	}
 	
 	
-	
+	public static Document toSimpleDoc(User obj) {
+		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("alias", obj.getAlias());
+		doc.append("fullName", obj.getFullName());
+		//doc.append("title", obj.getTitle());
+		doc.append("email", obj.getEmail());
+		//doc.append("employeeNumber", obj.getEmployeeNumber());
+		//doc.append("homePhoneNumber", obj.getHomePhoneNumber());
+		//doc.append("language", obj.getLanguage());
+		//doc.append("mobilePhoneNumber", obj.getMobilePhoneNumber());
+		doc.append("loginName", obj.getLoginName());
+		return doc;
+	}
 	public static Document toDocument(User obj) {
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
@@ -333,11 +346,6 @@ public class UserManager extends BaseUtil{
 		if(obj.getSecurityLevel()!=null){
 			doc.append("securityLevel", obj.getSecurityLevel().getName());
 			doc.append("securityLevelId", obj.getSecurityLevel().getId());
-		} else {
-			if(obj.getOrganization()!=null && obj.getOrganization().getSecurityLevel()!=null) {
-				doc.append("securityLevel", obj.getOrganization().getSecurityLevel().getName());
-				doc.append("securityLevelId", obj.getOrganization().getSecurityLevel().getId());
-			}
 		}
 		if (obj.getUserLevel()!=null) {
 			doc.append("userLevel", obj.getUserLevel().getName());
@@ -361,9 +369,7 @@ public class UserManager extends BaseUtil{
 	
 	public static boolean incrementLoginCounter(User loginUser) throws Exception{
 		boolean isBlocked=false;
-		
-		
- 		int ctr=loginUser.getLoginFailed()+1;
+		int ctr=loginUser.getLoginFailed()+1;
  		if (ctr>=MAX_WRONG_PASSWD_ATTEMPT) {
  			loginUser.setStatus(BLOCKED_USER_STATUS);
  			isBlocked=true;

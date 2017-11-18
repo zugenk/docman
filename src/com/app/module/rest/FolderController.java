@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.document.FolderManager;
+import com.simas.webservice.Utility;
 
 @Controller
 @RequestMapping("/v1/folder")
@@ -31,8 +32,8 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/folder/tree = "+ipassport);			
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.getTree(null));
 			return reply(response);  
@@ -49,6 +50,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/folder/"+startId+"/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.getTree(startId));
@@ -66,6 +68,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/folder/"+startId+"/fullTree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.getFullTree(startId));
@@ -84,8 +87,8 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/folder/"+startId+"/downline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.getDownline(startId));
 			return reply(response);  
@@ -102,8 +105,8 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/folder/"+startId+"/upline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.getUpline(startId));
 			return reply(response);  
@@ -120,8 +123,8 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/create = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.create(iPass, dataMap));
 			return reply(response);  
@@ -137,13 +140,13 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String folderId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+objId+"/update = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",FolderManager.update(iPass, dataMap, folderId));
+			response.put("result",FolderManager.update(iPass, dataMap, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -156,14 +159,13 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String folderId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+objId+"/delete = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			
 			response.put("ipassport",iPass.get("ipassport"));
-//			response.put("result",FolderManager.delete(iPass, folderId));
-			FolderManager.delete(iPass, folderId);
+			FolderManager.delete(iPass, objId);
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -199,6 +201,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/list = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug("List Folder by "+iPass.getString("loginName") );
 //			

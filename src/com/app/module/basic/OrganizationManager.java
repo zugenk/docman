@@ -83,7 +83,7 @@ public class OrganizationManager extends BaseUtil {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		OrganizationService.getInstance().add(obj);
 		return toDocument(obj);
@@ -95,7 +95,7 @@ public class OrganizationManager extends BaseUtil {
 		//long uid=Long.parseLong(organizationId);
 		Organization obj= OrganizationService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -109,7 +109,7 @@ public class OrganizationManager extends BaseUtil {
 //		long usrId= Long.parseLong(objId);
 		Organization obj=OrganizationService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "deleted"));
 		obj.setLastUpdatedDate(new Date());
@@ -118,25 +118,21 @@ public class OrganizationManager extends BaseUtil {
 	}
 
 	public static Document read(Document passport,String objId) throws Exception {
-//		log.debug("Read organization["+objId+" "+passport.getString("loginName"));
-//		long usrId= Long.parseLong(objId);
+		log.debug("Read organization["+objId+" "+passport.getString("loginName"));
 		Organization obj=OrganizationService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
 		String filterParam=null;
 		String orderParam=null;
 		int start=0;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -146,7 +142,6 @@ public class OrganizationManager extends BaseUtil {
 				}
 				filterParam=filterBuff.toString();
 			}
-			
 			Map orderMap= (Map) data.get("orderBy");
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
@@ -156,7 +151,16 @@ public class OrganizationManager extends BaseUtil {
 				}
 			}
 		}
-		
+		if("ALL".equals(mode)){
+			List result=OrganizationService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
+			List result=OrganizationService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
 		PartialList result=OrganizationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;

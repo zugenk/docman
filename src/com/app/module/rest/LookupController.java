@@ -54,12 +54,12 @@ public class LookupController extends BaseUtil{
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",LookupManager.update(iPass, dataMap, userId));
+			response.put("result",LookupManager.update(iPass, dataMap, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -72,13 +72,13 @@ public class LookupController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-//			response.put("result",LookupManager.delete(iPass, userId));
-			LookupManager.delete(iPass, userId);
+//			response.put("result",LookupManager.delete(iPass, objId));
+			LookupManager.delete(iPass, objId);
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -91,12 +91,13 @@ public class LookupController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/lookup/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",LookupManager.read(iPass, userId));
+			response.put("result",LookupManager.read(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -113,6 +114,7 @@ public class LookupController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/lookup/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", LookupManager.list(iPass, dataMap));
@@ -132,6 +134,7 @@ public class LookupController extends BaseUtil{
 			@PathVariable(value="type") String type) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/lookup/list/"+type+" ="+ipassport);
 			log.debug(">>>>>List Lookup by type =["+type+"]");
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
@@ -157,6 +160,7 @@ public class LookupController extends BaseUtil{
 			@PathVariable(value="code") String code) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/lookup/list/"+type+"/"+code+" ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.toDocument(LookupService.getInstance().getByTypeandCode(type, code)));

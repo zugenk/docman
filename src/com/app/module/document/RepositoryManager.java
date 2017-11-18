@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.util.SystemOutLogger;
 import org.apache.struts.taglib.tiles.GetTag;
 import org.bson.Document;
 import org.json.HTTP;
@@ -27,35 +28,54 @@ import org.springframework.web.client.RestTemplate;
 
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
+import com.mongodb.util.JSON;
 import com.simas.webservice.Utility;
 
 public class RepositoryManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(RepositoryManager.class.getName());
-//	public static String REPO_ENDPOINT_URL="http://52.187.54.220:8081/PHIDataEngine";
-//	public static String REPO_ENDPOINT_URL="http://127.0.0.1:8081/PHIDataEngine";
+//	public static String REPO_BASE_URL="http://52.187.54.220:8081/PHIDataEngine";
+//	public static String REPO_API_KEY="c02ae64c-fd69-42eb-975b-0a3607c388a7";
+//	public static String REPO_BASE_URL="http://127.0.0.1:8081/PHIDataEngine";
 	
-//	public static String REPO_ENDPOINT_URL="http://128.199.128.32:8080/DocumentManager/rest/v1";
-//	public static String REPO_ENDPOINT_URL="http://localhost:8080/DocumentManager/rest/v1";
+//	public static String REPO_BASE_URL="http://128.199.128.32:8080/DocumentManager/rest/v1";
+//	public static String REPO_BASE_URL="http://localhost:8080/DocumentManager/rest/v1";
 
 	public static String ContentType=MediaType.APPLICATION_JSON_VALUE;
-
+	public static RestTemplate restTemplate = new RestTemplate();
+	
 	public static List getTree() {
-		String servicePath="/file/ajax_get_directory_tree";
-		return restExchangeList(null, servicePath, HttpMethod.GET, null, ContentType);
+		String servicePath="/file/ajax_get_directory_tree?api_key="+REPO_API_KEY;
+		ResponseEntity<String> response= restTemplate.getForEntity(REPO_BASE_URL+servicePath, String.class);
+		return (List) JSON.parse(response.getBody());
+	/*	System.out.println(response.getBody());
+		Object result= JSON.parse(response.getBody());
+		List test=(List) result;
+		for (Iterator iterator = test.iterator(); iterator.hasNext();) {
+			Map o = (Map) iterator.next();
+			System.out.println(" XX==>> "+JSON.serialize(o));
+		}
+		System.out.println(JSON.serialize(result));
+		return test; 
+		*/
+		//return restExchangeList(null, servicePath, HttpMethod.GET, null, ContentType);
 	}
 	
 	public static Document getFolderContent(String folderId) {
-		String servicePath="/file/ajax_get_directory?folderid="+folderId;
+		String servicePath="/file/ajax_get_directory?api_key="+REPO_API_KEY+"&folderid="+folderId;
 		return restExchange(null, servicePath, HttpMethod.GET, null, ContentType);
  	}
 
 	public static Document createFolder(String folderName, String parentFolderId) {
-		String servicePath="/file/ajax_file_operation?action=new_folder&folder_name="+folderName+"&destination="+parentFolderId;
-		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
+		System.out.println("CreateFolder("+folderName+","+parentFolderId+")");
+		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&action=new_folder&folder_name="+folderName+"&destination="+parentFolderId;
+		ResponseEntity<String> response= restTemplate.getForEntity(REPO_BASE_URL+servicePath, String.class);
+		//System.out.println(response.getBody());
+		Object result= JSON.parse(response.getBody());
+		return toDocument(result);
 	}
 	
 	public static Document renameFolder(String newFolderName, String folderId) {
-		String servicePath="/file/ajax_file_operation?action=rename&folder_name="+newFolderName+"&destination="+folderId;
+		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&action=rename&folder_name="+newFolderName+"&destination="+folderId;
 		return restExchange(null, servicePath, HttpMethod.POST, null, ContentType);
 	}
 	
@@ -69,7 +89,7 @@ public class RepositoryManager extends BaseUtil{
 //		map.add("desc", "Coba dari RepoManager");
 		map.add("folderId",folderId);
 		map.add("overwrite",(overwrite?"true":"false"));
-		
+		map.add("api_key", REPO_API_KEY);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 		
@@ -90,7 +110,11 @@ public class RepositoryManager extends BaseUtil{
 		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&action=download&fileid="+fileId;
 		//String servicePath="/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId
 		//return restExchange(null, servicePath, HttpMethod.GET, null, ContentType);
+		System.out.println("====>>>>"+REPO_BASE_URL +servicePath);
 		return restTemplate.getForEntity(REPO_BASE_URL +servicePath ,String.class);
+//		System.out.println("HTTPStatus:"+response.getStatusCode());
+		//System.out.println(response.getBody());
+//		return response;
 	}
 
 	
@@ -229,23 +253,34 @@ public class RepositoryManager extends BaseUtil{
 	*/
 	
 	public static void main(String[] args) {
+		try {
+			RepositoryManager.downloadFile("f4272d4d-6381-419b-b47e-665941f6eda6");//f5616c4d-94fc-42ca-b5f6-72b369bf2573");
+//			DocumentManager.getRepoFolder(null, "MOVIE");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	//	RepositoryManager.getTree();
 //		test();
+		
+//		List result=restTemplate.getForObject( REPO_BASE_URL+ "/file/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
+//		System.out.println(Utility.debug(result));
 
-		String folderId="f33ec991-1f1d-4327-a7ca-71e24ad3f04f";
+
+//		String folderId="f33ec991-1f1d-4327-a7ca-71e24ad3f04f";
 //		getTree();
 //		getFolderContent(folderId);
 		//File file=new File("/Users/it.atsbanksinarmas.com/Documents/Invoice - SeatBelt.pdf" );
 		
-		System.out.println("====================================================================================================");
-		File file=new File("Invoice - SeatBelt.pdf" );
-		if (file.exists()) {
-			System.out.println("File exist.. ");
-			uploadFile(folderId, file, false);
-		} else System.out.println("File not found..!!");
+//		System.out.println("====================================================================================================");
+//		File file=new File("Invoice - SeatBelt.pdf" );
+//		if (file.exists()) {
+//			System.out.println("File exist.. ");
+//			uploadFile(folderId, file, false);
+//		} else System.out.println("File not found..!!");
 		
-		System.out.println("====================================================================================================");
+		//System.out.println("====================================================================================================");
 	//	getFolderContent(folderId);
-		System.out.println("====================================================================================================");
+//		System.out.println("====================================================================================================");
 		
 //		createFolder("CreatedFromJava",folderId);
 //		renameFolder("renamedFromJava",folderId);

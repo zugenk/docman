@@ -25,6 +25,8 @@ import com.app.module.basic.DBQueryManager;
 import com.app.module.basic.UserManager;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
+import com.mongodb.util.JSON;
+import com.sun.org.apache.xml.internal.dtm.ref.IncrementalSAXSource;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -107,9 +109,10 @@ public class DocumentManager extends BaseUtil {
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		if(nvl(obj.getDocumentVersion())) obj.setDocumentVersion("1.0.0");
 		DocumentService.getInstance().add(obj);
 		return toDocument(obj);
 	}
@@ -120,10 +123,11 @@ public class DocumentManager extends BaseUtil {
 		long uid=Long.parseLong(objId);
 		Document obj= DocumentService.getInstance().get(uid);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
+		obj.setDocumentVersion(updateVersion(obj.getDocumentVersion()));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		DocumentService.getInstance().update(obj);
@@ -135,7 +139,7 @@ public class DocumentManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Document obj=DocumentService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -147,21 +151,18 @@ public class DocumentManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Document obj=DocumentService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(org.bson.Document passport,Map data) throws Exception{
+	public static List list(org.bson.Document passport,Map data) throws Exception{
 		String filterParam=null;
 		String orderParam=null;
 		int start=0;
+		boolean noPaging=false;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -181,6 +182,11 @@ public class DocumentManager extends BaseUtil {
 				}
 			}
 		}
+		if(noPaging){
+			List result=DocumentService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
 		PartialList result=DocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
@@ -202,21 +208,21 @@ public class DocumentManager extends BaseUtil {
 		String filterParam="AND document.repositoryId='"+fileId+"' ";
 		Document obj=DocumentService.getInstance().getBy(filterParam);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	public static org.bson.Document downByRepoId(org.bson.Document passport, String fileId) throws Exception{
 		String filterParam="AND document.repositoryId='"+fileId+"' ";
 		Document obj=DocumentService.getInstance().getBy(filterParam);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "downloadRepo", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "downloadRepo", toDocument(obj));
 		return toDocument(obj);
 	}
 	public static org.bson.Document getByDocNumber(org.bson.Document passport, String docNumber) throws Exception{
 		String filterParam="AND document.documentNumber='"+docNumber+"' ";
 		Document obj=DocumentService.getInstance().getBy(filterParam);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
@@ -225,11 +231,12 @@ public class DocumentManager extends BaseUtil {
 		List<String> errors=new LinkedList<String>();
 		Document obj= DocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "updateRepoId", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "updateRepoId", toDocument(obj));
 		if(!nvl(obj.getRepositoryId()) && !obj.getRepositoryId().equals(data.get("newRepositoryId"))) throw new Exception("error.repositoryId.mismatch");
 		obj.setRepositoryId(toString(data.get("newRepositoryId")));
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
+		obj.setDocumentVersion(updateVersion(obj.getDocumentVersion()));
 		DocumentService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -242,19 +249,19 @@ public class DocumentManager extends BaseUtil {
 	public static org.bson.Document getRepoFolder(org.bson.Document passport,String folderName) throws Exception{
 		RestTemplate restTemplate= new RestTemplate();
     	if(REPO_FOLDER_MAP.isEmpty()) {
-    		List folderList=RepositoryManager.getTree(); //  restTemplate.getForObject( REPO_BASE_URL+ "/file/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
+    		List folderList=RepositoryManager.getTree(); 
         	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
-        		org.bson.Document folder = (org.bson.Document) iterator.next();
-    			REPO_FOLDER_MAP.put(folder.getString("text"),folder);
-    			if("\\".equals(folder.getString("text"))) REPO_ROOT_FOLDER_ID=folder.getString("id");
+        		org.bson.Document folder=toDocument(iterator.next());
+        		REPO_FOLDER_MAP.put(folder.getString("text"),folder);
+    			if("/".equals(folder.getString("text"))) REPO_ROOT_FOLDER_ID=folder.getString("id");
     		}
     	}
     	if (REPO_FOLDER_MAP.containsKey(folderName)) return REPO_FOLDER_MAP.get(folderName);
-		Map resp=RepositoryManager.createFolder(folderName, REPO_ROOT_FOLDER_ID);  //restTemplate.getForObject( REPO_BASE_URL+ "/ajax_file_operation?action=new_folder&destination="+REPO_ROOT_FOLDER_ID+"&folder_name="+folderName+"&api_key="+REPO_API_KEY,Map.class);
-	    if("success".equals(resp.get("status"))){
-	    	List folderList= RepositoryManager.getTree(); // restTemplate.getForObject(REPO_BASE_URL+ "/ajax_get_directory_tree?api_key="+REPO_API_KEY ,List.class);
+		Map resp=RepositoryManager.createFolder(folderName, REPO_ROOT_FOLDER_ID);  
+			if("success".equals(resp.get("status"))){
+	    	List folderList= RepositoryManager.getTree(); 
 	    	for (Iterator iterator = folderList.iterator(); iterator.hasNext();) {
-	    		org.bson.Document folder = (org.bson.Document) iterator.next();
+	    		org.bson.Document folder = toDocument(iterator.next());
 				REPO_FOLDER_MAP.put(folder.getString("text"),folder);
 			}
 	    }
@@ -262,28 +269,44 @@ public class DocumentManager extends BaseUtil {
 		throw new Exception("error.folderName.invalid");
 	}
 	
-	private static String getNewVersion(Document obj){
-		//TODO:
-		if(nvl(obj.getDocumentVersion())) return "1.0.0";
-		return obj.getDocumentVersion();
-/*		String[] vArr=obj.getDocumentVersion().split(".");
-		int level=vArr.length-1;
-		int x=toInt(vArr[level]);
+	private static String updateVersion(String curVersion){	
+		String[] vArr=curVersion.split("\\.");
+		int level=vArr.length;
+		boolean kick=false;int x;
 		String version="";
-		if (x<99) { 
-			x++;
-			for (int i = 0; i < level-1; i++) {
-				version+=vArr[i]+".";
-			}
-			version+="."+x;
-			return version;
-		} else {
+		do{
 			level--;
-			 x=toInt(vArr[level]);
+			x=toInt(vArr[level],0);
+			x++;
+			if (x>99) x=0;
+			vArr[level]=""+x;
+		}while(x==0 && level>0);		
+		
+		for (int j = 0; j < vArr.length; j++) {
+			version+=(j==0?"":".")+vArr[j];
 		}
-		*/
+		return version;
 	}
 	
+	public static void main(String[] args) {
+		/*
+		String curVer="1.0.0";
+		for (int i = 0; i < 989999; i++) {
+			curVer=updateVersion(curVer);
+			if(i%1000==0) System.out.println(curVer);
+		}
+		System.out.println(curVer);
+		curVer=updateVersion(curVer);
+		System.out.println(curVer);
+		*/
+		try {
+	//		RepositoryManager.createFolder("VIDEO", REPO_ROOT_FOLDER_ID);
+			System.out.println(JSON.serialize(DocumentManager.getRepoFolder(null,"AUDIO")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("============EOD=========");
+	}
 	
 	private static void updateFromMap(Document obj, Map data,List<String> errors) throws Exception{
 		obj.setContentType((String) data.get("contentType"));

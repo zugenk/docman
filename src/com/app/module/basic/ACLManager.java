@@ -132,7 +132,7 @@ public class ACLManager extends BaseUtil{
 //		return passport.getString("loginName").equals(createdBy);
 //	}
 //	
-	public static boolean isAuthorize(Document passport,String aclMode, String action, String subAction, Document entity) {
+	public static boolean isAuthorize(Document passport,String aclMode, String action, String subAction, Document entity) throws Exception{
 		String loginUserName= passport.getString("loginName");
 		String loginUserLevel= passport.getString("userLevel");
 		Long loginUserOrgId=passport.getLong("organizationId");
@@ -142,10 +142,7 @@ public class ACLManager extends BaseUtil{
 		Long ownerId=new Long(0);
 		String approvedBy=null;
 		String description=null;
-		try {
-			ownerId=toLong(entity.get("ownerId"));
-		} catch (Exception e) {
-		}
+		ownerId=toLong(entity.get("ownerId"),0);
 		boolean isOwner=(ownerId>0?loginUserId==ownerId: loginUserName.equals(createdBy));
 		boolean isAdmin="admin".equals(loginUserLevel);
 		boolean isExecutive="executive".equals(loginUserLevel);
@@ -170,7 +167,7 @@ public class ACLManager extends BaseUtil{
 						return true;
 					}
 					description="UnAuthorize action on Public Resource";
-					return false;
+					throw new Exception("error.forbidden");
 				}
 				description="UnRestricted access on Public Resource";
 				return true;
@@ -187,7 +184,7 @@ public class ACLManager extends BaseUtil{
 					return true;
 				}
 				description="UnAuthorize action "+action+" on System Resource";
-				return false;
+				throw new Exception("error.forbidden");
 			}  
 			if ("PRIVATE".equals(aclMode)){
 				if(isOwner) {
@@ -195,7 +192,7 @@ public class ACLManager extends BaseUtil{
 					return true;
 				}
 				description="UnAuthorize action "+action+" on Private Resource";
-				return false;
+				throw new Exception("error.forbidden");
 			}
 
 			if ("Document".equals(entity.getString("modelClass"))){
@@ -211,7 +208,7 @@ public class ACLManager extends BaseUtil{
 							return true;
 						}
 						description="Restricted action "+action+" on Public Document";
-						return false;
+						throw new Exception("error.forbidden");
 					}
 					description="Authorized action "+action+" on Public Document";
 					return true;
@@ -231,11 +228,11 @@ public class ACLManager extends BaseUtil{
 							return true;
 						}
 						description="Restricted action on Private Document";
-						return false;
+						throw new Exception("error.forbidden");
 					}
 					if ("list|search".contains(action)){
 						description="Restricted list/search to selfOwn Document";
-						return false;
+						throw new Exception("error.forbidden");
 					}
 					
 				}
@@ -260,20 +257,20 @@ public class ACLManager extends BaseUtil{
 						return true;
 					}
 					description="Restricted action on on Secured["+docSecurityLvl+"] Document";
-					return false;
+					throw new Exception("error.forbidden");
 					
 				}
 					
 			}	
 			description="Restricted Area no ACL defined for this action ";
-			return false;
+			throw new Exception("error.forbidden");
 		} catch (Exception e) {
 			e.printStackTrace();
 			description=e.getMessage();
 		} finally {
 			AuditTrailManager.auditLog(passport,action+(subAction!=null?":"+subAction:""),entity,description, approvedBy);
 		}
-		return false;
+		throw new Exception("error.forbidden");
 	}
 	
 	public static void main(String[] args) {

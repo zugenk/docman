@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.basic.UserManager;
+import com.simas.webservice.Utility;
 
 @Controller
 @RequestMapping("/v1/user")
@@ -27,8 +29,8 @@ public class UserController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/create ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.create(iPass, dataMap));
 			return reply(response);  
@@ -48,8 +50,8 @@ public class UserController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/"+objId+"/update ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.update(iPass, dataMap, objId));
 			return reply(response);  
@@ -67,10 +69,9 @@ public class UserController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/"+objId+"/delete ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			
 			response.put("ipassport",iPass.get("ipassport"));
-//			response.put("result",UserManager.delete(iPass, objId));
 			UserManager.delete(iPass, objId);
 			return reply(response);  
 			
@@ -87,9 +88,8 @@ public class UserController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/"+objId+"/  ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			//log.debug("Detail User id["+objId+"]  by "+iPass.getString("loginName") );
-			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.detail(iPass, objId));
 			return reply(response);  
@@ -107,9 +107,8 @@ public class UserController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			//log.debug("List User by "+iPass.getString("loginName") );
-			
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", UserManager.list(iPass, dataMap));
 			return reply(response);  
@@ -126,7 +125,7 @@ public class UserController extends BaseUtil{
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
 		Document response=new Document();
 		try {
-			System.out.println("masuk Sini-=====>>>>.");
+			log.trace("/v1/user/myself ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.myself(iPass));
@@ -146,6 +145,7 @@ public class UserController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/updateMe ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.updateMe(iPass, dataMap));
@@ -164,6 +164,7 @@ public class UserController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/chgMyPwd ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.chgMyPwd(iPass, dataMap));
@@ -181,6 +182,7 @@ public class UserController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/"+objId+"/rstPwd ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.resetPassword(iPass,objId));
@@ -192,6 +194,22 @@ public class UserController extends BaseUtil{
 		return reply(response);  
 	}
 	
+	@RequestMapping(value = "resetPwd",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> resetMyPasswd(
+			@RequestHeader(value="apiKey", defaultValue="") String apiKey,
+			@RequestBody final Map dataMap) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/user/resetPwd dataMap="+Utility.debug(dataMap));
+			response.put("result",UserManager.resetPassword((Document) dataMap));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+/*	
 	@RequestMapping(value = "resetPwd/{loginName}",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> resetMyPasswd(
 			//@RequestHeader(value="ipassport", defaultValue="") String ipassport,
@@ -209,7 +227,7 @@ public class UserController extends BaseUtil{
 		}
 		return reply(response);  
 	}
-	
+	*/
 	
 	@RequestMapping(value = "/myFavTopics",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> myFavTopics(
@@ -217,6 +235,7 @@ public class UserController extends BaseUtil{
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/user/myFavTopics ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", UserManager.myFavTopics(iPass));

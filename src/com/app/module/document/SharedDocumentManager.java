@@ -38,7 +38,7 @@ public class SharedDocumentManager extends BaseUtil{
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "new"));
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		SharedDocumentService.getInstance().add(obj);
@@ -51,7 +51,7 @@ public class SharedDocumentManager extends BaseUtil{
 		//long uid=Long.parseLong(objId);
 		SharedDocument obj= SharedDocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -66,7 +66,7 @@ public class SharedDocumentManager extends BaseUtil{
 		//long usrId= Long.parseLong(objId);
 		SharedDocument obj=SharedDocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("SharedDocument", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -78,21 +78,18 @@ public class SharedDocumentManager extends BaseUtil{
 		//long usrId= Long.parseLong(objId);
 		SharedDocument obj=SharedDocumentService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
 		String filterParam=null;
 		String orderParam=null;
 		int start=0;
+		boolean noPaging=false;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -113,6 +110,11 @@ public class SharedDocumentManager extends BaseUtil{
 				}
 			}
 		}
+		if(noPaging){
+			List result=SharedDocumentService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
 		PartialList result=SharedDocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;

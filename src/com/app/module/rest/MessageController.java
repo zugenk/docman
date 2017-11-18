@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.forum.MessageManager;
+import com.simas.webservice.Utility;
 //import com.app.module.forum.ForumManager;
 
 @Controller
@@ -32,6 +33,7 @@ public class MessageController  extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/create/="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",MessageManager.create(iPass, dataMap));
@@ -48,12 +50,13 @@ public class MessageController  extends BaseUtil{
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String messageId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/"+objId+"/update/="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",MessageManager.update(iPass, dataMap, messageId));
+			response.put("result",MessageManager.update(iPass, dataMap, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -66,12 +69,13 @@ public class MessageController  extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String messageId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/"+objId+"/delete/="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			MessageManager.delete(iPass, messageId);
+			MessageManager.delete(iPass, objId);
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -83,12 +87,13 @@ public class MessageController  extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String messageId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",MessageManager.read(iPass, messageId));
+			response.put("result",MessageManager.read(iPass, objId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -103,6 +108,7 @@ public class MessageController  extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/message/list="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", MessageManager.list(iPass, dataMap));

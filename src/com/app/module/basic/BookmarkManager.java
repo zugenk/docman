@@ -20,14 +20,15 @@ import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.BookmarkService;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
+import com.simas.webservice.Utility;
 
 public class BookmarkManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(BookmarkManager.class);
 	private static String ACL_MODE="PRIVATE";
 	
 	public static Document create(Document passport,Map<String, Object> data) throws Exception {
-//		log.debug("Creating Bookmark by "+passport.getString("loginName"));
-//		auditLog(passport, "Create", "Bookmark", "Creating Bookmark", null);
+		//log.debug("Creating Bookmark by "+passport.getString("loginName"));
+		//log.trace("data="+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
 		Bookmark obj= new Bookmark();
 		updateFromMap(obj, data,errors);
@@ -35,7 +36,7 @@ public class BookmarkManager extends BaseUtil{
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		BookmarkService.getInstance().add(obj);
@@ -46,11 +47,11 @@ public class BookmarkManager extends BaseUtil{
 	
 	public static Document update(Document passport,Map data,String objId) throws Exception{
 //		log.debug("Updating Bookmark["+objId+"] by "+passport.getString("loginName"));
+//		log.trace("data="+Utility.debug(data));
 		List<String> errors=new LinkedList<String>();
 		Bookmark obj= BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-//		if (!isAdmin(passport) && !isOwner(obj, passport)) throw new Exception("error.unauthorized");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -61,11 +62,10 @@ public class BookmarkManager extends BaseUtil{
 	}
 	
 	public static void delete(Document passport,String objId) throws Exception {
-		log.debug("Deleting Bookmark["+objId+" by "+passport.getString("loginName"));
+//		log.debug("Deleting Bookmark["+objId+"] by "+passport.getString("loginName"));
 		Bookmark obj=BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		//if (!isAdmin(passport) && !isOwner(obj, passport)) 
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Bookmark", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -78,36 +78,33 @@ public class BookmarkManager extends BaseUtil{
 	}
 */	
 	public static Document detail(Document passport,String objId) throws Exception {
-		log.debug("Detail Bookmark["+objId+" "+passport.getString("loginName"));
+//		log.debug("Detail Bookmark["+objId+"] by "+passport.getString("loginName"));
 		Bookmark obj=BookmarkService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-//		if (!isAdmin(passport) && !isOwner(obj, passport)) throw new Exception("error.unauthorized");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
+//		log.debug("List/Search Bookmark by "+passport.getString("loginName"));
+//		log.trace("data="+Utility.debug(data));
 		String filterParam=null;
 		if("PRIVATE".equals(ACL_MODE) && !isAdmin(passport)) filterParam+=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
 		int start=0;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND bookmark."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("bookmark",key,filterMap.get(key))); //filterBuff.append(" AND bookmark."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
-			
 			Map orderMap= (Map) data.get("orderBy");
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
@@ -117,12 +114,23 @@ public class BookmarkManager extends BaseUtil{
 				}
 			}
 		}
+		if("ALL".equals(mode)){
+			List result=BookmarkService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
+			List result=BookmarkService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
 		PartialList result=BookmarkService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
 	
 	public static PartialList listByOwner(Document passport,int start) throws Exception{
+		log.debug("ListByOwner Bookmark by "+passport.getString("loginName"));
 		String filterParam=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=" bookmark.category ASC, bookmark.name ASC ";
 		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);

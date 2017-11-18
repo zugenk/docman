@@ -11,8 +11,10 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import com.app.docmgr.model.LoginHistory;
+import com.app.docmgr.model.Organization;
 import com.app.docmgr.model.User;
 import com.app.docmgr.service.ForumService;
+import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.base.UserServiceBase;
 import com.app.module.forum.ForumManager;
@@ -49,23 +51,26 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 				iPass.put("organization", user.getOrganization().getName());
 				iPass.put("organizationId", user.getOrganization().getId());
 				if(iPass.get("securityLevel")==null){
-					iPass.put("securityLevel", user.getOrganization().getSecurityLevel().getName());
-					iPass.put("securityLevelId", user.getOrganization().getSecurityLevel().getId());
+					Organization org=OrganizationService.getInstance().get(iPass.getLong("organizationId"));
+					if(org.getSecurityLevel()!=null) {
+						iPass.put("securityLevel", org.getSecurityLevel().getName());
+						iPass.put("securityLevelId", org.getSecurityLevel().getId());
+					}
 				}
 			}
 			createNewPassport(iPass);
+			System.out.println("====================NEW PASSPORT ISSUED======================");
 		}
 //		iPass.put("favTopicIds", UserManager.getFavTopicIds(user));
 //		iPass.put("roleNames", UserManager.getRoleNames(user)); 
 //		System.out.println(Utility.debug(iPass));
-//		System.out.println("====================PASSPORT ISSUED======================");
 		iPass.put("lastAccess", System.currentTimeMillis());
 		savePassport(iPass,null);
 		return iPass;
 	}
 	
-	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	private static final int PASSPORT_LENGTH=32;
+	//private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	//private static final int PASSPORT_LENGTH=32;
 	
 	private static String genPassId() {
 		// TODO Auto-generated method stub

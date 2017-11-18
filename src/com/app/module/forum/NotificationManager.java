@@ -38,7 +38,7 @@ public class NotificationManager extends BaseUtil {
 		List<String> errors=new LinkedList<String>();
 		Notification obj= new Notification();
 		updateFromMap(obj, data,errors);
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		NotificationService.getInstance().add(obj);
@@ -51,7 +51,7 @@ public class NotificationManager extends BaseUtil {
 		long uid=Long.parseLong(objId);
 		Notification obj= NotificationService.getInstance().get(uid);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
@@ -64,7 +64,7 @@ public class NotificationManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Notification obj=NotificationService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		NotificationService.getInstance().update(obj);
 	}
 
@@ -73,7 +73,7 @@ public class NotificationManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Notification obj=NotificationService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	public static Document markRead(Document passport,String objId) throws Exception {
@@ -81,24 +81,21 @@ public class NotificationManager extends BaseUtil {
 		long usrId= Long.parseLong(objId);
 		Notification obj=NotificationService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "markRead", toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "markRead", toDocument(obj));
 		obj.setFlag("READ");
 		NotificationService.getInstance().update(obj);
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
 		String filterParam=null;
 		if("PRIVATE".equals(ACL_MODE) && !isAdmin(passport)) filterParam+=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
 		int start=0;
+		boolean noPaging=false;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -117,6 +114,11 @@ public class NotificationManager extends BaseUtil {
 				}
 			}
 		}
+		if(noPaging){
+			List result=NotificationService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
 		PartialList result=NotificationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;

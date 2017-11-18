@@ -23,7 +23,7 @@ public class StatusManager extends BaseUtil{
 		List<String> errors=new LinkedList<String>();
 		Status obj= new Status();
 		updateFromMap(obj, data,errors);
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		StatusService.getInstance().add(obj);
 		return toDocument(obj);
@@ -35,7 +35,7 @@ public class StatusManager extends BaseUtil{
 		long uid=Long.parseLong(objId);
 		Status obj= StatusService.getInstance().get(uid);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		//obj.setStatus(StatusService.getInstance().getByTypeandCode("Status", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
@@ -48,7 +48,7 @@ public class StatusManager extends BaseUtil{
 		long usrId= Long.parseLong(objId);
 		Status obj=StatusService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		StatusService.getInstance().update(obj);
 	}
 
@@ -57,27 +57,24 @@ public class StatusManager extends BaseUtil{
 		long usrId= Long.parseLong(objId);
 		Status obj=StatusService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
 		String filterParam=null;
 		String orderParam=null;
 		int start=0;
+		boolean noPaging=false;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND status."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("status",key,filterMap.get(key))); //filterBuff.append(" AND status."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -91,6 +88,11 @@ public class StatusManager extends BaseUtil{
 				}
 			}
 		}
+		if(noPaging){
+			List result=StatusService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
 		PartialList result=StatusService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;

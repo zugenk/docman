@@ -77,23 +77,20 @@ public class LoginHistoryManager extends BaseUtil{
 	}
 	
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
 		String filterParam=null;
 		String orderParam=null;
 		int start=0;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND loginHistory."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("loginHistory",key,filterMap.get(key))); //filterBuff.append(" AND loginHistory."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -107,7 +104,17 @@ public class LoginHistoryManager extends BaseUtil{
 				}
 			}
 		}
-		PartialList result=LoginHistoryService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		if("ALL".equals(mode)){
+			List result=LoginHistoryService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
+			List result=LoginHistoryService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
+		PartialList result=OrganizationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}

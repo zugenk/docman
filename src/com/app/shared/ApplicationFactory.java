@@ -44,7 +44,8 @@ public class ApplicationFactory {
 	private static String password="";
 	private static String adminEmail="";
 	private static String customerServiceEmail="";
-	
+	private static Properties SMTP_PROP=null;
+	private static SimpleAuthenticator SMTP_AUTH=null;
 	/**
 	 * @return  the adminEmail
 	 * @uml.property  name="adminEmail"
@@ -152,12 +153,21 @@ public class ApplicationFactory {
     	needSMTPAuth="true".equalsIgnoreCase(emailParam.get("NEED_SMTP_AUTH").getSvalue());				
     	username=emailParam.get("EMAIL_USER").getSvalue();;
     	password=emailParam.get("EMAIL_USER_PASSWORD").getSvalue();
-  
-/*        
+    	
+ /*        
 		if (ipSmtp==null || ipSmtp.length()==0)ipSmtp="mail.amsconsult.com";
 		if (adminEmail==null || adminEmail.length()==0) adminEmail="admin@amsconsult.com";
 		if (customerServiceEmail==null || customerServiceEmail.length()==0) customerServiceEmail="customerservice@amsconsult.com";
 */
+    	SMTP_PROP = new Properties();
+        SMTP_PROP.put("mail.transport.protocol", "SMTP");
+        SMTP_PROP.put("mail.smtp.host",ipSmtp);
+        if (needSMTPAuth) {
+        	SMTP_PROP.put("mail.smtp.auth", "true");
+            SMTP_AUTH = new SimpleAuthenticator();
+            SMTP_AUTH.setUsername(username);
+            SMTP_AUTH.setPassword(password);
+        } else SMTP_PROP.put("mail.smtp.auth", "false");
     }
     
 /*    public static void sendMail(String emailType,String from,List toAddress,String subject,String emailTemplate,VelocityContext emailContext) throws Exception{
@@ -310,7 +320,30 @@ public class ApplicationFactory {
     if (subject==null) subject="No Specific Subject";
     try{
     	if (from==null ||from.length()==0) from=adminEmail;
-    	Session session;
+		 List validAddress=new LinkedList();
+	     Iterator toAddrItr=toAddress.iterator();
+	     while (toAddrItr.hasNext()) {
+			String istraddr = (String) toAddrItr.next();
+	        try {
+	        	validAddress.add(new InternetAddress(istraddr));
+	        	unsentAddress.remove(istraddr);
+			} catch (Exception e) {
+				log.error("Invalid email address :"+istraddr,e);
+			}
+		}
+         if (validAddress.isEmpty()) {
+         	log.error("Send Email failed,all to_address are invalid !");
+         	return unsentAddress;
+         } 
+         InternetAddress toaddress[]=new InternetAddress[validAddress.size()];
+         toAddrItr=validAddress.iterator();
+         int i=0;
+         while (toAddrItr.hasNext()) {
+         	InternetAddress iaddress = (InternetAddress) toAddrItr.next();
+ 			toaddress[i]=iaddress;
+ 			i++;
+ 		}
+    	/* 
     	Properties props = new Properties();
         props.put("mail.transport.protocol", "SMTP");
         props.put("mail.smtp.host",ipSmtp);
@@ -327,38 +360,19 @@ public class ApplicationFactory {
             session = Session.getInstance(props);
             session.setDebug(false);
         }
-
-
+        */
+      	Session session= Session.getInstance(SMTP_PROP, SMTP_AUTH);
+        
+//    	if (needSMTPAuth) session = Session.getInstance(SMTP_PROP, SMTP_AUTH);
+//    	else {
+//	    	session = Session.getInstance(SMTP_PROP);
+//		}
+        session.setDebug(false);
+        
         if (from==null) from=new String(username);
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
-
-        List validAddress=new LinkedList();
-        Iterator toAddrItr=toAddress.iterator();
-        while (toAddrItr.hasNext()) {
-			String istraddr = (String) toAddrItr.next();
-	        try {
-	        	validAddress.add(new InternetAddress(istraddr));
-	        	unsentAddress.remove(istraddr);
-			} catch (Exception e) {
-				log.error("Invalid email address :"+istraddr,e);
-			}
-		}
-        if (validAddress.isEmpty()) {
-        	log.error("Send Email failed,all to_address are invalid !");
-        	return unsentAddress;
-        } 
-        InternetAddress toaddress[]=new InternetAddress[validAddress.size()];
-        toAddrItr=validAddress.iterator();
-        int i=0;
-        while (toAddrItr.hasNext()) {
-        	InternetAddress iaddress = (InternetAddress) toAddrItr.next();
-			toaddress[i]=iaddress;
-			i++;
-		}
-        
         msg.setRecipients(javax.mail.Message.RecipientType.TO,toaddress);
-
         msg.setSubject(subject);
         msg.setSentDate(new java.util.Date());
 
@@ -817,6 +831,7 @@ public class ApplicationFactory {
 		  System.out.println("Generated ActivationCode="+activationCode);
 		  return activationCode;
 	  }
+	  
 	  
 }
 

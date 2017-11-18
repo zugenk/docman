@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.forum.TopicManager;
+import com.simas.webservice.Utility;
 
 @Controller
 @RequestMapping("/v1/topic")
@@ -31,8 +32,8 @@ public class TopicController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/create/="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-		//	
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.create(iPass, dataMap));
 			return reply(response);  
@@ -48,13 +49,13 @@ public class TopicController extends BaseUtil{
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/update ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager.update(iPass, dataMap, topicId));
+			response.put("result",TopicManager.update(iPass, dataMap, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -67,12 +68,13 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/delete ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			TopicManager.delete(iPass, topicId);
+			TopicManager.delete(iPass, objId);
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -84,12 +86,13 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> close(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/close ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			TopicManager.close(iPass, topicId);
+			TopicManager.close(iPass, objId);
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -101,12 +104,13 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> archive(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/archive ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			TopicManager.archive(iPass, topicId);
+			TopicManager.archive(iPass, objId);
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -118,13 +122,13 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager.read(iPass, topicId));
+			response.put("result",TopicManager.read(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -140,8 +144,8 @@ public class TopicController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			//
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", TopicManager.list(iPass, dataMap));
 			return reply(response);  
@@ -156,13 +160,13 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> subscribe(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager.subscribe(iPass, topicId));
+			response.put("result",TopicManager.subscribe(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -175,13 +179,13 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> unSubscribe(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager.unSubscribe(iPass, topicId));
+			response.put("result",TopicManager.unSubscribe(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -194,13 +198,13 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> like(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager.like(iPass, topicId));
+			response.put("result",TopicManager.like(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -213,13 +217,12 @@ public class TopicController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> unLike(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String topicId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",TopicManager.unLike(iPass, topicId));
+			response.put("result",TopicManager.unLike(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {

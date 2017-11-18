@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
+import com.simas.webservice.Utility;
 import com.app.module.basic.BookmarkManager;
 
 
@@ -33,6 +34,7 @@ public class BookmarkController  extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/bookmark/create="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			if(!isAdmin(iPass)) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
@@ -50,13 +52,13 @@ public class BookmarkController  extends BaseUtil{
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String bookmarkId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/bookmark/"+objId+"/update/="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			if(!isAdmin(iPass)) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",BookmarkManager.update(iPass, dataMap, bookmarkId));
+			response.put("result",BookmarkManager.update(iPass, dataMap, objId));
 			return reply(response); 
 			
 		} catch (Exception e) {
@@ -69,14 +71,13 @@ public class BookmarkController  extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String bookmarkId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/bookmark/"+objId+"/delete/="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			if(!isAdmin(iPass)) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
-//			response.put("result",BookmarkManager.delete(iPass, bookmarkId));
-			BookmarkManager.delete(iPass, bookmarkId);
+			BookmarkManager.delete(iPass, objId);
 			return reply(response); 
 			
 		} catch (Exception e) {
@@ -89,13 +90,14 @@ public class BookmarkController  extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String bookmarkId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();//Document response=new Document();
 		try {
+			log.trace("/v1/bookmark/"+objId+"/="+ipassport); 
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			if(!isAdmin(iPass)) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",BookmarkManager.detail(iPass, bookmarkId));
+			response.put("result",BookmarkManager.detail(iPass, objId));
 			return reply(response);//return reply(response); 
 			
 		} catch (Exception e) {
@@ -111,6 +113,7 @@ public class BookmarkController  extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/bookmark/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 //			if(!isAdmin(iPass)) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
 			response.put("ipassport",iPass.get("ipassport"));
@@ -124,12 +127,13 @@ public class BookmarkController  extends BaseUtil{
 	}
 	
 	@RequestMapping(value = "myList",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> list(
+	public @ResponseBody ResponseEntity<Document> mylist(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestParam(value = "start", required = false) String start) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/bookmark/myList="+ipassport+" start="+start);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug(" My Bookmark list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));

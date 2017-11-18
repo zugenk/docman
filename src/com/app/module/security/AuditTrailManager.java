@@ -74,7 +74,7 @@ public class AuditTrailManager extends BaseUtil{
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(" AND auditTrail."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("auditTrail",key,filterMap.get(key))); //filterBuff.append(" AND auditTrail."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
 				filterParam=filterBuff.toString();
 			}

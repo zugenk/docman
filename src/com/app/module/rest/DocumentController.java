@@ -33,6 +33,7 @@ import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.document.DocumentManager;
 import com.app.module.document.RepositoryManager;
+import com.mongodb.util.JSON;
 import com.simas.webservice.Utility;
 
 
@@ -55,6 +56,7 @@ public class DocumentController extends BaseUtil{
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/tree = "+ipassport); 
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getTree(null));
@@ -72,6 +74,7 @@ public class DocumentController extends BaseUtil{
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+startId+"/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getTree(startId));
@@ -89,6 +92,7 @@ public class DocumentController extends BaseUtil{
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+startId+"/fullTree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getFullTree(startId));
@@ -107,6 +111,7 @@ public class DocumentController extends BaseUtil{
 			) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+startId+"/downline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getDownline(startId));
@@ -124,6 +129,7 @@ public class DocumentController extends BaseUtil{
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+startId+"/upline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getUpline(startId));
@@ -143,6 +149,7 @@ public class DocumentController extends BaseUtil{
 			@RequestParam(value = "start", required = false) String start) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/myList = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug(" My Document list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
@@ -164,6 +171,7 @@ public class DocumentController extends BaseUtil{
 			@RequestParam(value = "startIdx", required = false) String start) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/ownBy/"+userId+" = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug(" My Document list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
@@ -185,6 +193,7 @@ public class DocumentController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/create/="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.create(iPass, dataMap));
@@ -203,6 +212,7 @@ public class DocumentController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+objId+"/update/="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.update(iPass, dataMap, objId));
@@ -220,6 +230,7 @@ public class DocumentController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+objId+"/delete/="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			DocumentManager.delete(iPass, objId);
 			response.put("ipassport",iPass.get("ipassport"));
@@ -237,6 +248,7 @@ public class DocumentController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.detail(iPass, objId));
@@ -254,6 +266,7 @@ public class DocumentController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/document/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", DocumentManager.list(iPass, dataMap));
@@ -387,18 +400,24 @@ public class DocumentController extends BaseUtil{
 		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 		@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 		@PathVariable(value="fileId") String fileId) {	
-		String errorMessage="";
+		//String errorMessage="";
+		Document response=new Document();
 		try {
-		RestTemplate restTemplate= new RestTemplate();
+			log.debug("/v1/document/repoDl/"+fileId);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			DocumentManager.downByRepoId(iPass, fileId);
-	        return	RepositoryManager.downloadFile(fileId); //restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
+			//DocumentManager.downByRepoId(iPass, fileId);
+	        
+	        ResponseEntity<String> resp= RepositoryManager.downloadFile(fileId); 
+			System.out.println("HTTPStatus:"+resp.getStatusCode());
+			System.out.println(resp.getBody());
+			return resp;
+	        //restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
 		} catch (Exception e) {
-			errorMessage=e.getMessage();
+			response.append("errorMessage",e.getMessage());
 			log.error("Error geting Document-byRepoId",e);
 		}
 		//return new ResponseEntity<String>(errorMessage,HttpStatus.BAD_REQUEST);
-		return new ResponseEntity<String>(errorMessage,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<String>(JSON.serialize(response),HttpStatus.BAD_REQUEST);
 	}
 	
 	@RequestMapping(value = "byRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)

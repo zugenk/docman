@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.forum.ForumManager;
+import com.simas.webservice.Utility;
 
 @Controller
 @RequestMapping("/v1/forum")
@@ -30,6 +31,7 @@ public class ForumController extends BaseUtil{
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager.getTree(null));
@@ -47,6 +49,7 @@ public class ForumController extends BaseUtil{
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/"+startId+"/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager.getTree(startId));
@@ -64,6 +67,7 @@ public class ForumController extends BaseUtil{
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/"+startId+"/fullTree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager.getFullTree(startId));
@@ -82,6 +86,7 @@ public class ForumController extends BaseUtil{
 			) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/"+startId+"/downline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager.getDownline(startId));
@@ -99,6 +104,7 @@ public class ForumController extends BaseUtil{
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/"+startId+"/upline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager.getUpline(startId));
@@ -116,6 +122,7 @@ public class ForumController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/create = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",ForumManager.create(iPass, dataMap));
@@ -131,12 +138,13 @@ public class ForumController extends BaseUtil{
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap,
-			@PathVariable(value="ID") String forumId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/"+objId+"/update = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.update(iPass, dataMap, forumId));
+			response.put("result",ForumManager.update(iPass, dataMap, objId));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -148,11 +156,12 @@ public class ForumController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> delete(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String forumId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/"+objId+"/delete = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			ForumManager.delete(iPass, forumId);
+			ForumManager.delete(iPass, objId);
 			response.put("ipassport",iPass.get("ipassport"));
 			return reply(response); 
 		} catch (Exception e) {
@@ -165,12 +174,13 @@ public class ForumController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String forumId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/"+objId+"/ = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.detail(iPass, forumId));
+			response.put("result",ForumManager.detail(iPass, objId));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -185,6 +195,7 @@ public class ForumController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/forum/list = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", ForumManager.list(iPass, dataMap));

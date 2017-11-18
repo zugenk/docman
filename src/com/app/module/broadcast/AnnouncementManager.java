@@ -21,6 +21,7 @@ import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
 import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
+import com.app.module.basic.EmailManager;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
@@ -35,7 +36,7 @@ public class AnnouncementManager extends BaseUtil {
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "new"));
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().add(obj);
@@ -47,7 +48,7 @@ public class AnnouncementManager extends BaseUtil {
 		List<String> errors=new LinkedList<String>();
 		Announcement obj= AnnouncementService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, null, toDocument(obj));
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
@@ -62,7 +63,7 @@ public class AnnouncementManager extends BaseUtil {
 //		long usrId= Long.parseLong(objId);
 		Announcement obj=AnnouncementService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Announcement", "deleted"));
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
@@ -74,21 +75,18 @@ public class AnnouncementManager extends BaseUtil {
 		//long usrId= Long.parseLong(objId);
 		Announcement obj=AnnouncementService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
-		if(!ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj))) throw new Exception("error.unauthorized");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));
 		return toDocument(obj);
 	}
 	
-	public static PartialList list(Document passport,Map data) throws Exception{
+	public static List list(Document passport,Map data) throws Exception{
 		String filterParam=null;
 		String orderParam=null;
 		int start=0;
+		boolean noPaging=false;
 		if(data!=null && !data.isEmpty()) {
-			try {
-				start= Integer.parseInt((String) data.get("start"));
-			} catch (Exception e) {
-				start=0;
-			}
-			
+			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
+			start= toInt(data.get("start"),1);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -109,6 +107,11 @@ public class AnnouncementManager extends BaseUtil {
 				}
 			}
 		}
+		if(noPaging){
+			List result=AnnouncementService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}	
 		PartialList result=AnnouncementService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
@@ -116,6 +119,7 @@ public class AnnouncementManager extends BaseUtil {
 	
 	private static void updateFromMap(Announcement obj, Map data,List<String> errors) {
 		obj.setContent((String) data.get("content"));
+		obj.setSubject((String) data.get("subject"));
 		obj.setTargetOrganizations((String) data.get("targetOrganizations"));
 		obj.setTargetUsers((String) data.get("targetUsers"));
 		
@@ -223,7 +227,7 @@ public class AnnouncementManager extends BaseUtil {
 		try {
 			User sender=UserService.getInstance().getBy("user.loginName='"+ann.getCreatedBy()+"' ");
 			from=sender.getEmail();
-			ApplicationFactory.sendMail(from, toAddress, subject, message);
+			EmailManager.sendMail(from, toAddress, subject, message);
 			
 		} catch (Exception e) {
 			log.error("Error populate toAddress through Announcement targetUsers",e);

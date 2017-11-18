@@ -90,12 +90,13 @@ public class LoginHistoryController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/loginHistory/"+objId+"/ = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",LoginHistoryManager.read(iPass, userId));
+			response.put("result",LoginHistoryManager.read(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -112,6 +113,7 @@ public class LoginHistoryController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/loginHistory/list = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", LoginHistoryManager.list(iPass, dataMap));

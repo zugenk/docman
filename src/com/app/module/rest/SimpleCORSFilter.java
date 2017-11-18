@@ -11,12 +11,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 public class SimpleCORSFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
-        System.out.println(">>>>>>>>>> ["+req.getRemoteHost()+":"+req.getRemoteAddr()+":"+req.getRemotePort()+"]");
+       // System.out.println(">>>>>>>>>> ["+req.getRemoteHost()+":"+req.getRemoteAddr()+":"+req.getRemotePort()+"]");
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
@@ -26,6 +27,12 @@ public class SimpleCORSFilter implements Filter {
         //response.setHeader("access-control-allow-origin","chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop");
         response.setHeader("access-control-expose-headers","Access-Control-Allow-Origin,Access-Control-Allow-Credentials");
         
+       /* / ======
+    	
+        Access-Control-Request-Headers: X-MYHEADER
+        response.setHeader("Access-Control-Request-Headers: origin, content-type, accept");		
+        
+        */
         
 //        resp.headers().add("Access-Control-Allow-Origin", transport.settings().get("http.cors.allow-origin", HttpHeaders.getHeader(req, "Origin", "*")));
 //        resp.headers().add("Access-Control-Allow-Credentials", transport.settings().get("http.cors.allow-credentials", "true"));
@@ -41,5 +48,4 @@ public class SimpleCORSFilter implements Filter {
         // TODO Auto-generated method stub
 
     }
-
 }

@@ -22,9 +22,11 @@ import com.app.docmgr.model.SystemParameter;
 import com.app.docmgr.service.StatusService;
 import com.app.shared.ApplicationConstant;
 import com.app.shared.PartialList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.IndexOptions;
 import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 
 public class BaseUtil {
 //	public static String ADMIN_ROLE="GOD"; //"ADMIN";
@@ -36,8 +38,8 @@ public class BaseUtil {
 	public static String SERVER_BASE_URL="http://localhost:8080/DocumentManager/rest/v1";
 	
 //	public static String REPO_BASE_URL="http://localhost:8081/PHIDataEngine/file";
-	public static String REPO_BASE_URL="http://52.187.54.220:8081/PHIDataEngine/file";
-	public static String RESOURCE_URL="http://52.187.54.220:8082/PHIDataEngine/file";
+	public static String REPO_BASE_URL="http://52.187.54.220:8081/PHIDataEngine";
+	public static String RESOURCE_URL="http://52.187.54.220:8080/PHIDataEngine";
 	public static String REPO_API_KEY="c02ae64c-fd69-42eb-975b-0a3607c388a7";
 	public static Map<String, Document> REPO_FOLDER_MAP=new HashMap<>(); 
 	public static String REPO_ROOT_FOLDER_ID=null;
@@ -45,6 +47,7 @@ public class BaseUtil {
 	
 	static String IPASSPORT_COLLECTION="IPassportData";
 	static String MONGO_DB_CFG="DEFAULT|mongo-docman|27017|DOCMAN";
+	static int PASSPORT_LENGTH=32;
 	//static String DB_CFG="DEFAULT|localhost|27017|DOCMAN";
 	//private static boolean inited=false;
 
@@ -61,6 +64,7 @@ public class BaseUtil {
 			IPASSPORT_COLLECTION=coreParam.get("IPASSPORT_COLLECTION").getSvalue();
 			MONGO_DB_CFG=coreParam.get("MONGO_DB_CFG").getSvalue();
 			SESSION_TIMEOUT_PERIOD=toLong(coreParam.get("SESSION_TIMEOUT_PERIOD").getSvalue());
+			PASSPORT_LENGTH=toInt(coreParam.get("PASSPORT_LENGTH").getSvalue(),32);
 			
 			Map<String, SystemParameter> repoParam=ApplicationConstant.getSystemParamMap("REPOSITORY");
 			REPO_BASE_URL=repoParam.get("REPO_BASE_URL").getSvalue();
@@ -100,7 +104,18 @@ public class BaseUtil {
 //		throw new Exception("Expecting Long value instead of "+obj.getClass().getName());
 		return Long.parseLong((String) obj);
 	}
-
+	public static long toLong(Object obj,long x) {
+		try{
+			if(obj==null) return x;
+			if(obj instanceof Long) return (Long) obj; 
+			if(obj instanceof Integer) return new Long((Integer) obj);
+			if(obj instanceof String)  return Long.parseLong((String) obj);
+			return Long.parseLong((String) obj);
+		}catch(Exception ex){
+		}
+		return x;
+	}
+	
 	public static String toString(Object obj) throws Exception{
 		if(obj==null) return null;
 		if(obj instanceof Long) return ""+((Long) obj).longValue(); 
@@ -109,12 +124,23 @@ public class BaseUtil {
 //		throw new Exception("Expecting String value instead of "+obj.getClass().getName());
 		return obj.toString();
 	}
+	
 	public static int toInt(Object obj) throws Exception{
 		if(obj==null) return 0;
 		if(obj instanceof Integer) return ((Integer) obj).intValue();
 		if(obj instanceof String)  return Integer.parseInt((String) obj);
 //		throw new Exception("Expecting Integer value instead of "+obj.getClass().getName());
 		return 0;
+	}
+	
+	public static int toInt(Object obj,int x){
+		try {
+			if(obj==null) return x;
+			if(obj instanceof Integer) return ((Integer) obj).intValue();
+			if(obj instanceof String)  return Integer.parseInt((String) obj);
+		} catch (Exception e) {
+		}
+		return x;
 	}
 	
 	public static void putList(Map response,String key,Object result) {
@@ -208,6 +234,17 @@ public class BaseUtil {
     	headers.add("Authorization", "Basic " + base64Creds);
 	}
 	
+	public static Document toDocument(Object obj) {
+		if(obj instanceof com.mongodb.BasicDBObject){
+			Map<String,Object> dbo=(Map<String,Object>) obj;
+			Document result=new Document();
+			result.putAll(dbo);
+			return result;
+		}
+		return (Document) obj;
+	}
+	
+	
 	public static MediaType toMediaType(String contentType)throws Exception{
 		MediaType ct=MediaType.valueOf(contentType);
     	if (ct==null) {
@@ -232,9 +269,9 @@ public class BaseUtil {
 		if(response==null)  new ResponseEntity<Document>(new Document("errorMessage","error.object.notFound"),HttpStatus.BAD_REQUEST);
 		if(!nvl(response.getString("errorMessage"))) {
 			//System.out.println(response.getString("errorMessage") +" ====>>> "+response.getString("errorMessage").equals("error.unauthorized"));
-			if (response.getString("errorMessage").contains("error.unauthorized")) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
+			if (response.getString("errorMessage").contains("error.forbidden")) return new ResponseEntity<Document>(response,HttpStatus.FORBIDDEN);
+			if (response.getString("errorMessage").contains("error.session.invalid")) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
 			//if (response.getString("errorMessage").contains("error.login.password")||response.getString("errorMessage").contains("error.login.failed")) return new ResponseEntity<Document>(response,HttpStatus.UNAUTHORIZED);
-			//error.session.invalid
 			return new ResponseEntity<Document>(response,HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<Document>(response,HttpStatus.OK);
@@ -265,27 +302,5 @@ public class BaseUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static void main(String[] args) {
-		try {
-			
-			//Object test="21322";
-	//		Object test=new Integer(21322);
-	//		Object test=new Long(21322);
-			//long x=(Long) test;
-			//System.out.println(""+x);
-			
-		//	long x=Long.parseLong((String) test);
-	//		System.out.println(""+toLong(test)/2); 
-			init();
-			Document response=new Document("errorMessage","error.unauthorized");
-			ResponseEntity<Document> reply=reply(response);
-			System.out.println(Utility.debug(reply.getHeaders()));
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 }

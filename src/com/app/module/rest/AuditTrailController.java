@@ -20,6 +20,7 @@ import com.app.docmgr.service.AuditTrailService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.security.AuditTrailManager;
+import com.simas.webservice.Utility;
  
 @Controller
 @RequestMapping("/v1/auditTrail")
@@ -97,13 +98,14 @@ public class AuditTrailController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> read(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="ID") String userId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/auditTrail/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",AuditTrailManager.read(iPass, userId));
+			response.put("result",AuditTrailManager.read(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -120,6 +122,7 @@ public class AuditTrailController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/announcement/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			response.put("ipassport",iPass.get("ipassport"));
