@@ -1,5 +1,6 @@
 package com.app.module.basic;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,13 +21,16 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.BodyPart;
 
-public class EmailManager {
+public class EmailManager extends BaseUtil{
 	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(EmailManager.class);
 	
 	public static List sendMail(String from,List toAddress,String subject,String content) {
+		return sendMail( from, toAddress, subject, content,null);
+	}
+	public static List sendMail(String from,List toAddress,String subject,String content,List<File> attachments) {
 		Properties props = new Properties();
-	    //props.put("mail.smtp.host", "smtp.gmail.com");
-	    props.put("mail.smtp.host", "smtp.sendgrid.net");
+	    props.put("mail.smtp.host", "smtp.gmail.com");
+	    //props.put("mail.smtp.host", "smtp.sendgrid.net");
 	    props.put("mail.smtp.socketFactory.port", "465");
 	    props.put("mail.smtp.socketFactory.class",
 	            "javax.net.ssl.SSLSocketFactory");
@@ -36,8 +40,8 @@ public class EmailManager {
 	        new javax.mail.Authenticator() {
 	                            @Override
 	            protected PasswordAuthentication getPasswordAuthentication() {
-	               // return new PasswordAuthentication("martin.rohadi@gmail.com","deewyoaejupweqln");
-	               return new PasswordAuthentication("apikey","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");
+	               return new PasswordAuthentication("martin.rohadi@gmail.com","deewyoaejupweqln");
+	              // return new PasswordAuthentication("apikey","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");
 	            }
 	        });
 	    
@@ -87,10 +91,22 @@ public class EmailManager {
 	         MimeBodyPart mbp = new MimeBodyPart();
 	         mbp.setContent(content,"text/html");
 	         Multipart mp = new MimeMultipart();
-	         mp.addBodyPart(mbp);
+	         mp.addBodyPart(mbp); String fname;
+	         if(attachments!=null && !attachments.isEmpty()) {
+	        	 for (Iterator iterator = attachments.iterator(); iterator.hasNext();) {
+					File f = (File) iterator.next();
+					 mbp = new MimeBodyPart();
+		             DataSource source = new FileDataSource(f);
+		             mbp.setDataHandler(new DataHandler(source));
+		             if(f.getName().startsWith(TEMP_FILE_PREFIX)) fname=f.getName().substring(TEMP_FILE_PREFIX.length()+19);
+		             else fname=f.getName();
+		             mbp.setFileName(fname);
+		             mp.addBodyPart(mbp);
+	        	 }
+	        		        	 
+	         }
 	         msg.setContent(mp);
-
-	    	
+		     	
 	    	/*
 	        Message message = new MimeMessage(session);
 	        message.setFrom(new InternetAddress("zugenk@gmail.com"));
@@ -114,9 +130,9 @@ public class EmailManager {
 	
 	public static void main(String[] args) {
 		List toAddress=new LinkedList<String>();
-		toAddress.add("zugenk@yahoo.com");
+		toAddress.add("martin.rohadi@yahoo.com");
 		String content="KOK nggak bisa html tuh";
-		sendMail("zugenk@yahoo.com", toAddress, "Coba lagi boss", content);
+		sendMail("zugenk@docman.com", toAddress, "Coba lagi boss", content,null);
 	}
 	
 

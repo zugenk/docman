@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.Document;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -396,7 +397,7 @@ public class DocumentController extends BaseUtil{
     
 	@RequestMapping(value = "/repoDl/{fileId}", method = RequestMethod.GET)
 	//public @ResponseBody ResponseEntity<String> repoDl(@PathVariable("fileId") String fileId) {
-	public @ResponseBody ResponseEntity<String> repoDl(
+	public @ResponseBody ResponseEntity<Resource> repoDl(
 		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 		@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 		@PathVariable(value="fileId") String fileId) {	
@@ -407,8 +408,10 @@ public class DocumentController extends BaseUtil{
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			//DocumentManager.downByRepoId(iPass, fileId);
 	        
-	        ResponseEntity<String> resp= RepositoryManager.downloadFile(fileId); 
+	        ResponseEntity<Resource> resp= RepositoryManager.downloadFile(fileId); 
+	        //resp.getHeaders().add("Content-type", "application/octet-stream");
 			System.out.println("HTTPStatus:"+resp.getStatusCode());
+			System.out.println("HTTPHeaders:"+Utility.debug(resp.getHeaders()));
 			System.out.println(resp.getBody());
 			return resp;
 	        //restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
@@ -417,7 +420,8 @@ public class DocumentController extends BaseUtil{
 			log.error("Error geting Document-byRepoId",e);
 		}
 		//return new ResponseEntity<String>(errorMessage,HttpStatus.BAD_REQUEST);
-		return new ResponseEntity<String>(JSON.serialize(response),HttpStatus.BAD_REQUEST);
+		//Resource fake=
+		return null; //new ResponseEntity<Resource>(,HttpStatus.BAD_REQUEST); //JSON.serialize(response)
 	}
 	
 	@RequestMapping(value = "byRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)

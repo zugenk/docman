@@ -1,5 +1,6 @@
 package com.app.module.broadcast;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,7 +30,7 @@ public class AnnouncementManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(AnnouncementManager.class);
 	private static String ACL_MODE="PUBLIC";
 	
-	public static Document create(Document passport,Map<String, Object> data) throws Exception {
+	public static Document create(Document passport,Map<String, Object> data,List<File> attachments) throws Exception {
 		List<String> errors=new LinkedList<String>();
 		Announcement obj= new Announcement();
 		updateFromMap(obj, data,errors);
@@ -40,7 +41,7 @@ public class AnnouncementManager extends BaseUtil {
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		AnnouncementService.getInstance().add(obj);
-		blastEmail(obj);
+		blastEmail(obj,attachments);
 		return toDocument(obj);
 	}
 	
@@ -122,12 +123,12 @@ public class AnnouncementManager extends BaseUtil {
 		obj.setSubject((String) data.get("subject"));
 		obj.setTargetOrganizations((String) data.get("targetOrganizations"));
 		obj.setTargetUsers((String) data.get("targetUsers"));
-		
 		if(!nvl(data.get("announcementTypeId"))){
 			try {
 				Lookup announcementType= LookupService.getInstance().get(toLong(data.get("announcementTypeId")));
 				if(announcementType!=null) obj.setAnnouncementType(announcementType);
 			} catch (Exception e) {
+				e.printStackTrace();
 				errors.add("error.invalid.announcemenType");
 			}
 		}
@@ -172,15 +173,15 @@ public class AnnouncementManager extends BaseUtil {
 		}
 	}
 	
-	private static boolean blastEmail(Announcement ann) {
+	private static boolean blastEmail(Announcement ann,List<File> attachments) {
 //		String message=ApplicationFactory.applyTemplate(emailContext, emailTemplate)
 //		String subject="Announcement Blast ";
 		ann.getAnnouncementType();
 		String message=ann.getContent();
 		String subject=ann.getSubject();
-		ann.getCreatedBy();
-		ann.getCreatedDate();
-		ann.getStatus();
+//		ann.getCreatedBy();
+//		ann.getCreatedDate();
+//		ann.getStatus();
 		List<String> toAddress=new LinkedList<String>();
 		if(!nvl(ann.getTargetOrganizations())){
 			String[] orgArr=ann.getTargetOrganizations().split("\\|");
@@ -225,14 +226,14 @@ public class AnnouncementManager extends BaseUtil {
 		}
 		String from="";
 		try {
-			User sender=UserService.getInstance().getBy("user.loginName='"+ann.getCreatedBy()+"' ");
+			User sender=UserService.getInstance().getBy(" AND user.loginName='"+ann.getCreatedBy()+"' ");
 			from=sender.getEmail();
-			EmailManager.sendMail(from, toAddress, subject, message);
+			EmailManager.sendMail(from, toAddress, subject, message,attachments);
 			
 		} catch (Exception e) {
 			log.error("Error populate toAddress through Announcement targetUsers",e);
 		}
-	
+		clearTempFile(attachments);
 		return false;
 	}
 	

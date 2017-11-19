@@ -163,10 +163,29 @@ public class TopicController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/follow ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.subscribe(iPass, objId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+	
+	@RequestMapping(value = "{ID}/followers",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getSubscriberList(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String objId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/topic/"+objId+"/followers ="+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",TopicManager.getSubscriberList(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -182,8 +201,8 @@ public class TopicController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/unfollow ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.unSubscribe(iPass, objId));
 			return reply(response);  
@@ -201,8 +220,8 @@ public class TopicController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/like ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.like(iPass, objId));
 			return reply(response);  
@@ -220,6 +239,7 @@ public class TopicController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/topic/"+objId+"/unLike ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.unLike(iPass, objId));

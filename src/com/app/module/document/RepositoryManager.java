@@ -16,6 +16,7 @@ import org.apache.struts.taglib.tiles.GetTag;
 import org.bson.Document;
 import org.json.HTTP;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -105,13 +106,13 @@ public class RepositoryManager extends BaseUtil{
 //		return null;
 	}
 	
-	public static ResponseEntity<String> downloadFile(String fileId) {
+	public static ResponseEntity<Resource> downloadFile(String fileId) {
 		RestTemplate restTemplate = new RestTemplate();
 		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&action=download&fileid="+fileId;
 		//String servicePath="/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId
 		//return restExchange(null, servicePath, HttpMethod.GET, null, ContentType);
 		System.out.println("====>>>>"+REPO_BASE_URL +servicePath);
-		return restTemplate.getForEntity(REPO_BASE_URL +servicePath ,String.class);
+		return restTemplate.getForEntity(REPO_BASE_URL +servicePath ,Resource.class);
 //		System.out.println("HTTPStatus:"+response.getStatusCode());
 		//System.out.println(response.getBody());
 //		return response;

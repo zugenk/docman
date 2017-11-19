@@ -174,9 +174,13 @@ public class TopicManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
-	public static List<Document> getSubscriberList(Topic topic) {
+	public static List<Document> getSubscriberList(Document passport,String objId) throws Exception{
+		log.debug("Get SubscriberList from topic["+objId+"] by "+passport.getString("loginName"));
+		Topic obj=TopicService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "subscriberList", toDocument(obj));
 		List<Document> subscriberList=new LinkedList<Document>();
-		for (Iterator<User> iterator = topic.getSubscribers().iterator(); iterator.hasNext();) {
+		for (Iterator<User> iterator = obj.getSubscribers().iterator(); iterator.hasNext();) {
 			User user = iterator.next();
 			subscriberList.add(UserManager.toSimpleDoc(user));
 		}
@@ -313,9 +317,9 @@ public class TopicManager extends BaseUtil{
 			doc.append("status", obj.getStatus().getName());
 			doc.append("statusId", obj.getStatus().getId());
 		}
-		if(obj.getSubscribers()!=null) {
-			doc.append("subscribers", getSubscriberList(obj));
-		}
+//		if(obj.getSubscribers()!=null) {
+//			doc.append("subscribers", getSubscriberList(obj));
+//		}
 		return doc;
 	}
 	

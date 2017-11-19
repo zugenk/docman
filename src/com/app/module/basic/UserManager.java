@@ -35,7 +35,6 @@ public class UserManager extends BaseUtil{
 		obj.setCreatedDate(new Date());
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
 		obj.setLoginName((String) data.get("loginName"));
-		//obj.setLoginPassword(ApplicationFactory.encrypt((String) data.get("loginPassword")));
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj,errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
@@ -59,7 +58,6 @@ public class UserManager extends BaseUtil{
 	}
 	
 	public static Document updateMe(Document passport,Map data) throws Exception{
-		//log.debug("Update User profile :/n/r"+Utility.debug(data)+" by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
@@ -67,15 +65,12 @@ public class UserManager extends BaseUtil{
 		updateFromMap(obj,data,errors) ;
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		//obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		UserService.getInstance().update(obj);
 		return toDocument(obj);
 	}
 	
 	public static Document chgMyPwd(Document passport,Map data) throws Exception{
-//		log.trace("Update MyPassword "+Utility.debug(data)+" by "+passport.getString("loginName"));
-//		log.debug("Update MyPassword  by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
@@ -95,8 +90,6 @@ public class UserManager extends BaseUtil{
 	}
 	
 	public static List myFavTopics(Document passport) throws Exception{
-//		log.debug("Update MyPassword  by "+passport.getString("loginName"));
-//		if (!isAdmin(passport);
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFavTopics", toDocument(obj));
@@ -104,8 +97,6 @@ public class UserManager extends BaseUtil{
 	}
 	
 	public static Document myself(Document passport) throws Exception{
-		//log.debug("Detail of myself  by "+passport.getString("loginName"));
-		//List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myself", toDocument(obj));
@@ -113,8 +104,6 @@ public class UserManager extends BaseUtil{
 	}
 	
 	public static Document resetPassword(Document passport,String objId) throws Exception{
-		//log.debug("Reset MyPassword  by "+passport.getString("loginName"));
-		//List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(toLong(objId)); //passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj));
@@ -158,9 +147,6 @@ public class UserManager extends BaseUtil{
 }
 	
 	public static void delete(Document passport,String objId) throws Exception {
-//		log.debug("Deleting User["+objId+" by "+passport.getString("loginName"));
-//		if (!isAdmin(passport);
-	//	long usrId= Long.parseLong(objId);
 		User obj=UserService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DELETE, null, toDocument(obj));
@@ -171,8 +157,6 @@ public class UserManager extends BaseUtil{
 	}
 
 	public static Document detail(Document passport,String objId) throws Exception {
-		//log.debug("Detail User["+objId+" "+passport.getString("loginName"));
-		//long usrId= Long.parseLong(objId);
 		User obj=UserService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, null, toDocument(obj));

@@ -1,5 +1,6 @@
 package com.app.module.basic;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Base64;
 import java.util.Date;
@@ -43,6 +44,7 @@ public class BaseUtil {
 	public static String REPO_API_KEY="c02ae64c-fd69-42eb-975b-0a3607c388a7";
 	public static Map<String, Document> REPO_FOLDER_MAP=new HashMap<>(); 
 	public static String REPO_ROOT_FOLDER_ID=null;
+	public static String TEMP_FILE_PREFIX="DocMan_";
 	
 	
 	static String IPASSPORT_COLLECTION="IPassportData";
@@ -100,8 +102,8 @@ public class BaseUtil {
 		if(obj==null) return 0;
 		if(obj instanceof Long) return (Long) obj; 
 		if(obj instanceof Integer) return new Long((Integer) obj);
+		if(obj instanceof Double) return ((Double) obj).longValue();
 		if(obj instanceof String)  return Long.parseLong((String) obj);
-//		throw new Exception("Expecting Long value instead of "+obj.getClass().getName());
 		return Long.parseLong((String) obj);
 	}
 	public static long toLong(Object obj,long x) {
@@ -109,6 +111,7 @@ public class BaseUtil {
 			if(obj==null) return x;
 			if(obj instanceof Long) return (Long) obj; 
 			if(obj instanceof Integer) return new Long((Integer) obj);
+			if(obj instanceof Double) return ((Double) obj).longValue();
 			if(obj instanceof String)  return Long.parseLong((String) obj);
 			return Long.parseLong((String) obj);
 		}catch(Exception ex){
@@ -280,6 +283,30 @@ public class BaseUtil {
 	
 	public static String genRandomText(int len) {
 		return RandomStringUtils.randomAlphanumeric(len);
+	}
+	
+	
+	public static void clearTempFile(List<File> attachments){
+		for (Iterator iterator = attachments.iterator(); iterator.hasNext();) {
+			File file = (File) iterator.next();
+			if(file.exists()) file.delete();
+		}
+	}
+	
+	public static void main(String[] args) {
+		File f=null;
+		try {
+			f=File.createTempFile(TEMP_FILE_PREFIX, "original Name.txt");
+			System.out.println("Absolute path "+f.getAbsolutePath());
+			
+			System.out.println(f.getName().substring(TEMP_FILE_PREFIX.length()+19));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if(f!=null && f.exists()) f.delete();
+			System.out.println("Temp File Cleared");
+		}
+		
 	}
 	
 	public static void main2(String[] args) {
