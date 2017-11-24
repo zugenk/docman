@@ -30,7 +30,7 @@ import com.simas.webservice.Utility;
 public class LookupController extends BaseUtil{
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(LookupController.class);
 
-/*	
+	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> create(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
@@ -38,6 +38,7 @@ public class LookupController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/lookup/create ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.create(iPass, dataMap));
@@ -57,6 +58,7 @@ public class LookupController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/lookup/"+objId+"/update ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.update(iPass, dataMap, objId));
@@ -75,9 +77,9 @@ public class LookupController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/lookup/"+objId+"/delete ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-//			response.put("result",LookupManager.delete(iPass, objId));
 			LookupManager.delete(iPass, objId);
 			return reply(response);  
 			
@@ -86,9 +88,9 @@ public class LookupController extends BaseUtil{
 		}
 		return reply(response);  
 	}
-	*/
+	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> read(
+	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String objId) {
@@ -97,7 +99,7 @@ public class LookupController extends BaseUtil{
 			log.trace("/v1/lookup/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",LookupManager.read(iPass, objId));
+			response.put("result",LookupManager.detail(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -135,15 +137,10 @@ public class LookupController extends BaseUtil{
 		Document response=new Document();
 		try {
 			log.trace("/v1/lookup/list/"+type+" ="+ipassport);
-			log.debug(">>>>>List Lookup by type =["+type+"]");
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			List result=LookupService.getInstance().findbyType(type);
-			//System.out.println(Utility.debug(result));
-			LookupManager.toDocList(result);
-			BaseUtil.putList(response,"result", result);
+			BaseUtil.putList(response,"result", LookupManager.findByType(iPass, type));
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 			log.error("Error getting Lookup list by type ",e);
@@ -153,17 +150,17 @@ public class LookupController extends BaseUtil{
 	}
 	
 	@RequestMapping(value = "/{type}/{code}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> getByTypeandCode(
+	public @ResponseBody ResponseEntity<Document> getByTypeAndCode(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="type") String type,
 			@PathVariable(value="code") String code) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/lookup/list/"+type+"/"+code+" ="+ipassport);
+			log.trace("/v1/lookup/"+type+"/"+code+" ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",LookupManager.toDocument(LookupService.getInstance().getByTypeandCode(type, code)));
+			response.put("result",LookupManager.getByTypeAndCode(iPass, type, code));
 			return reply(response);  
 			
 		} catch (Exception e) {

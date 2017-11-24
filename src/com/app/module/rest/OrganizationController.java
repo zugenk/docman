@@ -39,7 +39,7 @@ public class OrganizationController  extends BaseUtil{
 			log.trace("/v1/organization/tree ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",OrganizationManager.getTree(null));
+			response.put("result",OrganizationManager.getTree(iPass,null));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -57,7 +57,7 @@ public class OrganizationController  extends BaseUtil{
 			log.trace("/v1/organization/"+startId+"/tree ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",OrganizationManager.getTree(startId));
+			response.put("result",OrganizationManager.getTree(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -75,7 +75,7 @@ public class OrganizationController  extends BaseUtil{
 			log.trace("/v1/organization/"+startId+"/fullTree ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",OrganizationManager.getFullTree(startId));
+			response.put("result",OrganizationManager.getFullTree(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -95,7 +95,7 @@ public class OrganizationController  extends BaseUtil{
 			log.trace("/v1/organization/"+startId+"/downline ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",OrganizationManager.getDownline(startId));
+			response.put("result",OrganizationManager.getDownline(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -113,7 +113,7 @@ public class OrganizationController  extends BaseUtil{
 			log.trace("/v1/organization/"+startId+"/upline ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",OrganizationManager.getUpline(startId));
+			response.put("result",OrganizationManager.getUpline(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -180,7 +180,7 @@ public class OrganizationController  extends BaseUtil{
 	}
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> read(
+	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String objId) {
@@ -189,7 +189,7 @@ public class OrganizationController  extends BaseUtil{
 			log.trace("/v1/organization/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",OrganizationManager.read(iPass, objId));
+			response.put("result",OrganizationManager.detail(iPass, objId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());

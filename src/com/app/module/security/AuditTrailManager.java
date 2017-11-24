@@ -111,10 +111,12 @@ public class AuditTrailManager extends BaseUtil{
 			at.setApprovedBy(approvedBy);
 			at.setAuditTime(new Date());
 			at.setDescription(description);
-			at.setDoneBy(passport.getString("loginName"));
-			at.setSessionId(passport.getString("ipassport"));
+			if(passport!=null) {
+				at.setDoneBy(passport.getString("loginName"));
+				at.setSessionId(passport.getString("ipassport"));
+			}else  at.setDoneBy("anonymous");
 			at.setEntity(entity.getString("modelClass"));
-			at.setEntityId(entity.getLong("id"));
+			if(entity.get("id")!=null) at.setEntityId(entity.getLong("id"));
 			log.debug("Audit to "+at.getAction()+" "+at.getEntity()+(at.getEntityId()!=null?"["+at.getEntityId()+"]":"")+
 					" done by"+at.getDoneBy()+":"+ description );
 			AuditTrailService.getInstance().add(at);

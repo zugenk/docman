@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.app.connection.ConnectionFactory;
@@ -144,5 +145,50 @@ public class UserService extends com.app.docmgr.service.base.UserServiceBase{
 		}
 	}   
 
+	public PartialList getPartialJoin(String filterParam, String orderParam, int start, int count) throws Exception{
+		PartialList result = new PartialList();
+		Session session = null;
+		try {
+			String filter = " WHERE user.status.state='active' and ft. ";
+			if(filterParam!=null) filter = filter + filterParam;
+			session = ConnectionFactory.getInstance().getSession();
+			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.User user "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
+			Query query = session.createQuery("SELECT user FROM com.app.docmgr.model.User user join user.favoriteTopics ft "+filter+" ");
+			result.setTotal((Integer) queryCount.list().iterator().next());
+			result.setStart(start);
+			result.setCount(count);
+			query.setFirstResult(start);
+			query.setMaxResults(count);			
+			result.addAll(query.list());	
+			java.util.Iterator itr = result.iterator();
+			while(itr.hasNext()){
+				com.app.docmgr.model.User user = (com.app.docmgr.model.User)itr.next();
+				Hibernate.initialize(user.getRoles());			
+				Hibernate.initialize(user.getFavoriteTopics());			
+				Hibernate.initialize(user.getUserLevel());			
+				Hibernate.initialize(user.getPosition());			
+				Hibernate.initialize(user.getStatus());			
+				Hibernate.initialize(user.getOrganization());			
+				Hibernate.initialize(user.getSecurityLevel());	              
+			    Hibernate.initialize(user.getFavoriteTopics());     
+				
+			}			
+		} catch(HibernateException he) {
+			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
+			throw new Exception(he);
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch(Exception e) {
+					System.out.println("Exception: " + this.getClass().getName() + ".getPartialList() \n" + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		}		
+		
+		return result;
+	}
 	
 }

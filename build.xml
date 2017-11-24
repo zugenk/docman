@@ -429,15 +429,16 @@
 		description="Generate WAR deploy package">	
 		<echo message="Generate WAR deploy package"/>
 		<jar jarfile="${release}/${ant.project.name}.jar" basedir="${bin}"/>
+		<copy file="${release}/${ant.project.name}.jar" tofile="${web}/WEB-INF/lib/${ant.project.name}.jar" overwrite="true" />
 		<war destfile="${release}/${ant.project.name}.war">
 		  	<fileset dir="${web}">
 		  		<exclude name="WEB-INF/classes/"/>
 		  		<exclude name="WEB-INF/db/"/>
 		  		<exclude name="WEB-INF/jsp-ext/"/>
-		  		<exclude name="WEB-INF/lib/${ant.project.name}.jar"/>
+		  		<!--exclude name="WEB-INF/lib/${ant.project.name}.jar"/-->
 			</fileset>
-			
 		</war>
+		<delete file="${web}/WEB-INF/lib/${ant.project.name}.jar" />
 	</target>
 	
 	<target name="release.jar" depends="compile" description="Packaging Project Jar" >

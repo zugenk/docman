@@ -38,7 +38,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class DocumentManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(DocumentManager.class);
-	private static String ACL_MODE="PUBLIC";
+	private static String ACL_MODE="DOCUMENT";
 
 	public static PartialList getDocumentList(int start){
 		PartialList resultList=null;
@@ -53,6 +53,10 @@ public class DocumentManager extends BaseUtil {
 		return resultList;
 	}
 	
+	public static List getTree(org.bson.Document passport,String startId) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getFullTree("+startId+")", new org.bson.Document("modelClass","Document"));
+		return getTree(startId);
+	}
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
 	   " SELECT document.id as id, document.document_number,document.repository_id,document.name,document.id||'' as tree, COALESCE(document.parent,0) as parent, 0 AS level FROM document "+
@@ -67,7 +71,10 @@ public class DocumentManager extends BaseUtil {
 	}	
 	
 
-
+	public static List getDownline(org.bson.Document passport,String startId) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getDownline("+startId+")", new org.bson.Document("modelClass","Document"));
+		return getDownline(startId);
+	}
 	public static List getDownline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT document.id,  document.document_number,document.repository_id, document.name, document.parent, 1 as level FROM document"+
 		  " WHERE document.id='"+startId+"' "+
@@ -80,6 +87,10 @@ public class DocumentManager extends BaseUtil {
 		return list;
 	}	
 
+	public static List getUpline(org.bson.Document passport,String startId) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getUpline("+startId+")", new org.bson.Document("modelClass","Document"));
+		return getUpline(startId);
+	}
 	public static List getUpline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT document.id, document.document_number,document.repository_id, document.name, document.parent, 1 as level FROM document"+
 		  " WHERE document.id='"+startId+"' "+
@@ -92,6 +103,10 @@ public class DocumentManager extends BaseUtil {
 		return list;
 	}	
 	
+	public static List getFullTree(org.bson.Document passport,String startId) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getFullTree("+startId+")", new org.bson.Document("modelClass","Document"));
+		return getFullTree(startId);
+	}
 	public static List getFullTree(String startId) throws Exception {
 		List upList=getUpline(startId);
 		if (upList.isEmpty()) return upList;
@@ -156,13 +171,14 @@ public class DocumentManager extends BaseUtil {
 	}
 	
 	public static List list(org.bson.Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new org.bson.Document("modelClass","Document"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -182,26 +198,42 @@ public class DocumentManager extends BaseUtil {
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=DocumentService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toSimpleDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=DocumentService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
-			toDocList(result);
+			toSimpleDocList(result);
 			return result;
 		}	
 		PartialList result=DocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
-		toDocList(result);
+		toSimpleDocList(result);
 		return result;
 	}
 	
-	public static PartialList myList(org.bson.Document passport,int start) throws Exception{
-		return ownBy(passport, passport.getLong("userId"),start);
+	public static PartialList myList(org.bson.Document passport,String start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "myList", new org.bson.Document("modelClass","Document"));
+		//return ownBy(passport, passport.getLong("userId"),start);
+		PartialList result=ownBy(passport.getLong("userId"), toInt(start,defaulStart));
+		toSimpleDocList(result);
+		return result;
 	}
 	
-	public static PartialList ownBy(org.bson.Document passport,long userId,int start) throws Exception{
+	public static PartialList ownBy(org.bson.Document passport,long userId,String start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new org.bson.Document("modelClass","Document"));
+		PartialList result=ownBy(userId, toInt(start,defaulStart));
+		toSimpleDocList(result);
+		return result;
+	}
+	public static PartialList ownBy(long userId,int start) throws Exception{
 		String filterParam=" AND document.owner.id='"+userId+"' ";
 		String orderParam=" document.contentType ASC, document.name ASC ";
-		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
-		toDocList(result);
-		return result;
+//		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
+//		toDocList(result);
+//		return result;
+		return DocumentService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
 	}
 	
 	public static org.bson.Document getByRepoId(org.bson.Document passport, String fileId) throws Exception{
@@ -379,6 +411,41 @@ public class DocumentManager extends BaseUtil {
 		return doc;
 	}
 	
+	public static org.bson.Document toSimpleDocument(Document obj) {
+		org.bson.Document doc=new org.bson.Document();
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
+//		doc.append("contentType", obj.getContentType());
+//		doc.append("description", obj.getDescription());
+//		doc.append("documentNumber", obj.getDocumentNumber());
+//		doc.append("documentType", obj.getDocumentType());
+//		doc.append("documentVersion", obj.getDocumentVersion());
+//		doc.append("repositoryId", obj.getRepositoryId());
+//		doc.append("priority", obj.getPriority());
+		doc.append("name", obj.getName());
+		if(obj.getOwner()!=null) {
+			doc.append("owner", obj.getOwner().getLoginName());
+			doc.append("ownerId", obj.getOwner().getId());
+		}
+//		if(obj.getParent()!=null) {
+//			doc.append("parent", obj.getParent().getName());
+//			doc.append("parentId", obj.getParent().getId());
+//		}
+//		if(obj.getFolder()!=null) {
+//			doc.append("folder", obj.getFolder().getName());
+//			doc.append("folderId", obj.getFolder().getId());
+//		}
+		if(obj.getSecurityLevel()!=null){
+			doc.append("securityLevel", obj.getSecurityLevel().getName());
+			doc.append("securityLevelId", obj.getSecurityLevel().getId());
+		}
+//		if(obj.getStatus()!=null){
+//			doc.append("status", obj.getStatus().getName());
+//			doc.append("statusId", obj.getStatus().getId());
+//		}
+		return doc;
+	}
 	public static void toDocList(List list){
 		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 		if(list.isEmpty()) return;
@@ -387,6 +454,15 @@ public class DocumentManager extends BaseUtil {
 			list.set(i, toDocument(obj));
 		}
 	}
+	public static void toSimpleDocList(List list){
+		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+		if(list.isEmpty()) return;
+		for (int i = 0; i < list.size(); i++) {
+			Document obj = (Document) list.get(i);
+			list.set(i, toSimpleDocument(obj));
+		}
+	}
+	
 	public static void checkValidity(Document obj,List errors) {
 		if (obj.getOwner()==null) errors.add("error.owner.null");
 	}

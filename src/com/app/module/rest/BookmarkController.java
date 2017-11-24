@@ -137,7 +137,7 @@ public class BookmarkController  extends BaseUtil{
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug(" My Bookmark list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", BookmarkManager.listByOwner(iPass,BaseUtil.toInt(start)));
+			BaseUtil.putList(response,"result", BookmarkManager.listByOwner(iPass,start));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());

@@ -17,6 +17,7 @@ import com.app.docmgr.model.User;
 import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.StatusService;
+import com.app.docmgr.service.TopicService;
 import com.app.docmgr.service.UserService;
 import com.app.module.forum.TopicManager;
 import com.app.shared.ApplicationFactory;
@@ -96,6 +97,15 @@ public class UserManager extends BaseUtil{
 		return TopicManager.toDocList((Set<Topic>) obj.getFavoriteTopics());
 	}
 	
+	public static List myFollTopics(Document passport) throws Exception{
+		User obj= UserService.getInstance().get(passport.getLong("userId"));
+		if (obj==null) throw new Exception("error.object.notfound");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFollTopics", toDocument(obj));
+		List<Topic> result=TopicService.getInstance().getList(" AND topic.subscribers.id='"+passport.getLong("userId")+"' ", null);
+		TopicManager.toDocList(result);
+		return result;
+	}
+	
 	public static Document myself(Document passport) throws Exception{
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
@@ -103,7 +113,7 @@ public class UserManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
-	public static Document resetPassword(Document passport,String objId) throws Exception{
+	public static Document resetMyPassword(Document passport,String objId) throws Exception{
 		User obj= UserService.getInstance().get(toLong(objId)); //passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj));
@@ -114,9 +124,9 @@ public class UserManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
-	public static Document resetPassword(Document data) throws Exception{
+	public static Document resetPassword(Map data) throws Exception{
 		if(nvl(data.get("loginName"))) throw new Exception("error.loginName.invalid");
-		User obj= UserService.getInstance().getBy(" AND user.loginName='"+ data.getString("loginName")+"'  AND user.email='"+ data.getString("email")+"' "); 
+		User obj= UserService.getInstance().getBy(" AND user.loginName='"+ data.get("loginName")+"'  AND user.email='"+ data.get("email")+"' "); 
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(null,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj));
 		obj.setLastUpdatedBy("SYSTEM");
@@ -143,7 +153,7 @@ public class UserManager extends BaseUtil{
 	String from=ApplicationFactory.getCustomerServiceEmail();
 	List<String> toAddress=new LinkedList<>();
 	toAddress.add(user.getEmail());
-	EmailManager.sendMail(from, toAddress, subject, message);
+	ApplicationFactory.sendMail(from, toAddress, subject, message);
 }
 	
 	public static void delete(Document passport,String objId) throws Exception {
@@ -164,13 +174,14 @@ public class UserManager extends BaseUtil{
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","User"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
+		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),1);
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -327,9 +338,16 @@ public class UserManager extends BaseUtil{
 			doc.append("position", obj.getPosition().getName());
 			doc.append("positionId", obj.getPosition().getId());
 		}
+		if(obj.getOrganization()!=null) {
+			doc.append("organization", obj.getOrganization().getName());
+			doc.append("organizationId", obj.getOrganization().getId());
+		}
 		if(obj.getSecurityLevel()!=null){
 			doc.append("securityLevel", obj.getSecurityLevel().getName());
 			doc.append("securityLevelId", obj.getSecurityLevel().getId());
+		} if (!nvl(obj.getOrganization()) && !nvl(obj.getOrganization().getSecurityLevel())){
+			doc.append("securityLevel", obj.getOrganization().getSecurityLevel().getName());
+			doc.append("securityLevelId", obj.getOrganization().getSecurityLevel().getId());
 		}
 		if (obj.getUserLevel()!=null) {
 			doc.append("userLevel", obj.getUserLevel().getName());

@@ -1,11 +1,9 @@
 package com.app.module.rest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,18 +11,108 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.forum.MessageManager;
 import com.simas.webservice.Utility;
-//import com.app.module.forum.ForumManager;
 
 @Controller
 @RequestMapping("/v1/message")
 public class MessageController  extends BaseUtil{
 	private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(MessageController.class);
+	/*
+	@RequestMapping(value = "tree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/message/tree = "+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",MessageManager.getTree(iPass,null));
+			return reply(response); 
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response); 
+	} */
+	
+	@RequestMapping(value = "{ID}/tree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/message/"+startId+"/tree = "+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",MessageManager.getTree(iPass,startId));
+			return reply(response); 
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response); 
+	}
+	
+	@RequestMapping(value = "{ID}/fullTree",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getFullTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/message/"+startId+"/fullTree = "+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",MessageManager.getFullTree(iPass,startId));
+			return reply(response); 
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response); 
+	}
+	
+	@RequestMapping(value = "{ID}/downline",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getDownline(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId
+			) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/message/"+startId+"/downline = "+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",MessageManager.getDownline(iPass,startId));
+			return reply(response); 
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response); 
+	}
+	
+	@RequestMapping(value = "{ID}/upline",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> getUpline(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/message/"+startId+"/upline = "+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",MessageManager.getUpline(iPass,startId));
+			return reply(response); 
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response); 
+	}
 	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> create(
@@ -112,6 +200,25 @@ public class MessageController  extends BaseUtil{
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", MessageManager.list(iPass, dataMap));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+	
+	@RequestMapping(value = "list/{topicId}",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> listByTopic(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="topicId") String topicId,
+			@RequestParam(value="start",defaultValue="1") String start) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/message/list/"+topicId+"="+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", MessageManager.listByTopic(iPass, toLong(topicId),start));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());

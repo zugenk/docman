@@ -29,6 +29,10 @@ public class OrganizationManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(OrganizationManager.class);
 	private static String ACL_MODE="SYSTEM";
 	
+	public static List<Map> getTree(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getTree("+startId+")", new Document("modelClass","Organization"));
+		return getTree( startId);
+	}
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
 	   " SELECT organization.id as id, organization.code,organization.name,organization.id||'' as tree, COALESCE(organization.parent,0) as parent, 0 AS level FROM organization "+
@@ -43,7 +47,10 @@ public class OrganizationManager extends BaseUtil {
 	}	
 	
 
-
+	public static List<Map> getDownline(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getDownline("+startId+")", new Document("modelClass","Organization"));
+		return getDownline( startId);
+	}
 	public static List getDownline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT organization.id, organization.code,organization.name, organization.parent, 1 as level FROM organization"+
 		  " WHERE organization.id='"+startId+"' "+
@@ -56,6 +63,11 @@ public class OrganizationManager extends BaseUtil {
 		return list;
 	}	
 
+	public static List getUpline(Document passport,String startId) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getUpline("+startId+")", new Document("modelClass","Organization"));
+		return getUpline(startId);
+	}
+	
 	public static List getUpline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT organization.id, organization.code,organization.name, organization.parent, 1 as level FROM organization"+
 		  " WHERE organization.id='"+startId+"' "+
@@ -68,6 +80,10 @@ public class OrganizationManager extends BaseUtil {
 		return list;
 	}	
 	
+	public static List getFullTree(Document passport,String startId) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getFullTree("+startId+")", new Document("modelClass","Organization"));
+		return getFullTree(startId);
+	}
 	public static List getFullTree(String startId) throws Exception {
 		List upList=getUpline(startId);
 		if (upList.isEmpty()) return upList;
@@ -117,7 +133,7 @@ public class OrganizationManager extends BaseUtil {
 		OrganizationService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String objId) throws Exception {
+	public static Document detail(Document passport,String objId) throws Exception {
 		log.debug("Read organization["+objId+" "+passport.getString("loginName"));
 		Organization obj=OrganizationService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
@@ -126,13 +142,14 @@ public class OrganizationManager extends BaseUtil {
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Organization"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
+		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),1);
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");

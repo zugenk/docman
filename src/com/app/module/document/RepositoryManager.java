@@ -106,9 +106,10 @@ public class RepositoryManager extends BaseUtil{
 //		return null;
 	}
 	
-	public static ResponseEntity<Resource> downloadFile(String fileId) {
+	public static ResponseEntity<Resource> downloadFile(String fileId,String mode) {
 		RestTemplate restTemplate = new RestTemplate();
 		String servicePath="/file/ajax_file_operation?api_key="+REPO_API_KEY+"&action=download&fileid="+fileId;
+		if (!nvl(mode) && !"inline".equals(mode))servicePath+="&disposition_type=attachment";//+mode;
 		//String servicePath="/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId
 		//return restExchange(null, servicePath, HttpMethod.GET, null, ContentType);
 		System.out.println("====>>>>"+REPO_BASE_URL +servicePath);
@@ -255,7 +256,7 @@ public class RepositoryManager extends BaseUtil{
 	
 	public static void main(String[] args) {
 		try {
-			RepositoryManager.downloadFile("f4272d4d-6381-419b-b47e-665941f6eda6");//f5616c4d-94fc-42ca-b5f6-72b369bf2573");
+			RepositoryManager.downloadFile("f4272d4d-6381-419b-b47e-665941f6eda6",null);//f5616c4d-94fc-42ca-b5f6-72b369bf2573");
 //			DocumentManager.getRepoFolder(null, "MOVIE");
 		} catch (Exception e) {
 			e.printStackTrace();

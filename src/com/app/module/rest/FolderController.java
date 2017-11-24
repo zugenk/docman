@@ -35,7 +35,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			log.trace("/v1/folder/tree = "+ipassport);			
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",FolderManager.getTree(null));
+			response.put("result",FolderManager.getTree(iPass,null));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -53,7 +53,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			log.trace("/v1/folder/"+startId+"/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",FolderManager.getTree(startId));
+			response.put("result",FolderManager.getTree(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -71,7 +71,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			log.trace("/v1/folder/"+startId+"/fullTree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",FolderManager.getFullTree(startId));
+			response.put("result",FolderManager.getFullTree(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -90,7 +90,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			log.trace("/v1/folder/"+startId+"/downline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",FolderManager.getDownline(startId));
+			response.put("result",FolderManager.getDownline(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -108,7 +108,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			log.trace("/v1/folder/"+startId+"/upline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",FolderManager.getUpline(startId));
+			response.put("result",FolderManager.getUpline(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());

@@ -88,14 +88,15 @@ public class BookmarkManager extends BaseUtil{
 	public static List list(Document passport,Map data) throws Exception{
 //		log.debug("List/Search Bookmark by "+passport.getString("loginName"));
 //		log.trace("data="+Utility.debug(data));
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Bookmark"));
 		String filterParam=null;
 		if("PRIVATE".equals(ACL_MODE) && !isAdmin(passport)) filterParam+=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
-		int start=0;
+		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),1);
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -129,11 +130,12 @@ public class BookmarkManager extends BaseUtil{
 		return result;
 	}
 	
-	public static PartialList listByOwner(Document passport,int start) throws Exception{
+	public static PartialList listByOwner(Document passport,String start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "listByOwner", new Document("modelClass","Bookmark"));
 		log.debug("ListByOwner Bookmark by "+passport.getString("loginName"));
 		String filterParam=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=" bookmark.category ASC, bookmark.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, toInt(start,defaulStart), ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -197,7 +199,7 @@ public class BookmarkManager extends BaseUtil{
 	}
 	
 	public static void checkValidity(Bookmark obj,List errors) {
-		if (obj.getBookmarkType()==null) errors.add("error.bookmarkType.null");
+		//if (obj.getBookmarkType()==null) errors.add("error.bookmarkType.null");
 		if (obj.getUrl()==null) errors.add("error.url.null");
 		if (obj.getOwner()==null) errors.add("error.owner.null");
 		if (obj.getName()==null) errors.add("error.name.null");

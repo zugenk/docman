@@ -39,8 +39,8 @@ public class AnnouncementController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> create(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@RequestParam("data") String data,
-			@RequestParam("files") MultipartFile[] files,
+			@RequestParam(value="data", defaultValue="{}") String data,
+			@RequestParam(value="files", required = false) MultipartFile[] files,
             RedirectAttributes redirectAttributes) {
 		Document response=new Document();
 		try {
@@ -49,16 +49,18 @@ public class AnnouncementController extends BaseUtil{
 			Document dataMap=gson.fromJson(data,Document.class);
 			System.out.println("DataMap="+Utility.debug(dataMap));
 			List<File> attachments=new LinkedList<File>();
-			File f; String fname; MultipartFile mf;
-			for (int i = 0; i < files.length; i++) {
-				if(!files[i].isEmpty()){
-					mf=files[i];
-					fname=mf.getOriginalFilename();
-					System.out.println(files[i].getOriginalFilename());
-					response.append("attachment_"+i, files[i].getOriginalFilename());
-					f=File.createTempFile(TEMP_FILE_PREFIX, fname);
-					Files.write(Paths.get(f.getAbsolutePath()), mf.getBytes());
-					attachments.add(f);
+			if(files!=null && files.length>0) {
+				File f; String fname; MultipartFile mf;
+				for (int i = 0; i < files.length; i++) {
+					if(!files[i].isEmpty()){
+						mf=files[i];
+						fname=mf.getOriginalFilename();
+						System.out.println(files[i].getOriginalFilename());
+						response.append("attachment_"+i, files[i].getOriginalFilename());
+						f=File.createTempFile(TEMP_FILE_PREFIX, fname);
+						Files.write(Paths.get(f.getAbsolutePath()), mf.getBytes());
+						attachments.add(f);
+					}
 				}
 			}
 			log.trace("/v1/announcement/create ="+ipassport+" dataMap="+Utility.debug(dataMap));
@@ -66,8 +68,8 @@ public class AnnouncementController extends BaseUtil{
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",AnnouncementManager.create(iPass, dataMap,attachments));
 			return reply(response); 
-			
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.put("errorMessage", e.getMessage());
 		}
 		return reply(response);  

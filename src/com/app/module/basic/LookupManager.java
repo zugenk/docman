@@ -30,7 +30,6 @@ public class LookupManager extends BaseUtil{
 		log.debug("Creating Lookup : "+Utility.debug(data)+" by "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		Lookup obj= new Lookup();
-						
 		updateFromMap(obj, data,errors);
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Lookup", "new"));
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
@@ -62,7 +61,7 @@ public class LookupManager extends BaseUtil{
 		LookupService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String objId) throws Exception {
+	public static Document detail(Document passport,String objId) throws Exception {
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		long usrId= Long.parseLong(objId);
 		Lookup obj=LookupService.getInstance().get(usrId);
@@ -72,13 +71,14 @@ public class LookupManager extends BaseUtil{
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Lookup"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
+		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),1);
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -111,6 +111,17 @@ public class LookupManager extends BaseUtil{
 		PartialList result=LookupService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
+	}
+	
+	public static List findByType(Document passport, String type) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "byType", new Document("modelClass","Lookup"));
+		List result=LookupService.getInstance().findbyType(type);
+		LookupManager.toDocList(result);
+		return result;
+	}
+	public static Document getByTypeAndCode(Document passport, String type, String code) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "byTypeAndCode", new Document("modelClass","Lookup"));
+		return toDocument(LookupService.getInstance().getByTypeandCode(type, code));
 	}
 	
 	private static void updateFromMap(Lookup obj, Map data,List<String> errors) {

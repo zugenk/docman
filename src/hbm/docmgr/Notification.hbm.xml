@@ -19,7 +19,7 @@
 			name="notificationType"
 			column="notification_type"
 			class="com.app.docmgr.model.Lookup"
-			not-null="true"
+			not-null="false"
 		>
 		</many-to-one>
 		<many-to-one

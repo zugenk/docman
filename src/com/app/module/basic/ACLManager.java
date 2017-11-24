@@ -133,6 +133,19 @@ public class ACLManager extends BaseUtil{
 //	}
 //	
 	public static boolean isAuthorize(Document passport,String aclMode, String action, String subAction, Document entity) throws Exception{
+		String description=null;
+		String approvedBy=null;
+		if(passport==null) {
+			if("resetPassword".equals(subAction) && "User".equals(entity.getString("modelClass")) && "update".equals(action)){
+				description="Authorize anonymous reset Password ";
+				AuditTrailManager.auditLog(null,action+(subAction!=null?":"+subAction:""),entity,description, approvedBy);
+				return true;
+			}
+			description="UnAuthorize anonymous access ";
+			AuditTrailManager.auditLog(null,action+(subAction!=null?":"+subAction:""),entity,description, approvedBy);
+			throw new Exception("error.forbidden");
+			
+		}
 		String loginUserName= passport.getString("loginName");
 		String loginUserLevel= passport.getString("userLevel");
 		Long loginUserOrgId=passport.getLong("organizationId");
@@ -140,8 +153,8 @@ public class ACLManager extends BaseUtil{
 		String createdBy=entity.getString("createdBy");
 		
 		Long ownerId=new Long(0);
-		String approvedBy=null;
-		String description=null;
+		
+		
 		ownerId=toLong(entity.get("ownerId"),0);
 		boolean isOwner=(ownerId>0?loginUserId==ownerId: loginUserName.equals(createdBy));
 		boolean isAdmin="admin".equals(loginUserLevel);
@@ -150,7 +163,12 @@ public class ACLManager extends BaseUtil{
 			if (isAdmin) {
 				description="Authorized as Admin";
 				return true;
-			} 
+			}
+			if("SystemParameter".equals(entity.getString("modelClass"))) {
+				description="UnAuthorize action "+action+" on SystemParameter Resource";
+				throw new Exception("error.forbidden");
+			}
+			
 			if("Topic".equals(entity.getString("modelClass")) && "update".equals(action)  &&  subAction!=null){
 				description="No Restriction to "+subAction+" to/from Topic Resource";
 				return true;
@@ -195,7 +213,13 @@ public class ACLManager extends BaseUtil{
 				throw new Exception("error.forbidden");
 			}
 
+//			if ("DOCUMENT".equals(aclMode)){
 			if ("Document".equals(entity.getString("modelClass"))){
+				if ("list|search".contains(action)){
+					description="Limited list/search to Document";
+					return true;
+				}
+				
 				String docSecurityLvl=entity.getString("securityLevel");
 				if(docSecurityLvl==null ||"public".equals(docSecurityLvl)){
 					if ("update|delete".contains(action)) {
@@ -231,7 +255,7 @@ public class ACLManager extends BaseUtil{
 						throw new Exception("error.forbidden");
 					}
 					if ("list|search".contains(action)){
-						description="Restricted list/search to selfOwn Document";
+						description="Restricted list/search to selfOwned Document";
 						throw new Exception("error.forbidden");
 					}
 					

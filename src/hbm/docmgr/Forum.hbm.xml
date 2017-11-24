@@ -53,7 +53,7 @@
 			name="forumType"
 			column="forum_type"
 			class="com.app.docmgr.model.Lookup"
-			not-null="true"
+			not-null="false"
 		>
 		</many-to-one>
 		<property

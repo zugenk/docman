@@ -9,13 +9,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.websocket.MessageHandler.Partial;
+
 import org.hibernate.Session;
 
 import com.app.connection.ConnectionFactory;
 import com.app.docmgr.model.User;
 import com.app.shared.ApplicationFactory;
+import com.app.shared.PartialList;
 
-public class DBQueryManager {
+public class DBQueryManager extends BaseUtil{
 //	static Map<String, PreparedStatement> PS_MAP=new HashMap<String, PreparedStatement>(); 
 //	
 //	private static PreparedStatement getPS(String qName,Connection conn, String sqlQuery) throws Exception {
@@ -75,4 +78,90 @@ public class DBQueryManager {
 			} 	
 		}
 	}   
+	
+	public static PartialList getPartialList(String qName,String sqlQuery,int start,String... params)  throws Exception{
+		Session session = null;
+		PreparedStatement ps;
+		ResultSet rs=null;
+		PartialList resultList=new PartialList();
+		try {
+			//List resultList = new LinkedList();
+			String paging=" offset "+start+" limit "+ITEM_PER_PAGE+" ";
+			session = ConnectionFactory.getInstance().getSession();
+			System.out.println("Executing ["+qName+"] :>> ["+sqlQuery+"] ");
+//			String query; 
+//			if (params!=null && params.length>0) query=ApplicationFactory.mergeParam(sqlQuery,params);
+//			else query= sqlQuery;
+			ps = session.connection().prepareStatement(sqlQuery);			
+			//ps=getPS(qName, session.connection(), sqlQuery);
+			if(params!=null && params.length>0) {
+				for (int i = 0; i < params.length; i++) {
+					ps.setString(i+1, params[i]);
+				}
+			}
+			rs = ps.executeQuery();
+			ResultSetMetaData meta= rs.getMetaData();
+			ps.clearParameters();
+			Map<String, Object> row;
+			String[] keys=new String[meta.getColumnCount()];
+			for (int i = 0; i < keys.length; i++) {
+				keys[i]=meta.getColumnLabel(i+1);
+			}
+			while (rs.next()) { 
+				row=new HashMap<String, Object>();
+				for (int i = 0; i < keys.length; i++) {
+					row.put(keys[i], rs.getObject(i+1));
+				}	
+				resultList.add(row);
+			}
+			return resultList;
+		}catch (Exception e) {
+			System.err.println("Exception" + e.getMessage());
+			throw new RuntimeException(e);
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch (Exception e) {
+				}
+			}
+			if (rs != null) {
+				try {
+					rs.close();
+				}catch (Exception e) {
+				}
+			} 	
+		}
+	}   
+	
+	
+	
+	public static int executeUpdate(String sqlQuery) throws Exception{
+		if (nvl(sqlQuery) && sqlQuery.toLowerCase().startsWith("update ")) throw new Exception("Invalid sql query or not an update query ");
+		Session session = null;
+		PreparedStatement ps=null;
+		try {
+			List resultList = new LinkedList();
+			session = ConnectionFactory.getInstance().getSession();
+			System.out.println("Executing Update query :>> ["+sqlQuery+"] ");
+			ps = session.connection().prepareStatement(sqlQuery);	
+			return ps.executeUpdate();
+		}catch (Exception e) {
+			System.err.println("Exception" + e.getMessage());
+			throw new RuntimeException(e);
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch (Exception e) {
+				}
+			}
+			if (ps != null) {
+				try {
+					ps.close();
+				}catch (Exception e) {
+				}
+			} 	
+		}
+	}
 }

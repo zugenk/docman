@@ -185,7 +185,7 @@ public class UserController extends BaseUtil{
 			log.trace("/v1/user/"+objId+"/rstPwd ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",UserManager.resetPassword(iPass,objId));
+			response.put("result",UserManager.resetMyPassword(iPass,objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -195,13 +195,13 @@ public class UserController extends BaseUtil{
 	}
 	
 	@RequestMapping(value = "resetPwd",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Document> resetMyPasswd(
+	public @ResponseBody ResponseEntity<Document> resetPassword(
 			@RequestHeader(value="apiKey", defaultValue="") String apiKey,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/user/resetPwd dataMap="+Utility.debug(dataMap));
-			response.put("result",UserManager.resetPassword((Document) dataMap));
+			response.put("result",UserManager.resetPassword(dataMap));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -239,6 +239,22 @@ public class UserController extends BaseUtil{
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", UserManager.myFavTopics(iPass));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+	@RequestMapping(value = "/myFollTopics",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> myFollTopics(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/user/myFollTopics ="+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", UserManager.myFollTopics(iPass));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());

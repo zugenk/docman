@@ -83,13 +83,14 @@ public class SharedDocumentManager extends BaseUtil{
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","SharedDocument"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -110,7 +111,12 @@ public class SharedDocumentManager extends BaseUtil{
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=SharedDocumentService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=SharedDocumentService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;

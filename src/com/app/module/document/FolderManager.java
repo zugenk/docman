@@ -43,6 +43,10 @@ public class FolderManager extends BaseUtil {
 	private static Logger log = Logger.getLogger(FolderManager.class);
 	private static String ACL_MODE="PUBLIC";
 
+	public static List<Map> getTree(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getTree("+startId+")", new Document("modelClass","Folder"));
+		return getTree( startId);
+	}
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
 	   " SELECT folder.id as id, folder.code,folder.name,folder.id||'' as tree, COALESCE(folder.parent,0) as parent, 0 AS level FROM folder "+
@@ -56,6 +60,10 @@ public class FolderManager extends BaseUtil {
 		return constructTreeList(list);
 	}	
 	
+	public static List<Map> getDownline(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getDownline("+startId+")", new Document("modelClass","Folder"));
+		return getDownline(startId);
+	}
 	public static List getDownline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT folder.id, folder.code,folder.name, folder.parent, 1 as level FROM folder"+
 		  " WHERE folder.id='"+startId+"' "+
@@ -68,6 +76,10 @@ public class FolderManager extends BaseUtil {
 		return list;
 	}	
 
+	public static List<Map> getUpline(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getUpline("+startId+")", new Document("modelClass","Folder"));
+		return getUpline(startId);
+	}
 	public static List getUpline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT folder.id, folder.code,folder.name, folder.parent, 1 as level FROM folder"+
 		  " WHERE folder.id='"+startId+"' "+
@@ -80,6 +92,10 @@ public class FolderManager extends BaseUtil {
 		return list;
 	}	
 
+	public static List<Map> getFullTree(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getFullTree("+startId+")", new Document("modelClass","Folder"));
+		return getFullTree(startId);
+	}
 	public static List getFullTree(String startId) throws Exception {
 		List upList=getUpline(startId);
 		if (upList.isEmpty()) return upList;
@@ -141,13 +157,14 @@ public class FolderManager extends BaseUtil {
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Folder"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -168,7 +185,12 @@ public class FolderManager extends BaseUtil {
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=FolderService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=FolderService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;

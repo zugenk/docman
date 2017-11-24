@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.docmgr.service.StatusService;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
+import com.app.module.basic.LookupManager;
 import com.app.module.basic.StatusManager;
 import com.simas.webservice.Utility;
  
@@ -95,7 +96,7 @@ public class StatusController extends BaseUtil{
 	*/
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> read(
+	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String objId) {
@@ -104,7 +105,7 @@ public class StatusController extends BaseUtil{
 			log.trace("/v1/status/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",StatusManager.read(iPass, objId));
+			response.put("result",StatusManager.detail(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -145,9 +146,7 @@ public class StatusController extends BaseUtil{
 			log.trace("/v1/status/list/"+type+" ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			List result=StatusService.getInstance().findbyType(type);
-			StatusManager.toDocList(result);
-			BaseUtil.putList(response,"result", result);
+			BaseUtil.putList(response,"result", StatusManager.findByType(iPass, type));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -164,10 +163,10 @@ public class StatusController extends BaseUtil{
 			@PathVariable(value="code") String code) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/status/list/"+type+"/"+code+" ="+ipassport);
+			log.trace("/v1/status/"+type+"/"+code+" ="+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",StatusManager.toDocument(StatusService.getInstance().getByTypeandCode(type, code)));
+			response.put("result",StatusManager.getByTypeAndCode(iPass, type, code));
 			return reply(response);  
 			
 		} catch (Exception e) {

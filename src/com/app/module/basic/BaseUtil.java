@@ -32,6 +32,7 @@ import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 public class BaseUtil {
 //	public static String ADMIN_ROLE="GOD"; //"ADMIN";
 	public static int ITEM_PER_PAGE=20;
+	public static final int defaulStart=0;
 	public static int MAX_WRONG_PASSWD_ATTEMPT=3;
 	public static Status BLOCKED_USER_STATUS=null; //StatusService.getInstance().getByTypeandCode("User", "Blocked");
 	private static boolean inited=false;
@@ -58,7 +59,7 @@ public class BaseUtil {
 	public static void init() {
 		if(inited) return;
 		try {
-			ApplicationConstant.reset();
+			//ApplicationConstant.reset();
 			Map<String, SystemParameter> coreParam=ApplicationConstant.getSystemParamMap("CORE");
 		    ITEM_PER_PAGE=toInt(coreParam.get("ITEM_PER_PAGE").getSvalue());
 			MAX_WRONG_PASSWD_ATTEMPT=toInt(coreParam.get("MAX_WRONG_PASSWD_ATTEMPT").getSvalue());
@@ -190,6 +191,7 @@ public class BaseUtil {
 	}
 	
 	public static String constructQuery(String objName,String key,Object objValue) throws Exception{
+		if(!nvl(objValue) && ((String)objValue).contains(";")) throw new Exception("Possible SQL Injection");
 		String query=" AND "+objName+"."+key;
 		String value=toString(objValue);
 		if(value==null) return query+" ISNULL";

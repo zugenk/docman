@@ -3,7 +3,6 @@ package com.app.shared;
 import java.io.*;
 import java.security.*;
 import java.security.Provider;
-import java.text.*;
 import java.util.*;
 import javax.activation.*;
 import javax.crypto.Cipher;
@@ -17,14 +16,12 @@ import javax.mail.internet.*;
 import javax.naming.*;
 import javax.naming.directory.*;
 import javax.servlet.*;
-import javax.servlet.http.*;
 import org.apache.log4j.*;
 import org.apache.velocity.*;
 import org.apache.velocity.app.*;
 
 import com.app.docmgr.model.*;
-import com.app.docmgr.service.*;
-
+import com.simas.webservice.Utility;
 
 /**
  * @author Martin - Digibox - WebCode Generator 1.5
@@ -38,14 +35,14 @@ public class ApplicationFactory {
 	private static Logger log = Logger.getLogger("com.app.shared.ApplicationFactory");	
 	private static final String KEY_STRING = "3816c875da2f2540";
 	private static DirContext dirContext = null;
-	private static String ipSmtp=null;
-	private static boolean needSMTPAuth=false;
-	private static String username="";
+	private static String smtpUserName="";
 	private static String password="";
 	private static String adminEmail="";
 	private static String customerServiceEmail="";
 	private static Properties SMTP_PROP=null;
-	private static SimpleAuthenticator SMTP_AUTH=null;
+	private static Authenticator SMTP_AUTH=null;
+	public static String TEMP_FILE_PREFIX="DocMan_";
+
 	/**
 	 * @return  the adminEmail
 	 * @uml.property  name="adminEmail"
@@ -137,37 +134,54 @@ public class ApplicationFactory {
     }   
 
     private static void init(){
-        if (ipSmtp!=null) return;
-//		ipSmtp=ApplicationConstant.getSystemParam("EMAIL", "SMTP_GATEWAY");
-//		needSMTPAuth="true".equalsIgnoreCase(ApplicationConstant.getSystemParam("EMAIL", "NEED_SMTP_AUTH"));
-//		adminEmail=ApplicationConstant.getSystemParam("EMAIL", "SYSTEM_ADMIN_EMAIL");
-//		customerServiceEmail=ApplicationConstant.getSystemParam("EMAIL", "SYSTEM_CUST_SERVICE_EMAIL");
-//		username=ApplicationConstant.getSystemParam("EMAIL", "EMAIL_USER");
-//		password=ApplicationConstant.getSystemParam("EMAIL", "EMAIL_USER_PASSWORD");
+        if (SMTP_PROP!=null) return;
+		log.debug("APP FACTORY INITIALIZATION");
+		String hostSmtp="smtp.gmail.com";
+		String portSmtp="465";
+		String timeout="1000";
 		
-
-        Map<String,SystemParameter> emailParam= ApplicationConstant.getSystemParamMap("EMAIL");
-        ipSmtp=emailParam.get("SMTP_GATEWAY").getSvalue();
-    	adminEmail=emailParam.get("SYSTEM_ADMIN_EMAIL").getSvalue();				
-    	customerServiceEmail=emailParam.get("SYSTEM_CUST_SERVICE_EMAIL").getSvalue();			
-    	needSMTPAuth="true".equalsIgnoreCase(emailParam.get("NEED_SMTP_AUTH").getSvalue());				
-    	username=emailParam.get("EMAIL_USER").getSvalue();;
-    	password=emailParam.get("EMAIL_USER_PASSWORD").getSvalue();
-    	
- /*        
-		if (ipSmtp==null || ipSmtp.length()==0)ipSmtp="mail.amsconsult.com";
-		if (adminEmail==null || adminEmail.length()==0) adminEmail="admin@amsconsult.com";
-		if (customerServiceEmail==null || customerServiceEmail.length()==0) customerServiceEmail="customerservice@amsconsult.com";
-*/
+		Map<String,SystemParameter> emailParam= ApplicationConstant.getSystemParamMap("EMAIL");
+		boolean useSSL=false;
+		boolean needSMTPAuth=false;
+		try {
+	        //System.out.println(Utility.debug(emailParam));
+	        hostSmtp=emailParam.get("SMTP_HOST").getSvalue();
+	        portSmtp=emailParam.get("SMTP_PORT").getSvalue();
+	    	adminEmail=emailParam.get("SYSTEM_ADMIN_EMAIL").getSvalue();				
+	    	customerServiceEmail=emailParam.get("SYSTEM_CUST_SERVICE_EMAIL").getSvalue();			
+	    	needSMTPAuth="true".equalsIgnoreCase(emailParam.get("NEED_SMTP_AUTH").getSvalue());		
+	    	smtpUserName=emailParam.get("EMAIL_USER").getSvalue();
+	    	password=emailParam.get("EMAIL_USER_PASSWORD").getSvalue();
+	    	useSSL="true".equalsIgnoreCase(emailParam.get("SMTP_USE_SSL").getSvalue());	
+	    	timeout=emailParam.get("SMTP_TIMEOUT").getSvalue();
+		} catch (Exception e) {
+			log.error("Error Initializing App Factory, Email may not work properly... ",e);
+			System.out.println(Utility.debug(emailParam));
+		}
     	SMTP_PROP = new Properties();
         SMTP_PROP.put("mail.transport.protocol", "SMTP");
-        SMTP_PROP.put("mail.smtp.host",ipSmtp);
-        if (needSMTPAuth) {
-        	SMTP_PROP.put("mail.smtp.auth", "true");
-            SMTP_AUTH = new SimpleAuthenticator();
-            SMTP_AUTH.setUsername(username);
-            SMTP_AUTH.setPassword(password);
-        } else SMTP_PROP.put("mail.smtp.auth", "false");
+        SMTP_PROP.put("mail.smtp.host",hostSmtp);      
+        //SMTP_PROP.put("mail.smtp.host", "smtp.gmail.com");
+	    //SMTP_PROP.put("mail.smtp.host", "smtp.sendgrid.net");
+        if(useSSL){
+	        SMTP_PROP.put("mail.smtp.socketFactory.port", portSmtp); //"465");
+	        SMTP_PROP.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        }
+        if (needSMTPAuth) SMTP_PROP.put("mail.smtp.auth", "true");
+        else SMTP_PROP.put("mail.smtp.auth", "false");
+	    SMTP_PROP.put("mail.smtp.port", portSmtp);// "465"); 
+	    SMTP_PROP.put("mail.smtp.timeout", timeout);    
+	    SMTP_PROP.put("mail.smtp.connectiontimeout", timeout);  
+	    
+	    SMTP_AUTH =  new Authenticator() {
+	    		@Override
+	    		protected PasswordAuthentication getPasswordAuthentication() {
+	    			return new PasswordAuthentication(smtpUserName,password);
+	    			//return new PasswordAuthentication("martin.rohadi@gmail.com","deewyoaejupweqln");
+	    			// return new PasswordAuthentication("apikey","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");
+	    		}
+			};
+			log.debug("APP FACTORY INITIALIZATION COMPLETED");
     }
     
 /*    public static void sendMail(String emailType,String from,List toAddress,String subject,String emailTemplate,VelocityContext emailContext) throws Exception{
@@ -309,6 +323,7 @@ public class ApplicationFactory {
     	}
     }*/
     
+    /*
   public static List sendMail(String from,List toAddress,String subject,String message) throws Exception {
 	init();
 	if (toAddress==null || toAddress.isEmpty()) {
@@ -360,7 +375,7 @@ public class ApplicationFactory {
             session = Session.getInstance(props);
             session.setDebug(false);
         }
-        */
+        * /
       	Session session= Session.getInstance(SMTP_PROP, SMTP_AUTH);
         
 //    	if (needSMTPAuth) session = Session.getInstance(SMTP_PROP, SMTP_AUTH);
@@ -369,7 +384,7 @@ public class ApplicationFactory {
 //		}
         session.setDebug(false);
         
-        if (from==null) from=new String(username);
+        if (from==null) from=new String(smtpUserName);
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
         msg.setRecipients(javax.mail.Message.RecipientType.TO,toaddress);
@@ -403,8 +418,107 @@ public class ApplicationFactory {
     	//System.err.println(ex);
     	return unsentAddress;
     }
-  }
+  }*/
 
+  public static List sendMail(String from,List toAddress,String subject,String content) {
+	  return sendMail( from, toAddress, subject, content,null);
+  }
+  
+  public static List sendMail(String from,List toAddress,String subject,String content,List<File> attachments) {
+	/*	Properties props = new Properties();
+	    props.put("mail.smtp.host", "smtp.gmail.com");
+	    //props.put("mail.smtp.host", "smtp.sendgrid.net");
+	    props.put("mail.smtp.socketFactory.port", "465");
+	    props.put("mail.smtp.socketFactory.class",
+	            "javax.net.ssl.SSLSocketFactory");
+	    props.put("mail.smtp.auth", "true");
+	    props.put("mail.smtp.port", "465"); 
+	    
+	    Session session = Session.getDefaultInstance(props,
+	        new javax.mail.Authenticator() {
+	                            @Override
+	            protected PasswordAuthentication getPasswordAuthentication() {
+	               return new PasswordAuthentication("martin.rohadi@gmail.com","deewyoaejupweqln");
+	              // return new PasswordAuthentication("apikey","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");
+	            }
+	        }
+	    );*/
+	    
+	    Session session;
+	    if(SMTP_AUTH!=null) session=Session.getDefaultInstance(SMTP_PROP,SMTP_AUTH);
+	    else session=Session.getDefaultInstance(SMTP_PROP);
+	    if (toAddress==null || toAddress.isEmpty()) {
+			log.error("Send Email failed, email has no to_address !");
+			return null; //new LinkedList();
+		}
+	    List unsentAddress=new LinkedList();
+	    unsentAddress.addAll(toAddress);
+	    if (subject==null) subject="No Specific Subject";
+	    
+	    try {
+	    	 if (from==null) from=new String(smtpUserName);
+	         MimeMessage msg = new MimeMessage(session);
+	         msg.setFrom(new InternetAddress(from));
+
+	         List validAddress=new LinkedList();
+	         Iterator toAddrItr=toAddress.iterator();
+	         while (toAddrItr.hasNext()) {
+	 			String istraddr = (String) toAddrItr.next();
+	 	        try {
+	 	        	validAddress.add(new InternetAddress(istraddr));
+	 	        	unsentAddress.remove(istraddr);
+	 			} catch (Exception e) {
+	 				log.error("Invalid email address :"+istraddr,e);
+	 			}
+	 		}
+	         if (validAddress.isEmpty()) {
+	         	log.error("Send Email failed,all to_address are invalid !");
+	         	return unsentAddress;
+	         } 
+	         InternetAddress toaddress[]=new InternetAddress[validAddress.size()];
+	         toAddrItr=validAddress.iterator();
+	         int i=0;
+	         while (toAddrItr.hasNext()) {
+	         	InternetAddress iaddress = (InternetAddress) toAddrItr.next();
+	 			toaddress[i]=iaddress;
+	 			i++;
+	 		}
+	         
+	         msg.setRecipients(javax.mail.Message.RecipientType.TO,toaddress);
+
+	         msg.setSubject(subject);
+	         msg.setSentDate(new java.util.Date());
+
+	         MimeBodyPart mbp = new MimeBodyPart();
+	         mbp.setContent(content,"text/html");
+	         Multipart mp = new MimeMultipart();
+	         mp.addBodyPart(mbp); String fname;
+	         if(attachments!=null && !attachments.isEmpty()) {
+	        	 for (Iterator iterator = attachments.iterator(); iterator.hasNext();) {
+					File f = (File) iterator.next();
+					 mbp = new MimeBodyPart();
+		             DataSource source = new FileDataSource(f);
+		             mbp.setDataHandler(new DataHandler(source));
+		             if(f.getName().startsWith(TEMP_FILE_PREFIX)) fname=f.getName().substring(TEMP_FILE_PREFIX.length()+19);
+		             else fname=f.getName();
+		             mbp.setFileName(fname);
+		             mp.addBodyPart(mbp);
+	        	 }
+	        		        	 
+	         }
+	         msg.setContent(mp);
+		    Transport.send(msg);
+	     //   System.out.println("Done");
+	        log.debug("Email Sent Successfully");
+
+	    } catch (MessagingException e) {
+	       // throw new RuntimeException(e);
+	        log.error("Email delivery failed ",e);
+
+	    }
+	    return unsentAddress;
+	}
+	
    public static String generateSessionId(String cifCode){
 		String result = "";
         try{

@@ -4,7 +4,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.Document;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
@@ -60,7 +65,7 @@ public class DocumentController extends BaseUtil{
 			log.trace("/v1/document/tree = "+ipassport); 
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",DocumentManager.getTree(null));
+			response.put("result",DocumentManager.getTree(iPass,null));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -78,7 +83,7 @@ public class DocumentController extends BaseUtil{
 			log.trace("/v1/document/"+startId+"/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",DocumentManager.getTree(startId));
+			response.put("result",DocumentManager.getTree(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -96,7 +101,7 @@ public class DocumentController extends BaseUtil{
 			log.trace("/v1/document/"+startId+"/fullTree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",DocumentManager.getFullTree(startId));
+			response.put("result",DocumentManager.getFullTree(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -115,7 +120,7 @@ public class DocumentController extends BaseUtil{
 			log.trace("/v1/document/"+startId+"/downline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",DocumentManager.getDownline(startId));
+			response.put("result",DocumentManager.getDownline(iPass,startId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -133,7 +138,7 @@ public class DocumentController extends BaseUtil{
 			log.trace("/v1/document/"+startId+"/upline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",DocumentManager.getUpline(startId));
+			response.put("result",DocumentManager.getUpline(iPass,startId));
 			return reply(response);  
 		
 		} catch (Exception e) {
@@ -154,7 +159,7 @@ public class DocumentController extends BaseUtil{
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug(" My Document list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", DocumentManager.myList(iPass, BaseUtil.toInt(start)));
+			BaseUtil.putList(response,"result", DocumentManager.myList(iPass, start));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -176,7 +181,7 @@ public class DocumentController extends BaseUtil{
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			log.debug(" My Document list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", DocumentManager.ownBy(iPass,toLong(userId), BaseUtil.toInt(start)));
+			BaseUtil.putList(response,"result", DocumentManager.ownBy(iPass,toLong(userId), start));
 			return reply(response);  
 			
 		} catch (Exception e) {
@@ -278,6 +283,74 @@ public class DocumentController extends BaseUtil{
 		return reply(response); 
 	}
 
+ 
+    
+    @RequestMapping(value = "/repoFolder/{folderName}", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> repoFolder(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable("folderName") String folderName) {
+    	Document response=new Document();
+    	try {
+    		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response=DocumentManager.getRepoFolder(iPass, folderName);
+	        return reply(response);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			log.error("Error geting my Document List",e);
+		}		
+    	return reply(response);
+
+	}
+    
+	@RequestMapping(value = "/repoDl/{fileId}", method = RequestMethod.GET)
+	//public @ResponseBody ResponseEntity<String> repoDl(@PathVariable("fileId") String fileId) {
+	public @ResponseBody ResponseEntity<?> repoDl(
+		@PathVariable(value="fileId") String fileId,
+		@RequestParam(value="ipassport", defaultValue="") String ipassport,
+		@RequestParam(value="mode", required=false) String mode) {	
+		//String errorMessage="";
+		Document response=new Document();
+		try {
+			log.debug("/v1/document/repoDl/"+fileId);
+			Document iPass=LoginManager.authenticate(ipassport, null);
+			DocumentManager.downByRepoId(iPass, fileId);
+			
+//			RestTemplate restTemplate=new RestTemplate();
+//	        ResponseEntity<Resource> resp= restTemplate.getForEntity("http://localhost:8080/DocumentManager/rest/v1/document/download",Resource.class);
+	        ResponseEntity<Resource> resp= RepositoryManager.downloadFile(fileId,mode); 
+			System.out.println("HTTPStatus:"+resp.getStatusCode());
+			System.out.println("HTTPHeaders:"+Utility.debug(resp.getHeaders()));
+			System.out.println(resp.getBody());
+			return resp;
+	        //restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
+		} catch (Exception e) {
+			response.append("errorMessage",e.getMessage());
+			log.error("Error geting Document-byRepoId",e);
+		}
+		return reply(response);  
+	}
+	
+	@RequestMapping(value = "byRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> byRepo(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="fileId") String fileId) {
+		Document response=new Document();
+		try {
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			log.error("Error geting Document-byRepoId",e);
+		}
+		return reply(response);  
+	}
+	
 
 	
 //	static String UPLOAD_FOLDER="./UPLOADED/";
@@ -375,74 +448,7 @@ public class DocumentController extends BaseUtil{
             return "Unable to upload. File is empty.";
         }
     }
-  */  
-    
-    @RequestMapping(value = "/repoFolder/{folderName}", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> repoFolder(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable("folderName") String folderName) {
-    	Document response=new Document();
-    	try {
-    		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			response=DocumentManager.getRepoFolder(iPass, folderName);
-	        return reply(response);
-		} catch (Exception e) {
-			response.put("errorMessage", e.getMessage());
-			log.error("Error geting my Document List",e);
-		}		
-    	return reply(response);
-
-	}
-    
-	@RequestMapping(value = "/repoDl/{fileId}", method = RequestMethod.GET)
-	//public @ResponseBody ResponseEntity<String> repoDl(@PathVariable("fileId") String fileId) {
-	public @ResponseBody ResponseEntity<Resource> repoDl(
-		@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-		@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-		@PathVariable(value="fileId") String fileId) {	
-		//String errorMessage="";
-		Document response=new Document();
-		try {
-			log.debug("/v1/document/repoDl/"+fileId);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			//DocumentManager.downByRepoId(iPass, fileId);
-	        
-	        ResponseEntity<Resource> resp= RepositoryManager.downloadFile(fileId); 
-	        //resp.getHeaders().add("Content-type", "application/octet-stream");
-			System.out.println("HTTPStatus:"+resp.getStatusCode());
-			System.out.println("HTTPHeaders:"+Utility.debug(resp.getHeaders()));
-			System.out.println(resp.getBody());
-			return resp;
-	        //restTemplate.getForEntity(REPO_BASE_URL + "/file/ajax_file_operation?action=download&api_key="+REPO_API_KEY+"&fileid="+fileId,String.class);
-		} catch (Exception e) {
-			response.append("errorMessage",e.getMessage());
-			log.error("Error geting Document-byRepoId",e);
-		}
-		//return new ResponseEntity<String>(errorMessage,HttpStatus.BAD_REQUEST);
-		//Resource fake=
-		return null; //new ResponseEntity<Resource>(,HttpStatus.BAD_REQUEST); //JSON.serialize(response)
-	}
-	
-	@RequestMapping(value = "byRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> byRepo(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@PathVariable(value="fileId") String fileId) {
-		Document response=new Document();
-		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
-			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));
-			return reply(response);  
-			
-		} catch (Exception e) {
-			response.put("errorMessage", e.getMessage());
-			log.error("Error geting Document-byRepoId",e);
-		}
-		return reply(response);  
-	}
+  */ 	
 /*	
 	@RequestMapping(value = "getRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getRepo(
@@ -476,4 +482,19 @@ public class DocumentController extends BaseUtil{
 	}
 */	
  
+	@RequestMapping(value = "download/{fileId}", method = RequestMethod.GET)
+	public ResponseEntity<Resource> download(String param) throws IOException {
+		///Users/it.atsbanksinarmas.com/Documents/workspace2/DocumentManager/Invoice - SeatBelt.pdf
+		File file=new File("/usr/local/tomcat/");//+fileId);
+		if(file.exists()) System.out.println(file.getAbsolutePath()+ " exist ");
+		else System.out.println("File not Found");
+	    InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+	    HttpHeaders headers= new HttpHeaders();
+	   // headers.setContentDispositionFormData("inline", file.getName());
+	    headers.set("Content-Disposition", "inline;filename="+file.getName());
+	    headers.setContentLength(file.length());
+	    headers.setContentType(MediaType.parseMediaType("application/pdf"));
+	    
+	    return new ResponseEntity<Resource>(resource,headers, HttpStatus.OK);
+	}
 }

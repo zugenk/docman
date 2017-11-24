@@ -87,7 +87,7 @@ public class LoginHistoryController extends BaseUtil{
 	}
 	*/
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> read(
+	public @ResponseBody ResponseEntity<Document> detail(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="ID") String objId) {
@@ -96,7 +96,7 @@ public class LoginHistoryController extends BaseUtil{
 			log.trace("/v1/loginHistory/"+objId+"/ = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",LoginHistoryManager.read(iPass, objId));
+			response.put("result",LoginHistoryManager.detail(iPass, objId));
 			return reply(response);  
 			
 		} catch (Exception e) {

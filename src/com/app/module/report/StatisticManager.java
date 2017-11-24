@@ -48,12 +48,14 @@ public class StatisticManager extends BaseUtil {
 	
 	public static  List<Map<String, Object>> getUserStatistic(String perPeriod, String reportIntv)  throws Exception{
 		if(!validPeriod.contains(perPeriod)) throw new Exception("error.invalid.perPeriod");
+		if(perPeriod.contains(";")) throw new Exception("Possible SQL Injection");
 		String rptPeriod=reportIntv;
 		if(reportIntv.indexOf(" ")>0){
 			rptPeriod=reportIntv.substring(reportIntv.lastIndexOf(' ')+1 );
 		}
 		if(!validPeriod.contains(rptPeriod)) throw new Exception("error.invalid.reportIntv");
-		String sqlQuery = " select done_by, entity,date_trunc('"+perPeriod+"', audit_time) AS period, count(id) as Freq from audit_trail "+
+		if(rptPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String sqlQuery = " select done_by, entity, to_char(date_trunc('"+perPeriod+"', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq from audit_trail "+
 				// "date_trunc('month', audit_time)='2017-11' "+
 				" WHERE audit_time > now() - interval '"+reportIntv+"' "+
 				" group by 1,2,3";
@@ -71,14 +73,18 @@ group by 1,2,3
 	
 	public static  List<Map<String, Object>> getLoginStat(String perPeriod, String reportIntv) throws Exception{ //("day","1 year")
 		if(!validPeriod.contains(perPeriod)) throw new Exception("error.invalid.perPeriod");
+		if(perPeriod.contains(";")) throw new Exception("Possible SQL Injection");
 		String rptPeriod=reportIntv;
 		if(reportIntv.indexOf(" ")>0){
 			rptPeriod=reportIntv.substring(reportIntv.lastIndexOf(' ')+1 );
 		}
 		if(!validPeriod.contains(rptPeriod)) throw new Exception("error.invalid.reportIntv");
-		String sqlQuery = " SELECT date_trunc('"+perPeriod+"', login_time) AS period , user_id, count(*) AS Freq FROM login_history "+
-				" WHERE login_time > now() - interval '"+reportIntv+"' "+
-				" GROUP BY 1,2  ORDER BY 1;";
+		if(rptPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		
+		
+		String sqlQuery = " SELECT to_char(date_trunc('"+perPeriod+"', login_time),'DD-MM-YYYY') AS period , u.login_name , count(*) AS Freq FROM login_history lh, app_user u "+
+				" WHERE login_time > now() - interval '"+reportIntv+"' and u.id=lh.user_id "+
+				" GROUP BY 1,2  ORDER BY 1 ";
 		System.out.println(sqlQuery);
 		return DBQueryManager.getList("User Login Statistic", sqlQuery, null); 
 		//return list;

@@ -25,6 +25,7 @@ import com.app.docmgr.service.UserService;
 import com.app.docmgr.service.NotificationService;
 import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
+import com.app.module.basic.DBQueryManager;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
@@ -68,7 +69,7 @@ public class NotificationManager extends BaseUtil {
 		NotificationService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String objId) throws Exception {
+	public static Document detail(Document passport,String objId) throws Exception {
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		long usrId= Long.parseLong(objId);
 		Notification obj=NotificationService.getInstance().get(usrId);
@@ -77,7 +78,6 @@ public class NotificationManager extends BaseUtil {
 		return toDocument(obj);
 	}
 	public static Document markRead(Document passport,String objId) throws Exception {
-		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		long usrId= Long.parseLong(objId);
 		Notification obj=NotificationService.getInstance().get(usrId);
 		if (obj==null) throw new Exception("error.object.notfound");
@@ -87,15 +87,23 @@ public class NotificationManager extends BaseUtil {
 		return toDocument(obj);
 	}
 	
+	public static List markReadAll(Document passport) throws Exception {
+		//, last_updated_date=LOCALTIMESTAMP ,lastUpdated_by='"+passport.getString("loginName")+"' " 
+		String sqlQuery="update notification set flag='READ' where subscriber='"+passport.getLong("userId")+"' ";
+		DBQueryManager.executeUpdate(sqlQuery);
+		return listByOwner(passport, null);
+	}
+	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Notification"));
 		String filterParam=null;
 		if("PRIVATE".equals(ACL_MODE) && !isAdmin(passport)) filterParam+=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -114,7 +122,12 @@ public class NotificationManager extends BaseUtil {
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=NotificationService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=NotificationService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;
@@ -156,10 +169,11 @@ public class NotificationManager extends BaseUtil {
 	
 	
 	
-	public static PartialList listByOwner(Document passport,int start) throws Exception{
+	public static PartialList listByOwner(Document passport,String start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "listByOwner", new Document("modelClass","Notification"));
 		String filterParam=" AND notification.subscriber.id='"+passport.getLong("userId")+"' AND notification.flag is null";
 		String orderParam=" notification.id DESC";
-		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
+		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, toInt(start,defaulStart), ITEM_PER_PAGE);
 		toDocList(result);
 		return result;
 	}
@@ -194,7 +208,7 @@ public class NotificationManager extends BaseUtil {
 	}
 	
 	public static void checkValidity(Notification obj,List errors) {
-		if (obj.getNotificationType()==null) errors.add("error.notificationType.null");
+		//if (obj.getNotificationType()==null) errors.add("error.notificationType.null");
 		if (obj.getPostMessage()==null) errors.add("error.postMessage.null");
 		if (obj.getSubscriber()==null) errors.add("error.subscriber.null");
 	}

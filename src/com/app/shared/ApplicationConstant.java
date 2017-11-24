@@ -23,9 +23,9 @@ import com.simas.webservice.Utility;
 public class ApplicationConstant {
 	private static Logger log = Logger.getLogger("com.app.shared.ApplicationConstant");	
 	public static int MAX_ITEM_PER_PAGE = 10; 
-	private static Map<String,Map<String,SystemParameter>> SYSTEM_PARAMETER=new HashMap<String,Map<String,SystemParameter>>();
-	private static Map<String,Map<String,Status>> STATUS_MAP=new HashMap<String, Map<String,Status>>();
-	private static Map<String, Map<String,Lookup>> LOOKUP_MAP=new HashMap<String, Map<String,Lookup>>();
+	private static Map<String,Map<String,SystemParameter>> SYSTEM_PARAMETER=null;//new HashMap<String,Map<String,SystemParameter>>();
+	private static Map<String,Map<String,Status>> STATUS_MAP=null;//new HashMap<String, Map<String,Status>>();
+	private static Map<String, Map<String,Lookup>> LOOKUP_MAP=null;//new HashMap<String, Map<String,Lookup>>();
 	//public static Map city=new HashMap();
 	//public static List country=new LinkedList();
 	public static String contextRealPath=""; //eclipse/workspace/iBankEder/WebContent";

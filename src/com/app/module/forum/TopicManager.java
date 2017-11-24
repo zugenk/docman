@@ -115,13 +115,14 @@ public class TopicManager extends BaseUtil{
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Topic"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -141,7 +142,12 @@ public class TopicManager extends BaseUtil{
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=TopicService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=TopicService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;
@@ -238,7 +244,8 @@ public class TopicManager extends BaseUtil{
 	}
 	
 
-	public static PartialList getTopicList(int start) throws Exception{
+	public static PartialList getTopicList(Document passport,int start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Topic"));
 		PartialList resultList=null;
 		String filterParam=null; 
 		String orderParam=" ORDER BY topic.id ASC ";
@@ -247,7 +254,8 @@ public class TopicManager extends BaseUtil{
 		return resultList;
 	}
 	
-	public static PartialList getTopicListByForum(Forum forum,int start) throws Exception{
+	public static PartialList getTopicListByForum(Document passport,Forum forum,int start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "byForum", new Document("modelClass","Topic"));
 		PartialList resultList=null;
 		String filterParam=" AND topic.forum="+forum.getId(); 
 		String orderParam=" ORDER BY topic.id ASC ";

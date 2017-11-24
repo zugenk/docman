@@ -31,6 +31,11 @@ public class MessageManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(MessageManager.class);
 	private static String ACL_MODE="PUBLIC";
 	
+	
+	public static List<Map> getTree(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getTree("+startId+")", new Document("modelClass","Message"));
+		return getTree( startId);
+	}
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
 	   " SELECT message.id as id, message.id||'' as tree, COALESCE(message.parent,0) as parent, 0 AS level FROM message "+
@@ -44,6 +49,10 @@ public class MessageManager extends BaseUtil{
 		return constructTreeList(list);
 	}	
 	
+	public static List<Map> getDownline(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getDownline("+startId+")", new Document("modelClass","Message"));
+		return getDownline( startId);
+	}
 	public static List getDownline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT message.id, message.parent, 1 as level FROM message"+
 		  " WHERE message.id='"+startId+"' "+
@@ -56,6 +65,10 @@ public class MessageManager extends BaseUtil{
 		return list;
 	}	
 
+	public static List<Map> getUpline(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getUpline("+startId+")", new Document("modelClass","Message"));
+		return getUpline( startId);
+	}
 	public static List getUpline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT message.id, message.parent, 1 as level FROM message"+
 		  " WHERE message.id='"+startId+"' "+
@@ -68,7 +81,10 @@ public class MessageManager extends BaseUtil{
 		return list;
 	}	
 	
-	
+	public static List<Map> getFullTree(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getFullTree("+startId+")", new Document("modelClass","Message"));
+		return getFullTree( startId);
+	}
 	public static List getFullTree(String startId) throws Exception {
 		List upList=getUpline(startId);
 		if (upList.isEmpty()) return upList;
@@ -131,13 +147,14 @@ public class MessageManager extends BaseUtil{
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Message"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -157,7 +174,12 @@ public class MessageManager extends BaseUtil{
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=MessageService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=MessageService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;
@@ -167,6 +189,15 @@ public class MessageManager extends BaseUtil{
 		return result;
 	}
 	
+	
+	public static List listByTopic(Document passport, long topicId,String start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "byTopic("+topicId+")", new Document("modelClass","Message"));
+		
+		String filterParam= " AND message.topic.id='"+topicId+"' ";
+		PartialList result=MessageService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), " message.id ASC ", toInt(start,defaulStart), ITEM_PER_PAGE);
+		toDocList(result);
+		return result;
+	}
 	private static void updateFromMap(Message obj, Map data,List<String> errors) {
 		obj.setContent((String) data.get("content"));
 		obj.setFilterCode((String) data.get("filterCode"));
@@ -243,7 +274,7 @@ public class MessageManager extends BaseUtil{
 	}
 	
 	public static void checkValidity(Message obj,List errors) {
-		if (obj.getPostType()==null) errors.add("error.postType.null");
+	//	if (obj.getPostType()==null) errors.add("error.postType.null");
 		if (obj.getTopic()==null) errors.add("error.topic.null");
 	}
 

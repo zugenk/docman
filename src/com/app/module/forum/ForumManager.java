@@ -20,6 +20,7 @@ import com.app.docmgr.service.StatusService;
 import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
+import com.app.docmgr.service.BookmarkService;
 import com.app.docmgr.service.ForumService;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
@@ -28,6 +29,11 @@ import com.simas.webservice.Utility;
 public class ForumManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(ForumManager.class);
 	private static String ACL_MODE="SYSTEM"; 
+	
+	public static List<Map> getTree(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getTree("+startId+")", new Document("modelClass","Forum"));
+		return getTree( startId);
+	}
 	
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
@@ -42,6 +48,10 @@ public class ForumManager extends BaseUtil{
 		return BaseUtil.constructTreeList(list);
 	}	
 
+	public static List<Map> getDownline(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getDownline("+startId+")", new Document("modelClass","Forum"));
+		return getDownline( startId);
+	}
 	public static List getDownline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT forum.id, forum.code,forum.name, forum.parent, 1 as level FROM forum"+
 		  " WHERE forum.id='"+startId+"' "+
@@ -53,7 +63,10 @@ public class ForumManager extends BaseUtil{
 		//log.debug(Utility.debug(list));
 		return list;
 	}	
-
+	public static List<Map> getUpline(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getUpline("+startId+")", new Document("modelClass","Forum"));
+		return getUpline( startId);
+	}
 	public static List getUpline(String startId) throws Exception{
 		String sqlQuery = " WITH RECURSIVE q AS (  SELECT forum.id, forum.code,forum.name, forum.parent, 1 as level FROM forum"+
 		  " WHERE forum.id='"+startId+"' "+
@@ -66,6 +79,10 @@ public class ForumManager extends BaseUtil{
 		return list;
 	}	
 	
+	public static List<Map> getFullTree(Document passport,String startId)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getFullTree("+startId+")", new Document("modelClass","Forum"));
+		return getFullTree( startId);
+	}
 	public static List getFullTree(String startId) throws Exception {
 		//ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, toDocument(obj));
 		List upList=getUpline(startId);
@@ -128,13 +145,14 @@ public class ForumManager extends BaseUtil{
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Forum"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -154,7 +172,12 @@ public class ForumManager extends BaseUtil{
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=ForumService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=ForumService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;
@@ -231,7 +254,7 @@ public class ForumManager extends BaseUtil{
 	}
 	
 	public static void checkValidity(Forum obj,List errors) {
-		if (obj.getForumType()==null) errors.add("error.forumType.null");
+		//if (obj.getForumType()==null) errors.add("error.forumType.null");
 		if (obj.getName()==null) errors.add("error.name.null");
 	}
 

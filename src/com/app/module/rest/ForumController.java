@@ -34,7 +34,7 @@ public class ForumController extends BaseUtil{
 			log.trace("/v1/forum/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.getTree(null));
+			response.put("result",ForumManager.getTree(iPass,null));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -52,7 +52,7 @@ public class ForumController extends BaseUtil{
 			log.trace("/v1/forum/"+startId+"/tree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.getTree(startId));
+			response.put("result",ForumManager.getTree(iPass,startId));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -70,7 +70,7 @@ public class ForumController extends BaseUtil{
 			log.trace("/v1/forum/"+startId+"/fullTree = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.getFullTree(startId));
+			response.put("result",ForumManager.getFullTree(iPass,startId));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -89,7 +89,7 @@ public class ForumController extends BaseUtil{
 			log.trace("/v1/forum/"+startId+"/downline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.getDownline(startId));
+			response.put("result",ForumManager.getDownline(iPass,startId));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
@@ -107,7 +107,7 @@ public class ForumController extends BaseUtil{
 			log.trace("/v1/forum/"+startId+"/upline = "+ipassport);
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",ForumManager.getUpline(startId));
+			response.put("result",ForumManager.getUpline(iPass,startId));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.bson.Document;
 
 import com.app.docmgr.model.Status;
+import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.StatusService;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
@@ -52,7 +53,7 @@ public class StatusManager extends BaseUtil{
 		StatusService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String objId) throws Exception {
+	public static Document detail(Document passport,String objId) throws Exception {
 		log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		long usrId= Long.parseLong(objId);
 		Status obj=StatusService.getInstance().get(usrId);
@@ -62,13 +63,14 @@ public class StatusManager extends BaseUtil{
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Status"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=0;
-		boolean noPaging=false;
+		int start=defaulStart;
+		String mode=null;
 		if(data!=null && !data.isEmpty()) {
-			noPaging=("Y".equalsIgnoreCase((String)data.get("noPaging")));
-			start= toInt(data.get("start"),1);
+			mode=(String)data.get("mode");
+			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -88,7 +90,12 @@ public class StatusManager extends BaseUtil{
 				}
 			}
 		}
-		if(noPaging){
+		if("ALL".equals(mode)){
+			List result=StatusService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			toDocList(result);
+			return result;
+		}
+		if("NOPAGE".equals(mode)){
 			List result=StatusService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;
@@ -98,6 +105,17 @@ public class StatusManager extends BaseUtil{
 		return result;
 	}
 	
+	public static List findByType(Document passport, String type) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "byType", new Document("modelClass","Status"));
+		List result=StatusService.getInstance().findbyType(type);
+		StatusManager.toDocList(result);
+		return result;
+	}
+	public static Document getByTypeAndCode(Document passport, String type, String code) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "byTypeAndCode", new Document("modelClass","Status"));
+		return toDocument(StatusService.getInstance().getByTypeandCode(type, code));
+	}
+
 	private static void updateFromMap(Status obj, Map data,List<String> errors) {
 		obj.setState((String)data.get("state"));
 		obj.setCode((String)data.get("code"));
