@@ -61,7 +61,8 @@ public class NotificationServiceBase {
 		try {
 			notification = (Notification) session.get(Notification.class, id);
 			Hibernate.initialize(notification.getNotificationType());			
-			Hibernate.initialize(notification.getPostMessage());			
+			Hibernate.initialize(notification.getPostMessage());
+			Hibernate.initialize(notification.getPostMessage().getTopic());
 			Hibernate.initialize(notification.getSubscriber());			
 
 		} catch (ObjectNotFoundException onfe) {
@@ -98,7 +99,8 @@ public class NotificationServiceBase {
 			notification = (com.app.docmgr.model.Notification) query.uniqueResult();
 			if(notification!=null) {
 				Hibernate.initialize(notification.getNotificationType());			
-				Hibernate.initialize(notification.getPostMessage());			
+				Hibernate.initialize(notification.getPostMessage());		
+				Hibernate.initialize(notification.getPostMessage().getTopic());
 				Hibernate.initialize(notification.getSubscriber());			
 			}
 			return notification;
@@ -298,7 +300,8 @@ public class NotificationServiceBase {
 			while(itr.hasNext()){
 				com.app.docmgr.model.Notification notification = (com.app.docmgr.model.Notification)itr.next();
 				Hibernate.initialize(notification.getNotificationType());			
-				Hibernate.initialize(notification.getPostMessage());			
+				Hibernate.initialize(notification.getPostMessage());	
+				Hibernate.initialize(notification.getPostMessage().getTopic());
 				Hibernate.initialize(notification.getSubscriber());			
 			}			
 		} catch(HibernateException he) {
@@ -336,8 +339,9 @@ public class NotificationServiceBase {
 			while(itr.hasNext()){
 			    com.app.docmgr.model.Notification notification = (com.app.docmgr.model.Notification)itr.next();
 			    Hibernate.initialize(notification.getNotificationType());                    
-			    Hibernate.initialize(notification.getPostMessage());                    
-			    Hibernate.initialize(notification.getSubscriber());                    
+			    Hibernate.initialize(notification.getPostMessage()); 
+			    Hibernate.initialize(notification.getPostMessage().getTopic());
+				Hibernate.initialize(notification.getSubscriber());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.document.FolderManager;
+import com.app.module.forum.ForumManager;
 import com.app.module.report.StatisticManager;
 import com.simas.webservice.Utility;
 
@@ -28,64 +29,78 @@ import com.simas.webservice.Utility;
 public class ReportController extends BaseUtil{
 private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.getClass().getName());
 
-	@RequestMapping(value = "/activity",produces = "application/json", method = RequestMethod.GET)
+/*	@RequestMapping(value = "/activity",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> activity(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestParam(value="perPeriod", defaultValue="day") String perPeriod,
-			@RequestParam(value="reportIntv", defaultValue="1 month") String reportIntv ) {
+			@RequestParam(value="reportIntv", defaultValue="1 month") String reportIntv,
+			@RequestParam(value="start", required=false) String start ) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/report/activity = "+ipassport);			
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",StatisticManager.getUserStatistic(perPeriod, reportIntv));
+			BaseUtil.putList(response,"result",StatisticManager.getUserStatistic(perPeriod, reportIntv,start));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
 		}
 		return reply(response);  
-	}
+	}*/
 	
-	@RequestMapping(value = "/login",produces = "application/json", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Document> login(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
-			@RequestParam(value="perPeriod", defaultValue="day") String perPeriod,
-			@RequestParam(value="reportIntv", defaultValue="1 month") String reportIntv ) {
-		Document response=new Document();
-		try {
-			log.trace("/v1/report/login = "+ipassport);			
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",StatisticManager.getLoginStat(perPeriod, reportIntv));
-			return reply(response);  
-		} catch (Exception e) {
-			response.put("errorMessage", e.getMessage());
-		}
-		return reply(response);  
-	}
-	
-	/*
-	@RequestMapping(value = "/list",produces = "application/json", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Document> list(
+	@RequestMapping(value = "/activity",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> activity(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/document/list = "+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/report/activity = "+ipassport);			
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
-			log.debug("List Folder by "+iPass.getString("loginName") );
-//			
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", FolderManager.list(iPass, dataMap));
+			BaseUtil.putList(response,"result",StatisticManager.getUserStatistic(iPass,dataMap));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			e.printStackTrace();
 		}
 		return reply(response);  
 	}
-	*/
+/*	@RequestMapping(value = "/login",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> login(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestParam(value="perPeriod", defaultValue="day") String perPeriod,
+			@RequestParam(value="reportIntv", defaultValue="1 month") String reportIntv,
+			@RequestParam(value="start", required=false) String start ) { 
+		Document response=new Document();
+		try {
+			log.trace("/v1/report/login = "+ipassport);			
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result",StatisticManager.getLoginStat(perPeriod, reportIntv,start));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+*/	
+	@RequestMapping(value = "/login",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> login(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestBody final Map dataMap) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/report/login = "+ipassport);			
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result",StatisticManager.getLoginStat(iPass,dataMap));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
 }

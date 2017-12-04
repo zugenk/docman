@@ -190,6 +190,10 @@ public class NotificationManager extends BaseUtil {
 		if(obj.getPostMessage()!=null){
 			doc.append("message", obj.getPostMessage().getContent());
 			doc.append("messageId", obj.getPostMessage().getId());
+			if(obj.getPostMessage().getTopic()!=null){
+				doc.append("topic", obj.getPostMessage().getTopic().getName());
+				doc.append("topicId", obj.getPostMessage().getTopic().getId());	
+			}
 		}
 		if (obj.getSubscriber()!=null) {
 			doc.append("subsriber", obj.getSubscriber().getLoginName());

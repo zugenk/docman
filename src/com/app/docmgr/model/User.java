@@ -62,8 +62,18 @@ public class User  implements java.io.Serializable {
         this.id = id;
     }
    
+    @Override
+    public boolean equals(Object obj) {
+    	if(obj==null) return false;
+    	if(obj instanceof User) return this.getId().longValue()==((User) obj).getId();
+    	return super.equals(obj);
+    }
     
-    
+    @Override
+    public int hashCode() {
+    	return loginName.hashCode();
+    	//return super.hashCode();
+    }
 
     // Property accessors
 

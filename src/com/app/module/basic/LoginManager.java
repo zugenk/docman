@@ -65,7 +65,15 @@ public class LoginManager extends BaseUtil{
     	//log.debug("["+loginName+"] -> ["+passwd+"]");
     	return login(loginName, passwd); // null; // 
  	}
-	    
+	
+	public static String encryptPassword(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
+    	String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
+		//String plain=new String(org.springframework.security.crypto.codec.Base64.decode(basicAuth.substring(6).getBytes()));
+    	int idx=plain.indexOf(':');
+    	//String loginName=plain.substring(0,idx);
+    	String passwd=plain.substring(idx+1);
+    	return ApplicationFactory.encrypt(passwd);
+ 	}
 	public static String makeBasicAuth(String user, String password) {
     	String plainCreds = user+":"+password;//"okmAdmin:admin";
     	byte[] plainCredsBytes = plainCreds.getBytes();
@@ -144,6 +152,12 @@ public class LoginManager extends BaseUtil{
 		}
 		if (iPass==null) throw new Exception("error.session.invalid");
 		return iPass;
+	}
+	
+	public static void logout(String ipassport) throws Exception{
+		log.debug("Logout ["+ipassport+"]");
+		Document iPass=null;
+		if(!nvl(ipassport)) PassportManager.logoutPassport(ipassport);
 	}
 
 	public static ResponseEntity<Map> preFilter(Map map,String ipassport, String basicAuth, String uri) {

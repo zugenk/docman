@@ -155,6 +155,13 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		return iPass;
 	}
 	
+	public static void logoutPassport(String ipassport) throws Exception{
+		init();
+		Document searchQ=new Document("ipassport", ipassport);		
+		MongoManager.deleteOne(IPASSPORT_COLLECTION, searchQ);
+		log.debug("PASSPORT LOGGED OUT "+ipassport);
+	}
+	
 	public static void main(String[] args) {
 		try {
 			/*

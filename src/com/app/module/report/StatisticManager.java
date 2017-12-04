@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.functors.ForClosure;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.hibernate.classic.Validatable;
@@ -46,57 +47,116 @@ public class StatisticManager extends BaseUtil {
 //	String validPeriod="millennium|century|decade|year|quarter|month|week|day|hour|minute|second|milliseconds|microseconds";
 	private static String validPeriod="year|quarter|month|week|day|hour|minute";
 	
-	public static  List<Map<String, Object>> getUserStatistic(String perPeriod, String reportIntv)  throws Exception{
-		if(!validPeriod.contains(perPeriod)) throw new Exception("error.invalid.perPeriod");
-		if(perPeriod.contains(";")) throw new Exception("Possible SQL Injection");
-		String rptPeriod=reportIntv;
-		if(reportIntv.indexOf(" ")>0){
-			rptPeriod=reportIntv.substring(reportIntv.lastIndexOf(' ')+1 );
+	public static  List<Map<String, Object>> getUserStatistic(Document passport,Map data)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getUserStatistic", new org.bson.Document("modelClass","Report"));
+		String recordPeriod= (String) data.get("recordPeriod");
+		if(!validPeriod.contains(recordPeriod)) throw new Exception("error.invalid.recordPeriod");
+		if(recordPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String reportPeriod=(String) data.get("reportPeriod");
+		if(!validPeriod.contains(reportPeriod)) throw new Exception("error.invalid.reportPeriod");
+		if(reportPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String filterParam=constructPeriodFilter("audit_time", (String) data.get("periodValue"), reportPeriod);
+		Map filterMap= (Map) data.get("filter");
+		if (filterMap!=null && !filterMap.isEmpty()) {
+			StringBuffer filterBuff=new StringBuffer("");
+			for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				filterBuff.append(constructQuery(null,key,filterMap.get(key)));
+			}
+			filterParam+=filterBuff.toString();
 		}
-		if(!validPeriod.contains(rptPeriod)) throw new Exception("error.invalid.reportIntv");
-		if(rptPeriod.contains(";")) throw new Exception("Possible SQL Injection");
-		String sqlQuery = " select done_by, entity, to_char(date_trunc('"+perPeriod+"', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq from audit_trail "+
-				// "date_trunc('month', audit_time)='2017-11' "+
-				" WHERE audit_time > now() - interval '"+reportIntv+"' "+
-				" group by 1,2,3";
-		System.out.println(sqlQuery);
-		return DBQueryManager.getList("User Activity Statistic", sqlQuery, null);
+		String start=(String) data.get("start");
 		
+		String sqlQuery = " select done_by, entity, to_char(date_trunc('"+recordPeriod+"', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq from audit_trail auditTrail "+
+				" WHERE 1=1 "+filterParam+
+				" group by 1,2,3";
+		System.out.println("REPORT QUERY=["+sqlQuery+"]");
+		if (!nvl(start)) return DBQueryManager.getPartialList("User Activity Statistic", sqlQuery,toInt(start,defaulStart), null);
+		return DBQueryManager.getList("User Activity Statistic", sqlQuery, null);
 	}	
 	
-	/*
-	 select done_by, entity,date_trunc('day', audit_time) AS "Month", count(id) as Freq from audit_trail 
-where date_trunc('month', audit_time)='2017-11-01'
-group by 1,2,3
-
-	 */
-	
-	public static  List<Map<String, Object>> getLoginStat(String perPeriod, String reportIntv) throws Exception{ //("day","1 year")
-		if(!validPeriod.contains(perPeriod)) throw new Exception("error.invalid.perPeriod");
-		if(perPeriod.contains(";")) throw new Exception("Possible SQL Injection");
-		String rptPeriod=reportIntv;
-		if(reportIntv.indexOf(" ")>0){
-			rptPeriod=reportIntv.substring(reportIntv.lastIndexOf(' ')+1 );
+	public static  List<Map<String, Object>> getLoginStat(Document passport,Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getLoginStatistic", new org.bson.Document("modelClass","Report"));
+		String recordPeriod= (String) data.get("recordPeriod");
+		if(!validPeriod.contains(recordPeriod)) throw new Exception("error.invalid.recordPeriod");
+		if(recordPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String reportPeriod=(String) data.get("reportPeriod");
+		if(!validPeriod.contains(reportPeriod)) throw new Exception("error.invalid.reportPeriod");
+		if(reportPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String filterParam=constructPeriodFilter("login_time", (String) data.get("periodValue"), reportPeriod);
+		String start=(String) data.get("start");
+		Map filterMap= (Map) data.get("filter");
+		if (filterMap!=null && !filterMap.isEmpty()) {
+			StringBuffer filterBuff=new StringBuffer("");
+			for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				filterBuff.append(constructQuery(null,key,filterMap.get(key)));
+			}
+			filterParam+=filterBuff.toString();
 		}
-		if(!validPeriod.contains(rptPeriod)) throw new Exception("error.invalid.reportIntv");
-		if(rptPeriod.contains(";")) throw new Exception("Possible SQL Injection");
-		
-		
-		String sqlQuery = " SELECT to_char(date_trunc('"+perPeriod+"', login_time),'DD-MM-YYYY') AS period , u.login_name , count(*) AS Freq FROM login_history lh, app_user u "+
-				" WHERE login_time > now() - interval '"+reportIntv+"' and u.id=lh.user_id "+
+		String sqlQuery = " SELECT to_char(date_trunc('"+recordPeriod+"', login_time),'DD-MM-YYYY') AS period , appUser.login_name , count(*) AS Freq FROM login_history loginHistory, app_user appUser "+
+				" WHERE appUser.id=loginHistory.user_id "+filterParam+
 				" GROUP BY 1,2  ORDER BY 1 ";
-		System.out.println(sqlQuery);
-		return DBQueryManager.getList("User Login Statistic", sqlQuery, null); 
-		//return list;
+		System.out.println("REPORT QUERY=["+sqlQuery+"]");
+		if (!nvl(start)) return DBQueryManager.getPartialList("User Login Statistic", sqlQuery,toInt(start,defaulStart), null);
+		return DBQueryManager.getList("User Login Statistic", sqlQuery, null);
+}
+	
+	
+	private static String constructPeriodFilter(String periodField ,String fromPeriod,String reportPeriod) {
+		if(!nvl(fromPeriod) && fromPeriod.contains("|")){
+			String[] vArr=fromPeriod.split("\\|");
+			if (vArr[0].equals("$LA")){
+				int from=toInt(vArr[1],1);
+				return " AND "+periodField+" > now() - interval '"+from+" "+reportPeriod+"' ";
+			}
+			if (vArr.length==2) {
+				int from=toInt(vArr[1],0);
+				//if (from>0) return " AND date_part('"+reportPeriod+"',"+periodField+") "+toOpr(vArr[0])+" "+from+" ";
+				//if (from==0) return " AND date_part('"+reportPeriod+"',"+periodField+") "+toOpr(vArr[0])+" date_part('"+reportPeriod+"',current_date) ";
+				return " AND date_part('"+reportPeriod+"',"+periodField+") "+toOpr(vArr[0])+(from>0?from:" (date_part('"+reportPeriod+"',current_date)+ "+from+") ");
+			}
+			
+			if (fromPeriod.startsWith("$BT|") && vArr.length==3){
+				int from=toInt(vArr[1],0);
+				int to=toInt(vArr[2],0);
+				return " AND date_part('"+reportPeriod+"',"+periodField+") between "+(from>0?from:" (date_part('"+reportPeriod+"',current_date)+ "+from+") ")+" and "+(to>0?to:" (date_part('"+reportPeriod+"',current_date)+ "+to+") ")+" ";
+			}
+		}
+		return "";
+
 	}
-	/* 
-	 SELECT date_trunc('day', login_time) AS "Month" , user_id, count(*) AS "freq"
-FROM login_history
-where date_trunc('month', login_time)='2017-11-01'
--- WHERE login_time > now() - interval '1 month' 
-GROUP BY 1,2
-ORDER BY 1;
-	 
-	 */
+
+	private static String toOpr(String sOperand) {
+		if("$EQ".equals(sOperand)) return "=";
+		if("$GT".equals(sOperand)) return ">";
+		if("$GE".equals(sOperand)) return ">=";
+		if("$LT".equals(sOperand)) return "<";
+		if("$LE".equals(sOperand)) return "<=";
+		else return "";
+	}
+	
+	public static void main(String[] args) {
+		Map<String,Object> data=new HashMap<String,Object>();
+		data.put("start", "0");
+		data.put("recordPeriod", "day");
+		data.put("reportPeriod", "month");
+	//	data.put("periodValue", "$EQ|0");
+	//	data.put("periodValue", "$EQ|11");
+		//data.put("periodValue", "$GE|-3");
+		//data.put("periodValue", "$BT|10|12");
+		data.put("periodValue", "$BT|-6|0");
+		Map<String,String> filter=new HashMap<String,String>();
+		filter.put("auditTrail.done_by", "$EQ|admin");
+		//filter.put("auditTrail.done_by","$LK|admin%");
+		data.put("filter", filter);
+		System.out.println(Utility.debug(data));
+		try{
+		System.out.println("filter = "+constructPeriodFilter("audit_time",(String) data.get("periodValue"),(String)data.get("reportPeriod")));
+		System.out.println("add = "+constructQuery("auditTrail","done_by","$EQ|admin"));
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
 

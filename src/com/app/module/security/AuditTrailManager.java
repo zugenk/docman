@@ -118,7 +118,7 @@ public class AuditTrailManager extends BaseUtil{
 			at.setEntity(entity.getString("modelClass"));
 			if(entity.get("id")!=null) at.setEntityId(entity.getLong("id"));
 			log.debug("Audit to "+at.getAction()+" "+at.getEntity()+(at.getEntityId()!=null?"["+at.getEntityId()+"]":"")+
-					" done by"+at.getDoneBy()+":"+ description );
+					" done by ["+at.getDoneBy()+"] : "+ description );
 			AuditTrailService.getInstance().add(at);
 		} catch (Exception e) {
 			//log.error("Error logging AuditTrail",e);

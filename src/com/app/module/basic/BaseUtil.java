@@ -20,14 +20,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import com.app.docmgr.model.Status;
 import com.app.docmgr.model.SystemParameter;
-import com.app.docmgr.service.StatusService;
 import com.app.shared.ApplicationConstant;
 import com.app.shared.PartialList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.IndexOptions;
 import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
 
 public class BaseUtil {
 //	public static String ADMIN_ROLE="GOD"; //"ADMIN";
@@ -192,21 +190,32 @@ public class BaseUtil {
 	
 	public static String constructQuery(String objName,String key,Object objValue) throws Exception{
 		if(!nvl(objValue) && ((String)objValue).contains(";")) throw new Exception("Possible SQL Injection");
-		String query=" AND "+objName+"."+key;
+		//String query=" AND "+objName+"."+key;
+		String query=" AND "+(objName!=null?objName+".":"")+key;
 		String value=toString(objValue);
 		if(value==null) return query+" ISNULL";
 		value=value.trim();
 		if (value.contains("=")) throw new Exception("error.filter.invalidChar");
+		if(value.equals("$ISNULL")) return query+" ISNULL ";
+		if(value.equals("!$ISNULL")) return query+" IS NOT NULL ";
 		if(value.startsWith("$EQ|")) return query+" = '"+value.substring(4)+"' ";
 		if(value.startsWith("$GT|")) return query+" > '"+value.substring(4)+"' ";
 		if(value.startsWith("$GE|")) return query+" >= '"+value.substring(4)+"' ";
 		if(value.startsWith("$LT|")) return query+" < '"+value.substring(4)+"' ";
 		if(value.startsWith("$LE|")) return query+" <= '"+value.substring(4)+"' ";
 		if(value.startsWith("$LK|")) return query+" LIKE '"+value.substring(4)+"' ";
+
 		if(value.startsWith("$BT|")) {
 			String[] vArr=value.split("\\|");
-			if (vArr.length==3)  return query+" >= '"+vArr[1]+"' "+query+" < '"+vArr[2]+"' ";
+			//if (vArr.length==3)  
+			//return query+" >= '"+vArr[1]+"' "+query+" <= '"+vArr[2]+"' ";
+			return query+" BETWEEN '"+vArr[1]+"' AND  '"+vArr[2]+"' ";
+			
 		}
+		String lowQuery=" AND lower("+(objName!=null?objName+".":"")+key+") ";
+		if(value.startsWith("$EL|")) return lowQuery+" = '"+value.substring(4)+"' ";
+		if(value.startsWith("$LL|")) return lowQuery+" LIKE '"+value.substring(4)+"' ";
+
 		return query+" LIKE '%"+value+"%'";
 	}
 	

@@ -168,6 +168,7 @@ public class OrganizationManager extends BaseUtil {
 				}
 			}
 		}
+		log.trace("filterParam=["+filterParam+"]");
 		if("ALL".equals(mode)){
 			List result=OrganizationService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);

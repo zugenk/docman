@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.websocket.MessageHandler.Partial;
+import java.util.regex.Pattern;
 
 import org.hibernate.Session;
 
@@ -26,7 +25,7 @@ public class DBQueryManager extends BaseUtil{
 //		return PS_MAP.get(qName);
 //	}
 	
-	public static List<Map<String, Object>> getList(String qName,String sqlQuery,String... params)  throws Exception{
+	public static List getList(String qName,String sqlQuery,String... params)  throws Exception{
 		Session session = null;
 		PreparedStatement ps;
 		ResultSet rs=null;
@@ -85,14 +84,22 @@ public class DBQueryManager extends BaseUtil{
 		ResultSet rs=null;
 		PartialList resultList=new PartialList();
 		try {
-			//List resultList = new LinkedList();
-			String paging=" offset "+start+" limit "+ITEM_PER_PAGE+" ";
 			session = ConnectionFactory.getInstance().getSession();
-			System.out.println("Executing ["+qName+"] :>> ["+sqlQuery+"] ");
+			resultList.setTotal(-1);
+			String countSql=createCountQuery(sqlQuery);
+			if(countSql!=null){
+				ps=session.connection().prepareStatement(countSql);
+				rs=ps.executeQuery();
+				if(rs.next()) resultList.setTotal(rs.getInt(1));
+			} 
+			resultList.setStart(start);
+			resultList.setCount(ITEM_PER_PAGE);
+			String paging=" offset "+start+" limit "+ITEM_PER_PAGE+" ";
+			System.out.println("Executing ["+qName+"] :>> ["+sqlQuery+paging+"] ");
 //			String query; 
 //			if (params!=null && params.length>0) query=ApplicationFactory.mergeParam(sqlQuery,params);
 //			else query= sqlQuery;
-			ps = session.connection().prepareStatement(sqlQuery);			
+			ps = session.connection().prepareStatement(sqlQuery+paging);			
 			//ps=getPS(qName, session.connection(), sqlQuery);
 			if(params!=null && params.length>0) {
 				for (int i = 0; i < params.length; i++) {
@@ -134,6 +141,30 @@ public class DBQueryManager extends BaseUtil{
 		}
 	}   
 	
+	public static void main(String[] args) {
+//		String sqlQuery="select * from organization";
+		String sqlQuery="select done_by, entity, to_char(date_trunc('day', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq FROM audit_trail "+
+				" WHERE audit_time > now() - interval '1 week' "+
+				" group by 1,2,3 ";
+		System.out.println(createCountQuery(sqlQuery) );
+	}
+	
+	public static String createCountQuery(String sqlQuery) {
+	
+		if (nvl(sqlQuery)) return null;
+		sqlQuery=sqlQuery.replaceFirst("(?i)from", "from");
+		int f=sqlQuery.indexOf("from");
+		int x=sqlQuery.indexOf(",");
+		if (f<=0 || x<=0) return null;
+		int j=sqlQuery.indexOf(",",x+1);
+		while(j<f) {
+			x=j;
+			j=sqlQuery.indexOf(",",x+1);
+		}
+		String countQuery="select count(*) from ("+sqlQuery.substring(0,x)+" "+sqlQuery.substring(f)+") as rpt";
+		//System.out.println(countQuery);
+		return countQuery;
+	}
 	
 	
 	public static int executeUpdate(String sqlQuery) throws Exception{

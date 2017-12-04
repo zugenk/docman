@@ -41,6 +41,18 @@ public class Topic  implements java.io.Serializable {
     }
    
     
+    @Override
+    public boolean equals(Object obj) {
+    	if(obj==null) return false;
+    	if(obj instanceof Topic) return this.getId().longValue()==((Topic) obj).getId();
+    	return super.equals(obj);
+    }
+    
+    @Override
+    public int hashCode() {
+    	return 31*id.hashCode();
+    	//return super.hashCode();
+    }
     
 
     // Property accessors

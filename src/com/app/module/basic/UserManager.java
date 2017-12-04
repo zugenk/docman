@@ -90,11 +90,24 @@ public class UserManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
+	public static Document chgMyPwd(Document passport,String newAuth) throws Exception{
+		List<String> errors=new LinkedList<String>();
+		User obj= UserService.getInstance().get(passport.getLong("userId"));
+		if (obj==null) throw new Exception("error.object.notfound");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "chgMyPwd", toDocument(obj));
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLoginPassword(LoginManager.encryptPassword(newAuth)); 
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		UserService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
 	public static List myFavTopics(Document passport) throws Exception{
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFavTopics", toDocument(obj));
-		return TopicManager.toDocList((Set<Topic>) obj.getFavoriteTopics());
+		return TopicManager.toDocSimpleList((Set<Topic>) obj.getFavoriteTopics());
 	}
 	
 	public static List myFollTopics(Document passport) throws Exception{

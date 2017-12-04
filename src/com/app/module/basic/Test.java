@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 
 import com.app.module.document.DocumentManager;
 import com.app.module.document.RepositoryManager;
+import com.app.shared.ApplicationConstant;
+import com.app.shared.ApplicationFactory;
 import com.mongodb.util.JSON;
 import com.simas.webservice.Utility;
 
@@ -41,9 +43,13 @@ public class Test {
 			//	System.out.println(Utility.debug(JSON.parse(jsonList)));
 		
 				//RepositoryManager.getTree();
-				DocumentManager.getRepoFolder(null,"VIDEO");
-				System.out.println("============EOD=========");
-				
+				//DocumentManager.getRepoFolder(null,"VIDEO");
+			//	System.out.println("============EOD=========");
+				String[] sArr=new String[]{"12345678","password","admin","seriusamat","kerenabis"};
+				for (int i = 0; i < sArr.length; i++) {
+					System.out.println("["+sArr[i]+"] = ["+ApplicationFactory.encrypt(sArr[i])+"]");
+				}
+//				System.out.println(ApplicationFactory.encrypt("12345678")+" : "+ApplicationFactory.encrypt("password")+" : "+ApplicationFactory.encrypt("admin")+" : "+ApplicationFactory.encrypt("seriusamat"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

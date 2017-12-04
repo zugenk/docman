@@ -226,7 +226,7 @@
 		<set
 			name="favoriteTopics"
 			table="favorite_topic"
-			cascade="all-delete-orphan"
+			cascade="none"
 		>
 			<key column="user_id"/>
 			<many-to-many column="topic_id" class="com.app.docmgr.model.Topic"/>

@@ -109,6 +109,27 @@ public class DocumentController extends BaseUtil{
 		return reply(response);  
 	}
 	
+	@RequestMapping(value = "/{ID}/pushTree",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> pushTree(
+			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@PathVariable(value="ID") String startId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/document/"+startId+"/pushTree = "+ipassport);
+			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			List result=DocumentManager.getFullTree(iPass,startId);
+			response.put("result",result); //DocumentManager.getFullTree(iPass,startId));
+			String rootRepoId=(String) ((Map) result.get(0)).get("repository_id");
+			RepositoryManager.addMeta(rootRepoId, JSON.serialize(result));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}
+	
 	@RequestMapping(value = "/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getDownline(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,

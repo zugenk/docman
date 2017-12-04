@@ -26,18 +26,18 @@
 		<property name="hibernate.format_sql">false</property>
 		<property name="hibernate.use_sql_comments">false</property>
 
-		<property name="c3p0.min_size">5</property>
-		<property name="c3p0.max_size">10</property>
+		<property name="c3p0.min_size">25</property>
+		<property name="c3p0.max_size">100</property>
 		<property name="c3p0.timeout">60</property>
 		<property name="c3p0.acquireRetryAttempts">30</property>
 		<property name="c3p0.acquireIncrement">1</property>
 		<property name="c3p0.idleConnectionTestPeriod">300</property>
 		<property name="c3p0.testConnectionOnCheckout">true</property>
-		<property name="c3p0.initialPoolSize">5</property>
-		<property name="c3p0.maxPoolSize">10</property>
+		<property name="c3p0.initialPoolSize">25</property>
+		<property name="c3p0.maxPoolSize">100</property>
 		<property name="c3p0.maxIdleTime">300</property>
-		<property name="c3p0.maxStatements">1</property>
-		<property name="c3p0.minPoolSize">5</property>
+		<property name="c3p0.maxStatements">5</property>
+		<property name="c3p0.minPoolSize">25</property>
 		
 		<!-- PROD SETTING
 		<property name="c3p0.min_size">50</property>

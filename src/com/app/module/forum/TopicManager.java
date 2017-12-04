@@ -164,8 +164,9 @@ public class TopicManager extends BaseUtil{
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "subscribe", toDocument(obj));
 		User subscriber=UserService.getInstance().get(passport.getLong("userId"));
-		obj.getSubscribers().add(subscriber);
-		TopicService.getInstance().update(obj);
+		if(obj.getSubscribers().add(subscriber)){
+			TopicService.getInstance().update(obj);
+		} else throw new Exception("error.duplicate.follow");
 		return toDocument(obj);
 	}
 	
@@ -175,8 +176,9 @@ public class TopicManager extends BaseUtil{
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "unSubscribe", toDocument(obj));
 		User subscriber=UserService.getInstance().get(passport.getLong("userId"));
-		obj.getSubscribers().remove(subscriber);
-		TopicService.getInstance().update(obj);
+		if(obj.getSubscribers().remove(subscriber)){
+			TopicService.getInstance().update(obj);
+		}else throw new Exception("error.notfound.unfollow");
 		return toDocument(obj);
 	}
 	
@@ -199,10 +201,11 @@ public class TopicManager extends BaseUtil{
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "like", toDocument(obj));
 		User loginUser=UserService.getInstance().get(passport.getLong("userId"));
-		loginUser.getFavoriteTopics().add(obj);
-		UserService.getInstance().update(loginUser);
-		obj.setNumberOfLike(obj.getNumberOfLike()+1);
-		TopicService.getInstance().update(obj);
+		if(loginUser.getFavoriteTopics().add(obj)){
+			obj.setNumberOfLike(toInt(obj.getNumberOfLike(),0)+1);
+			UserService.getInstance().update(loginUser);
+			//TopicService.getInstance().update(obj);
+		} else throw new Exception("error.duplicate.like");
 		return toDocument(obj);
 	}
 	
@@ -212,10 +215,11 @@ public class TopicManager extends BaseUtil{
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "unLike", toDocument(obj));
 		User loginUser=UserService.getInstance().get(passport.getLong("userId"));
-		loginUser.getFavoriteTopics().remove(obj);
-		UserService.getInstance().update(loginUser);
-		obj.setNumberOfLike(obj.getNumberOfLike()+1);
-		TopicService.getInstance().update(obj);
+		if(loginUser.getFavoriteTopics().remove(obj)){
+			obj.setNumberOfLike(obj.getNumberOfLike()-1);
+			UserService.getInstance().update(loginUser);
+			//TopicService.getInstance().update(obj);
+		} else throw new Exception("error.notfound.unlike");
 		return toDocument(obj);
 	}
 
@@ -270,7 +274,7 @@ public class TopicManager extends BaseUtil{
 		if(postMessage.getTopic()!=null){
 			try{
 				Topic topic= TopicService.getInstance().get(postMessage.getTopic().getId());
-				topic.setNumberOfPost(topic.getNumberOfPost()+1);
+				topic.setNumberOfPost(toInt(topic.getNumberOfPost(),0)+1);
 				if (topic.getSubscribers()!=null || topic.getSubscribers().size()<=0) {
 					NotificationService notifService=NotificationService.getInstance();
 					Lookup notificationType=LookupService.getInstance().getByTypeandCode("notificationType","postMessage");
@@ -293,6 +297,7 @@ public class TopicManager extends BaseUtil{
 				log.debug("Not Generate any Notification, PostMessage.Topic doesnt have any Subscribers..");
 				return true;
 			}catch (Exception e) {
+				e.printStackTrace();
 				log.error("Error Generating Notification for messageId["+postMessage.getId()+"]",e);
 			}
 			return false;
@@ -331,6 +336,38 @@ public class TopicManager extends BaseUtil{
 		return doc;
 	}
 	
+	public static Document toSimpleDocument(Topic obj) {
+		SimpleDateFormat sdf= new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+		Document doc=new Document();
+		doc.append("modelClass", obj.getClass().getSimpleName());
+		doc.append("id", obj.getId());
+		doc.append("createdBy", obj.getCreatedBy());
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
+		doc.append("code", obj.getCode());
+		doc.append("description", obj.getDescription());
+		doc.append("filterCode", obj.getFilterCode());
+		
+		doc.append("icon", obj.getIcon());
+		doc.append("name", obj.getName());
+		doc.append("numberOfLike", obj.getNumberOfLike());
+		doc.append("numberOfPost", obj.getNumberOfPost());
+
+		/*
+		if(obj.getForum()!=null){
+			//doc.append("forum", obj.getForum().getName());	
+			doc.append("forumId", obj.getForum().getId());
+		}
+				if(obj.getStatus()!=null) {
+			doc.append("status", obj.getStatus().getName());
+			doc.append("statusId", obj.getStatus().getId());
+		} */
+//		if(obj.getSubscribers()!=null) {
+//			doc.append("subscribers", getSubscriberList(obj));
+//		}
+		return doc;
+	}
+	
 
 	public static void toDocList(List list){
 		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
@@ -346,6 +383,16 @@ public class TopicManager extends BaseUtil{
 		for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 			Topic obj = (Topic) iterator.next();
 			list.add(toDocument(obj));
+		}
+		return list;
+	}
+	
+	public static List toDocSimpleList(Set set){
+		List list=new LinkedList();
+		if(set.isEmpty()) return list;
+		for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+			Topic obj = (Topic) iterator.next();
+			list.add(toSimpleDocument(obj));
 		}
 		return list;
 	}

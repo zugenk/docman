@@ -205,6 +205,11 @@ public class ACLManager extends BaseUtil{
 				throw new Exception("error.forbidden");
 			}  
 			if ("PRIVATE".equals(aclMode)){
+				if("list".equals(action) && "listByOwner".equals(subAction)){
+					description="Authorized as Owner on Private Resource";
+					return true;
+				}
+				
 				if(isOwner) {
 					description="Authorized as Owner on Private Resource";
 					return true;

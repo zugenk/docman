@@ -5,32 +5,20 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import com.app.docmgr.model.Bookmark;
 import com.app.docmgr.model.Document;
 import com.app.docmgr.model.Folder;
 import com.app.docmgr.model.Lookup;
-import com.app.docmgr.model.Organization;
-import com.app.docmgr.model.User;
-import com.app.docmgr.service.BookmarkService;
 import com.app.docmgr.service.DocumentService;
 import com.app.docmgr.service.FolderService;
 import com.app.docmgr.service.LookupService;
-import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.UserService;
 import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
-import com.app.module.basic.UserManager;
-import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.mongodb.util.JSON;
-import com.sun.org.apache.xml.internal.dtm.ref.IncrementalSAXSource;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
@@ -320,36 +308,16 @@ public class DocumentManager extends BaseUtil {
 		return version;
 	}
 	
-	public static void main(String[] args) {
-		/*
-		String curVer="1.0.0";
-		for (int i = 0; i < 989999; i++) {
-			curVer=updateVersion(curVer);
-			if(i%1000==0) System.out.println(curVer);
-		}
-		System.out.println(curVer);
-		curVer=updateVersion(curVer);
-		System.out.println(curVer);
-		*/
-		try {
-	//		RepositoryManager.createFolder("VIDEO", REPO_ROOT_FOLDER_ID);
-			System.out.println(JSON.serialize(DocumentManager.getRepoFolder(null,"AUDIO")));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("============EOD=========");
-	}
-	
 	private static void updateFromMap(Document obj, Map data,List<String> errors) throws Exception{
 		obj.setContentType((String) data.get("contentType"));
 		obj.setDescription((String) data.get("description"));
 		obj.setDocumentNumber(toString(data.get("documentNumber")));
-		obj.setDocumentVersion(toString(data.get("documentVersion")));
+		//obj.setDocumentVersion(toString(data.get("documentVersion")));
 		obj.setName((String) data.get("name"));
 		obj.setPriority(toInt(data.get("priority")));
 		obj.setRepositoryId((String) data.get("repositoryId"));
+		obj.setDocumentType(toString(data.get("documentType")));
 //		obj.set((String) data.get(""));
-	
 		if(!nvl(data.get("parentId"))){
 			try {
 				Document parent= DocumentService.getInstance().get(toLong(data.get("parentId")));

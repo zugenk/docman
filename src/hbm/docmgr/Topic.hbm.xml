@@ -108,7 +108,7 @@
 		<set
 			name="subscribers"
 			table="topic_subscriber"
-			cascade="all-delete-orphan"
+			cascade="none"
 		>
 
 			<key column="topic_id"/>

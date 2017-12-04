@@ -156,7 +156,7 @@ public class UserController extends BaseUtil{
 		}
 		return reply(response);  
 	}
-	
+/*	
 	@RequestMapping(value = "chgMyPwd",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> chgMyPwd(
 			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
@@ -168,6 +168,23 @@ public class UserController extends BaseUtil{
 			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",UserManager.chgMyPwd(iPass, dataMap));
+			return reply(response);
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+		}
+		return reply(response);  
+	}*/
+	
+	@RequestMapping(value = "chgMyPwd",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> chgMyPwd(
+			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="newAuthorization", defaultValue="") String newAuth) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/user/chgMyPwd ="+basicAuth);
+			Document iPass=LoginManager.authenticate(null, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",UserManager.chgMyPwd(iPass, newAuth));
 			return reply(response);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
