@@ -1,0 +1,1 @@
+docker run --net docman-nw --name tomcat-docman --rm -it -p 0.0.0.0:8080:8080 -p 0.0.0.0:8443:8443 -v ${PWD}/tomcat/conf:/usr/local/tomcat/conf -v ${PWD}/tomcat/logs:/usr/local/tomcat/logs  -v ${PWD}/tomcat/DocumentManager:/usr/local/tomcat/webapps/DocumentManager -d tomcat:8.0-jre8
