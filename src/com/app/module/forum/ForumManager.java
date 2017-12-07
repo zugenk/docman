@@ -99,8 +99,10 @@ public class ForumManager extends BaseUtil{
 		updateFromMap(obj, data,errors);
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
-		obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "new"));
+		obj.setLastUpdatedBy(obj.getCreatedBy());
+		obj.setLastUpdatedDate(obj.getCreatedDate());
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Forum", "new"));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		ForumService.getInstance().add(obj);

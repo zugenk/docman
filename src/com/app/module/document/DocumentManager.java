@@ -110,9 +110,11 @@ public class DocumentManager extends BaseUtil {
 		updateFromMap(obj, data,errors);
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
+		obj.setLastUpdatedBy(obj.getCreatedBy());
+		obj.setLastUpdatedDate(obj.getCreatedDate());
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
-		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		if(nvl(obj.getDocumentVersion())) obj.setDocumentVersion("1.0.0");

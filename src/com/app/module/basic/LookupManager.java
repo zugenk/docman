@@ -31,8 +31,8 @@ public class LookupManager extends BaseUtil{
 		List<String> errors=new LinkedList<String>();
 		Lookup obj= new Lookup();
 		updateFromMap(obj, data,errors);
-		obj.setStatus(StatusService.getInstance().getByTypeandCode("Lookup", "new"));
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Lookup", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		LookupService.getInstance().add(obj);
 		return toDocument(obj);

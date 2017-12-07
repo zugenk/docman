@@ -34,9 +34,11 @@ public class UserManager extends BaseUtil{
 		updateFromMap(obj, data,errors);
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
-		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
+		obj.setLastUpdatedBy(obj.getCreatedBy());
+		obj.setLastUpdatedDate(obj.getCreatedDate());
 		obj.setLoginName((String) data.get("loginName"));
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
 		checkValidity(obj,errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		assignNewPassword(obj);

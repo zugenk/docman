@@ -40,18 +40,18 @@
 		<property name="c3p0.minPoolSize">25</property>
 		
 		<!-- PROD SETTING
-		<property name="c3p0.min_size">50</property>
-		<property name="c3p0.max_size">300</property>
+		<property name="c3p0.min_size">150</property>
+		<property name="c3p0.max_size">500</property>
 		<property name="c3p0.timeout">60</property>
 		<property name="c3p0.acquireRetryAttempts">30</property>
 		<property name="c3p0.acquireIncrement">1</property>
 		<property name="c3p0.idleConnectionTestPeriod">300</property>
 		<property name="c3p0.testConnectionOnCheckout">true</property>
 		<property name="c3p0.initialPoolSize">150</property>
-		<property name="c3p0.maxPoolSize">300</property>
+		<property name="c3p0.maxPoolSize">500</property>
 		<property name="c3p0.maxIdleTime">300</property>
 		<property name="c3p0.maxStatements">1</property>
-		<property name="c3p0.minPoolSize">50</property>
+		<property name="c3p0.minPoolSize">150</property>
 		 -->
 
 <!-- 		<property name="c3p0.preferredTestQuery">SELECT 1</property> -->

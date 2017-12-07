@@ -10,14 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import com.app.connection.ConnectionFactory;
 import com.app.docmgr.model.User;
+import com.app.module.report.StatisticManager;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
 public class DBQueryManager extends BaseUtil{
+	private static Logger log = Logger.getLogger(DBQueryManager.class);
 //	static Map<String, PreparedStatement> PS_MAP=new HashMap<String, PreparedStatement>(); 
 //	
 //	private static PreparedStatement getPS(String qName,Connection conn, String sqlQuery) throws Exception {
@@ -32,7 +35,7 @@ public class DBQueryManager extends BaseUtil{
 		try {
 			List resultList = new LinkedList();
 			session = ConnectionFactory.getInstance().getSession();
-			System.out.println("Executing ["+qName+"] :>> ["+sqlQuery+"] ");
+			log.debug("Executing ["+qName+"] :>> ["+sqlQuery+"] ");
 //			String query; 
 //			if (params!=null && params.length>0) query=ApplicationFactory.mergeParam(sqlQuery,params);
 //			else query= sqlQuery;
@@ -60,7 +63,7 @@ public class DBQueryManager extends BaseUtil{
 			}
 			return resultList;
 		}catch (Exception e) {
-			System.err.println("Exception" + e.getMessage());
+			log.error("Exception while running query " + e.getMessage());
 			throw new RuntimeException(e);
 		} finally {
 			if (session != null) {
@@ -91,11 +94,12 @@ public class DBQueryManager extends BaseUtil{
 				ps=session.connection().prepareStatement(countSql);
 				rs=ps.executeQuery();
 				if(rs.next()) resultList.setTotal(rs.getInt(1));
+				log.debug("CountQuery ["+countSql+"] = "+rs.getInt(1));
 			} 
 			resultList.setStart(start);
 			resultList.setCount(ITEM_PER_PAGE);
 			String paging=" offset "+start+" limit "+ITEM_PER_PAGE+" ";
-			System.out.println("Executing ["+qName+"] :>> ["+sqlQuery+paging+"] ");
+			log.debug("Executing ["+qName+"] :>> ["+sqlQuery+paging+"] ");
 //			String query; 
 //			if (params!=null && params.length>0) query=ApplicationFactory.mergeParam(sqlQuery,params);
 //			else query= sqlQuery;
@@ -142,15 +146,13 @@ public class DBQueryManager extends BaseUtil{
 	}   
 	
 	public static void main(String[] args) {
-//		String sqlQuery="select * from organization";
 		String sqlQuery="select done_by, entity, to_char(date_trunc('day', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq FROM audit_trail "+
 				" WHERE audit_time > now() - interval '1 week' "+
 				" group by 1,2,3 ";
-		System.out.println(createCountQuery(sqlQuery) );
+		log.debug(createCountQuery(sqlQuery) );
 	}
 	
 	public static String createCountQuery(String sqlQuery) {
-	
 		if (nvl(sqlQuery)) return null;
 		sqlQuery=sqlQuery.replaceFirst("(?i)from", "from");
 		int f=sqlQuery.indexOf("from");
@@ -162,7 +164,7 @@ public class DBQueryManager extends BaseUtil{
 			j=sqlQuery.indexOf(",",x+1);
 		}
 		String countQuery="select count(*) from ("+sqlQuery.substring(0,x)+" "+sqlQuery.substring(f)+") as rpt";
-		//System.out.println(countQuery);
+		//log.debug(countQuery);
 		return countQuery;
 	}
 	
@@ -174,11 +176,11 @@ public class DBQueryManager extends BaseUtil{
 		try {
 			List resultList = new LinkedList();
 			session = ConnectionFactory.getInstance().getSession();
-			System.out.println("Executing Update query :>> ["+sqlQuery+"] ");
+			log.debug("Executing Update query :>> ["+sqlQuery+"] ");
 			ps = session.connection().prepareStatement(sqlQuery);	
 			return ps.executeUpdate();
 		}catch (Exception e) {
-			System.err.println("Exception" + e.getMessage());
+			log.error("Exception during executing update " + e.getMessage());
 			throw new RuntimeException(e);
 		} finally {
 			if (session != null) {

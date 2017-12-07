@@ -146,6 +146,7 @@ public class StatisticManager extends BaseUtil {
 		//data.put("periodValue", "$GE|-3");
 		//data.put("periodValue", "$BT|10|12");
 		data.put("periodValue", "$BT|-6|0");
+		
 		Map<String,String> filter=new HashMap<String,String>();
 		filter.put("auditTrail.done_by", "$EQ|admin");
 		//filter.put("auditTrail.done_by","$LK|admin%");
@@ -154,6 +155,10 @@ public class StatisticManager extends BaseUtil {
 		try{
 		System.out.println("filter = "+constructPeriodFilter("audit_time",(String) data.get("periodValue"),(String)data.get("reportPeriod")));
 		System.out.println("add = "+constructQuery("auditTrail","done_by","$EQ|admin"));
+		
+		String sqlQuery="select done_by, entity, to_char(date_trunc('week', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq from audit_trail auditTrail  WHERE 1=1  AND audit_time > now() - interval '1 month'  group by 1,2,3";
+
+		System.out.println("COUNT Query =["+DBQueryManager.createCountQuery(sqlQuery)+"]");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

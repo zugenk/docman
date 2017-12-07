@@ -209,7 +209,10 @@ public class ACLManager extends BaseUtil{
 					description="Authorized as Owner on Private Resource";
 					return true;
 				}
-				
+				if("create".equals(action)){
+					description="Authorized to create on Private owned Resource";
+					return true;
+				}
 				if(isOwner) {
 					description="Authorized as Owner on Private Resource";
 					return true;
@@ -220,6 +223,11 @@ public class ACLManager extends BaseUtil{
 
 //			if ("DOCUMENT".equals(aclMode)){
 			if ("Document".equals(entity.getString("modelClass"))){
+				if("create".equals(action)){
+					description="Authorized to create  self owned Document Resource";
+					return true;
+				}
+				
 				if ("list|search".contains(action)){
 					description="Limited list/search to Document";
 					return true;

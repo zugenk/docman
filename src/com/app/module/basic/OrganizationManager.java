@@ -98,8 +98,10 @@ public class OrganizationManager extends BaseUtil {
 		updateFromMap(obj, data,errors);
 		obj.setCreatedBy(passport.getString("loginName"));
 		obj.setCreatedDate(new Date());
-		obj.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
+		obj.setLastUpdatedBy(obj.getCreatedBy());
+		obj.setLastUpdatedDate(obj.getCreatedDate());
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("Organization", "new"));
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		OrganizationService.getInstance().add(obj);
 		return toDocument(obj);
