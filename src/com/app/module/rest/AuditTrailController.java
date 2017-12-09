@@ -35,7 +35,7 @@ public class AuditTrailController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			
 			
@@ -57,7 +57,7 @@ public class AuditTrailController extends BaseUtil{
 			@PathVariable(value="ID") String userId) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			
 			
@@ -78,7 +78,7 @@ public class AuditTrailController extends BaseUtil{
 			@PathVariable(value="ID") String userId) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			
 			response.put("ipassport",iPass.get("ipassport"));
@@ -96,13 +96,14 @@ public class AuditTrailController extends BaseUtil{
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> read(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/auditTrail/"+objId+"/ ="+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",AuditTrailManager.read(iPass, objId));
@@ -117,13 +118,14 @@ public class AuditTrailController extends BaseUtil{
 	
 	@RequestMapping(value = "list",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> list(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/announcement/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", AuditTrailManager.list(iPass, dataMap));
@@ -143,7 +145,7 @@ public class AuditTrailController extends BaseUtil{
 			@PathVariable(value="type") String type) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			List result=AuditTrailService.getInstance().findbyType(type);
 			AuditTrailManager.toDocList(result);
@@ -164,7 +166,7 @@ public class AuditTrailController extends BaseUtil{
 			@PathVariable(value="code") String code) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",AuditTrailManager.toDocument(AuditTrailService.getInstance().getByTypeandCode(type, code)));
 			return reply(response);  

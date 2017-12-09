@@ -28,11 +28,12 @@ public class LoginController  extends BaseUtil{
 	
 	@RequestMapping(value = "action/login",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> login(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport,basicAuth); 
+			Document iPass=LoginManager.authenticate(itoken,ipassport,basicAuth); 
 			if(iPass==null)	{
 				response.put("errorMessage", "error.authentication.failed");
 			} else {

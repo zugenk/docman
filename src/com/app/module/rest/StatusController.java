@@ -31,12 +31,13 @@ public class StatusController extends BaseUtil{
 /*	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> create(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			
 			
@@ -52,13 +53,14 @@ public class StatusController extends BaseUtil{
 	
 	@RequestMapping(value = "{ID}/update",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> update(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap,
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			
 			
@@ -74,12 +76,13 @@ public class StatusController extends BaseUtil{
 	
 	@RequestMapping(value = "{ID}/delete",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> delete(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			
 			response.put("ipassport",iPass.get("ipassport"));
@@ -97,13 +100,14 @@ public class StatusController extends BaseUtil{
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> detail(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/status/"+objId+"/ ="+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",StatusManager.detail(iPass, objId));
 			return reply(response);  
@@ -117,13 +121,14 @@ public class StatusController extends BaseUtil{
 	
 	@RequestMapping(value = "list",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> list(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/status/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", StatusManager.list(iPass, dataMap));
@@ -138,13 +143,14 @@ public class StatusController extends BaseUtil{
 	
 	@RequestMapping(value = "/list/{type}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> listByType(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="type") String type) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/status/list/"+type+" ="+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", StatusManager.findByType(iPass, type));
 			return reply(response);  
@@ -157,14 +163,15 @@ public class StatusController extends BaseUtil{
 	
 	@RequestMapping(value = "/{type}/{code}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getByTypeandCode(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="type") String type,
 			@PathVariable(value="code") String code) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/status/"+type+"/"+code+" ="+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",StatusManager.getByTypeAndCode(iPass, type, code));
 			return reply(response);  

@@ -32,7 +32,7 @@ public class PassportManager extends BaseUtil{
 
 private static Logger log = Logger.getLogger(PassportManager.class.getName());
 	
-	public static Document issuePassport(User user) throws Exception{
+	public static Document issuePassport(User user,String itoken) throws Exception{
 		Document iPass=null;
 		iPass=checkLastPassport(user.getId());
 		if (iPass==null) {
@@ -65,6 +65,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 //		iPass.put("roleNames", UserManager.getRoleNames(user)); 
 //		System.out.println(Utility.debug(iPass));
 		iPass.put("lastAccess", System.currentTimeMillis());
+		if(!nvl(itoken)) iPass.put("itoken",itoken);
 		savePassport(iPass,null);
 		return iPass;
 	}
@@ -117,7 +118,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			updateDoc.append("$set", updatePart);
 		} else {
 			updateDoc.append("$set", iPass); //.remove("_id")
-		}
+		}	
 //		FindOneAndReplaceOptions opt=new FindOneAndReplaceOptions();
 //		opt.upsert(true);
 //		Document result=MongoManager.getCollection(IPASSPORT_COLLECTION).findOneAndReplace(query, iPass,opt); 
@@ -141,6 +142,17 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			//savePassport(iPass,new Document("lastAccess", System.currentTimeMillis()));
 			log.debug("PASSPORT CHECKED OK ="+iPass.getString("ipassport"));
 		}
+		return iPass;
+	}
+	
+	public static Document checkPassportByToken(String itoken) throws Exception{
+		init();
+		Document searchQ=new Document("itoken", itoken).append("lastAccess", new Document("$gte", (System.currentTimeMillis()-SESSION_TIMEOUT_PERIOD)));
+		Document iPass= MongoManager.getCollection(IPASSPORT_COLLECTION).find(searchQ).first();
+		if (iPass!=null) {
+			savePassport(iPass,new Document("lastAccess", System.currentTimeMillis()));
+			log.debug("PASSPORT CHECKED OK ="+iPass.getString("ipassport"));
+		} else  log.debug("TOKEN INVALID "+itoken);
 		return iPass;
 	}
 	
@@ -177,7 +189,7 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 			System.out.println("==========================================================================================");
 			*/
 			
-			PartialList result=ForumService.getInstance().getPartialList(null,null, 0,20);
+		/*	PartialList result=ForumService.getInstance().getPartialList(null,null, 0,20);
 			System.out.println("lewat kok");
 			ForumManager.toDocList(result);
 			for (Iterator iterator = result.iterator(); iterator.hasNext();) {
@@ -185,6 +197,8 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 				System.out.println(Utility.debug(user));
 			}
 			System.out.println("showing "+result.getStart()+" to "+(result.getStart()+result.getCount())+" of "+result.getTotal());
+*/
+			System.out.println(RandomStringUtils.randomAlphanumeric(64));
 			//System.out.println(Utility.debug(lsUsr));
 			//MongoManager.getCollection("Testing").insertOne(new Document("Nama","Martin").append("Role","Manager"));
 			//System.out.println(Utility.debug(MongoManager.find("Testing", new Document()).first()));

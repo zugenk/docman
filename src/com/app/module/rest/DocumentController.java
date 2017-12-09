@@ -58,12 +58,13 @@ public class DocumentController extends BaseUtil{
 
 	@RequestMapping(value = "tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getTree(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth) {
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/tree = "+ipassport); 
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getTree(iPass,null));
 			return reply(response);  
@@ -75,13 +76,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "/{ID}/tree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getTree(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+startId+"/tree = "+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getTree(iPass,startId));
 			return reply(response);  
@@ -93,13 +95,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "/{ID}/fullTree",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getFullTree(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+startId+"/fullTree = "+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getFullTree(iPass,startId));
 			return reply(response);  
@@ -111,13 +114,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "/{ID}/pushTree",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> pushTree(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+startId+"/pushTree = "+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			List result=DocumentManager.getFullTree(iPass,startId);
 			response.put("result",result); //DocumentManager.getFullTree(iPass,startId));
@@ -132,14 +136,15 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "/{ID}/downline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getDownline(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String startId
 			) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+startId+"/downline = "+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getDownline(iPass,startId));
 			return reply(response);  
@@ -151,13 +156,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "/{ID}/upline",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getUpline(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String startId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+startId+"/upline = "+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.getUpline(iPass,startId));
 			return reply(response);  
@@ -171,13 +177,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "myList",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> myList(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestParam(value = "start", required = false) String start) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/myList = "+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			log.debug(" My Document list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", DocumentManager.myList(iPass, start));
@@ -192,14 +199,15 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "ownBy/{userId}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> ownBy(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="userId") String userId,
 			@RequestParam(value = "startIdx", required = false) String start) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/ownBy/"+userId+" = "+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			log.debug(" My Document list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", DocumentManager.ownBy(iPass,toLong(userId), start));
@@ -215,13 +223,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "create",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> create(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/create/="+ipassport+" dataMap="+Utility.debug(dataMap));
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.create(iPass, dataMap));
 			return reply(response); 
@@ -233,14 +242,15 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "{ID}/update",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> update(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap,
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+objId+"/update/="+ipassport+" dataMap="+Utility.debug(dataMap));
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.update(iPass, dataMap, objId));
 			return reply(response); 
@@ -252,13 +262,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "{ID}/delete",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> delete(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+objId+"/delete/="+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			DocumentManager.delete(iPass, objId);
 			response.put("ipassport",iPass.get("ipassport"));
 			return reply(response); 
@@ -270,13 +281,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> detail(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/"+objId+"/ ="+ipassport);
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",DocumentManager.detail(iPass, objId));
 			return reply(response); 
@@ -288,13 +300,14 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "list",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> list(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/document/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", DocumentManager.list(iPass, dataMap));
 			return reply(response); 
@@ -308,12 +321,13 @@ public class DocumentController extends BaseUtil{
     
     @RequestMapping(value = "/repoFolder/{folderName}", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> repoFolder(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable("folderName") String folderName) {
     	Document response=new Document();
     	try {
-    		Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+    		Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response=DocumentManager.getRepoFolder(iPass, folderName);
 	        return reply(response);
 		} catch (Exception e) {
@@ -328,13 +342,15 @@ public class DocumentController extends BaseUtil{
 	//public @ResponseBody ResponseEntity<String> repoDl(@PathVariable("fileId") String fileId) {
 	public @ResponseBody ResponseEntity<?> repoDl(
 		@PathVariable(value="fileId") String fileId,
-		@RequestParam(value="ipassport", defaultValue="") String ipassport,
+		@RequestHeader(value="itoken", required = false) String itoken,
+		@RequestHeader(value="ipassport", required = false) String ipassport,
+		@RequestHeader(value="Authorization", required = false) String basicAuth,
 		@RequestParam(value="mode", required=false) String mode) {	
 		//String errorMessage="";
 		Document response=new Document();
 		try {
 			log.debug("/v1/document/repoDl/"+fileId);
-			Document iPass=LoginManager.authenticate(ipassport, null);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, null);
 			DocumentManager.downByRepoId(iPass, fileId);
 			
 //			RestTemplate restTemplate=new RestTemplate();
@@ -354,12 +370,13 @@ public class DocumentController extends BaseUtil{
 	
 	@RequestMapping(value = "byRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> byRepo(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="fileId") String fileId) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));
@@ -473,12 +490,14 @@ public class DocumentController extends BaseUtil{
 /*	
 	@RequestMapping(value = "getRepo/{fileId}",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getRepo(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
 			@PathVariable(value="fileId") String fileId) {
 		Document response=new Document();
 		try {
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			log.debug(" Get Document by RepoId["+fileId+"] done by"+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", DocumentManager.getByRepoId(iPass, fileId));

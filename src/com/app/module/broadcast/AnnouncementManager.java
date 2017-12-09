@@ -73,7 +73,7 @@ public class AnnouncementManager extends BaseUtil {
 		AnnouncementService.getInstance().update(obj);
 	}
 
-	public static Document read(Document passport,String objId) throws Exception {
+	public static Document detail(Document passport,String objId) throws Exception {
 		//log.debug("Read obj["+objId+" "+passport.getString("loginName"));
 		//long usrId= Long.parseLong(objId);
 		Announcement obj=AnnouncementService.getInstance().get(toLong(objId));

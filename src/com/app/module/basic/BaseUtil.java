@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.bson.Document;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +55,8 @@ public class BaseUtil {
 	//private static boolean inited=false;
 
 	static long SESSION_TIMEOUT_PERIOD=600000; //10 Mins
+	public static Map<String,String> APIKEY_MAP= new HashMap<String,String>();
+	
 	
 	public static void init() {
 		if(inited) return;
@@ -71,9 +75,17 @@ public class BaseUtil {
 			REPO_BASE_URL=repoParam.get("REPO_BASE_URL").getSvalue();
 			RESOURCE_URL=repoParam.get("RESOURCE_URL").getSvalue(); 
 			REPO_API_KEY=repoParam.get("REPO_API_KEY").getSvalue(); 
+			
+			Map<String, SystemParameter> tokenApiParam=ApplicationConstant.getSystemParamMap("API_TOKEN");
+			for (Iterator iterator = tokenApiParam.values().iterator(); iterator.hasNext();) {
+				SystemParameter sParam = (SystemParameter) iterator.next();
+				APIKEY_MAP.put(sParam.getParameter(), sParam.getSvalue());
+			}
+//			APIKEY_MAP.put("VeritaKM-FE", "r02u7JZu2p7uGMdQKCycCrsM6pANO34E");
 			MongoManager.init(MONGO_DB_CFG);
 		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
 		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
+		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("itoken", 1),new IndexOptions().unique(true).name("UniqueIToken"));
 
 			BLOCKED_USER_STATUS=ApplicationConstant.getStatus("User", "blocked");	
 		    inited=true;

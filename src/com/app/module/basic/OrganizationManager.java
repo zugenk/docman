@@ -272,12 +272,10 @@ public class OrganizationManager extends BaseUtil {
 		}
 	}
 	
-	public static void checkValidity(User obj,List errors) {
+	public static void checkValidity(Organization obj,List errors) {
 		//login_name,login_password,userLevel,name
-		if (obj.getLoginName()==null) errors.add("error.loginName.null");
-		if (obj.getUserLevel()==null) errors.add("error.userLevel.null");
+//		if (obj.getLoginName()==null) errors.add("error.loginName.null");
+//		if (obj.getUserLevel()==null) errors.add("error.userLevel.null");
 		if (obj.getName()==null) errors.add("error.name.null");
 	}
-
-	
 }

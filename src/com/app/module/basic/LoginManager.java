@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionError;
 import org.bson.Document;
@@ -23,37 +25,55 @@ import com.app.shared.ApplicationFactory;
 import com.meterware.httpunit.HttpHeader;
 import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
+import com.thoughtworks.xstream.core.util.Base64Encoder;
 
 public class LoginManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(LoginManager.class.getName());
 	
 	
+	public static Document loginWithToken(String itoken) throws Exception{
+		init();
+		String apiToken=null;
+		String nip=null;
+		try{
+			apiToken=new String(Base64.getDecoder().decode(itoken));
+			nip=apiToken.substring(apiToken.lastIndexOf(":")+1);
+			apiToken=apiToken.substring(0, apiToken.indexOf("::"));
+			System.out.println(apiToken+"::"+nip);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("error.invalid.token");
+		}
+		if (!APIKEY_MAP.containsValue(apiToken)) throw new Exception("error.invalid.token");
+		User loginUser = null;
+		loginUser = UserService.getInstance().getBy(" AND user.employeeNumber = '"+nip+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
+		if(loginUser==null) throw new Exception("error.login.notFound");
+	 	Document iPass=PassportManager.issuePassport(loginUser,itoken);
+	 	if(iPass.get("_id")==null){
+	 	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
+		 	PassportManager.savePassport(iPass,new Document("loginHistId", lhId));
+	 	}
+	 	return iPass;
+	}
+	
 	public static Document login(String loginName,String passwd) throws Exception{
 		init();
-		UserService userService = UserService.getInstance();
-		
 		User loginUser = null;
-		loginUser = userService.getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
+		loginUser = UserService.getInstance().getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
 		if(loginUser==null) throw new Exception("error.login.failed");
-//		log.debug(Utility.debug(loginUser));
-		
 		String encriptedPassword=ApplicationFactory.encrypt(passwd);
-	 	//String encriptedPassword=pwd;
 	 	if(!encriptedPassword.equals(loginUser.getLoginPassword())){
 	 		recordLoginHistory(loginUser,"rejected",null,"Wrong Password");
 	 		UserManager.incrementLoginCounter(loginUser);
 	 		throw new Exception("error.login.password");
 	 	} 
-	 	Document iPass=PassportManager.issuePassport(loginUser);
+	 	Document iPass=PassportManager.issuePassport(loginUser,null);
 	 	if(iPass.get("_id")==null){
 	 	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
-		 	//iPass.put("loginHistId",lhId);
 		 	PassportManager.savePassport(iPass,new Document("loginHistId", lhId));
 	 	}
-	 	//iPass.put("loginUser",loginUser);
 	 	return iPass;
 	}
-	
 	
 	
 	public static Document loginWithBasicAuth(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
@@ -131,24 +151,22 @@ public class LoginManager extends BaseUtil{
 	
 	
 	public static Document authHeader(HttpHeaders httpHeaders) throws Exception{
-		return authenticate(httpHeaders.getFirst("ipassport"), httpHeaders.getFirst("Authorization"));
+		return authenticate(httpHeaders.getFirst("itoken"),httpHeaders.getFirst("ipassport"), httpHeaders.getFirst("Authorization"));
 	}
 	
-	public static Document authenticate(String ipassport, String basicAuth) throws Exception{
-		log.debug("Authenticate ["+ipassport+":"+basicAuth+"]");
+	public static Document authenticate(String itoken,String ipassport, String basicAuth) throws Exception{
+		log.debug("Authenticate ["+itoken+":"+ipassport+":"+basicAuth+"]");
 		Document iPass=null;
-		if(ipassport !=null && ipassport.length()>0) {
-			try {
-				iPass=PassportManager.checkPassport(ipassport);
-			} catch (Exception e) {
-			}
+		if(!nvl(itoken)){
+			iPass=PassportManager.checkPassportByToken(itoken);
+			if(iPass==null) iPass=loginWithToken(itoken);
+		}
+		if(iPass==null && !nvl(ipassport)){ 
+			iPass=iPass=PassportManager.checkPassport(ipassport);
 		} 
 		
-		if (iPass==null && basicAuth!=null && basicAuth.length()>0) {
-			try {
-				iPass=LoginManager.loginWithBasicAuth(basicAuth);
-			} catch (Exception e) {
-			}
+		if (iPass==null && !nvl(basicAuth)){ 
+			iPass=LoginManager.loginWithBasicAuth(basicAuth);
 		}
 		if (iPass==null) throw new Exception("error.session.invalid");
 		return iPass;
@@ -160,10 +178,10 @@ public class LoginManager extends BaseUtil{
 		if(!nvl(ipassport)) PassportManager.logoutPassport(ipassport);
 	}
 
-	public static ResponseEntity<Map> preFilter(Map map,String ipassport, String basicAuth, String uri) {
+	public static ResponseEntity<Map> preFilter(Map map,String itoken,String ipassport, String basicAuth, String uri) {
 		try {
 			log.debug("["+ipassport+"] - payload : "+map);
-			Document iPass=authenticate(ipassport,basicAuth); 
+			Document iPass=authenticate(itoken,ipassport,basicAuth); 
 			if(iPass==null)	{
 				log.debug("["+ipassport+"] - Login Failed");
 				map.put("errorMessage", "error.authentication.failed");
@@ -180,10 +198,19 @@ public class LoginManager extends BaseUtil{
 	}
 	
 	public static void main(String[] args) {
-		LoginManager lm=new LoginManager();
-		String bauth=lm.makeBasicAuth("admin","admin");
+//		LoginManager lm=new LoginManager();
+//		String bauth=lm.makeBasicAuth("admin","admin");
 		try {
-			lm.loginWithBasicAuth(bauth);
+//			lm.loginWithBasicAuth(bauth);
+			
+			String itoken= "r02u7JZu2p7uGMdQKCycCrsM6pANO34E::"+System.currentTimeMillis()+":"+"1111111111111111";
+			System.out.println("itoken=["+itoken+"]");
+			String enc=Base64.getEncoder().encodeToString(itoken.getBytes());
+			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI3NDYyNjAxMjI6MTExMTExMTExMTExMTExMQ==";
+			System.out.println("enc=["+enc+"]");
+			System.out.println("dec=["+new String(Base64.getDecoder().decode(enc.getBytes()))+"]");
+			
+			//[{"key":"itoken","value":"cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI3NDYyNjAxMjI6MTExMTExMTExMTExMTExMQ==","description":""}]
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

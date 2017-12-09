@@ -31,15 +31,16 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 
 /*	@RequestMapping(value = "/activity",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> activity(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestParam(value="perPeriod", defaultValue="day") String perPeriod,
 			@RequestParam(value="reportIntv", defaultValue="1 month") String reportIntv,
 			@RequestParam(value="start", required=false) String start ) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/report/activity = "+ipassport);			
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result",StatisticManager.getUserStatistic(perPeriod, reportIntv,start));
 			return reply(response);  
@@ -51,13 +52,14 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 	
 	@RequestMapping(value = "/activity",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> activity(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/report/activity = "+ipassport);			
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result",StatisticManager.getUserStatistic(iPass,dataMap));
 			return reply(response);  
@@ -68,15 +70,16 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 	}
 /*	@RequestMapping(value = "/login",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> login(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestParam(value="perPeriod", defaultValue="day") String perPeriod,
 			@RequestParam(value="reportIntv", defaultValue="1 month") String reportIntv,
 			@RequestParam(value="start", required=false) String start ) { 
 		Document response=new Document();
 		try {
 			log.trace("/v1/report/login = "+ipassport);			
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result",StatisticManager.getLoginStat(perPeriod, reportIntv,start));
 			return reply(response);  
@@ -88,13 +91,14 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 */	
 	@RequestMapping(value = "/login",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> login(
-			@RequestHeader(value="ipassport", defaultValue="") String ipassport,
-			@RequestHeader(value="Authorization", defaultValue="") String basicAuth,
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/report/login = "+ipassport);			
-			Document iPass=LoginManager.authenticate(ipassport, basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result",StatisticManager.getLoginStat(iPass,dataMap));
 			return reply(response);  
