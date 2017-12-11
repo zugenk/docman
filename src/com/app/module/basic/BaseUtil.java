@@ -85,7 +85,7 @@ public class BaseUtil {
 			MongoManager.init(MONGO_DB_CFG);
 		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
 		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
-		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("itoken", 1),new IndexOptions().unique(true).name("UniqueIToken"));
+		  //  MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("itoken", 1),new IndexOptions().unique(true).name("UniqueIToken"));
 
 			BLOCKED_USER_STATUS=ApplicationConstant.getStatus("User", "blocked");	
 		    inited=true;

@@ -20,6 +20,7 @@ import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.TopicService;
 import com.app.docmgr.service.UserService;
 import com.app.module.forum.TopicManager;
+import com.app.shared.ApplicationConstant;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
@@ -41,8 +42,32 @@ public class UserManager extends BaseUtil{
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
 		checkValidity(obj,errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
-		assignNewPassword(obj);
+		assignNewPassword(obj,true);
 		UserService.getInstance().add(obj);
+		return toDocument(obj);
+	}
+	
+	public static Document syncUser(Map<String, Object> data) throws Exception {
+		//log.trace("Legacy User ="+Utility.debug(data));
+		List<String> errors=new LinkedList<String>();
+		Map profile= (Map) data.get("profile");
+		User obj=UserService.getInstance().getBy(" AND user.loginName='"+profile.get("nip_baru")+"' ");
+		if (obj==null) obj= new User();
+		updateFromSIP(obj, profile,errors);
+		obj.setCreatedBy((String)profile.get("nip_baru"));
+		obj.setCreatedDate(new Date());
+		
+		obj.setLastUpdatedBy(obj.getCreatedBy());
+		obj.setLastUpdatedDate(obj.getCreatedDate());
+		obj.setLoginName((String) profile.get("nip_baru"));
+		ACLManager.isAuthorize(null,ACL_MODE, ACLManager.ACTION_CREATE, "syncUserSIP", toDocument(obj));
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
+		checkValidity(obj,errors);
+		if(!errors.isEmpty()) throw new Exception(listToString(errors));
+		assignNewPassword(obj,false);
+	//	System.out.println(Utility.debug(obj));
+		if(obj.getId()==null) UserService.getInstance().add(obj);
+		else UserService.getInstance().update(obj);
 		return toDocument(obj);
 	}
 	
@@ -134,7 +159,7 @@ public class UserManager extends BaseUtil{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj));
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		obj.setLastUpdatedDate(new Date());
-		assignNewPassword(obj);
+		assignNewPassword(obj,true);
 		UserService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -146,16 +171,16 @@ public class UserManager extends BaseUtil{
 		ACLManager.isAuthorize(null,ACL_MODE, ACLManager.ACTION_UPDATE, "resetPassword", toDocument(obj));
 		obj.setLastUpdatedBy("SYSTEM");
 		obj.setLastUpdatedDate(new Date());
-		assignNewPassword(obj);
+		assignNewPassword(obj,true);
 		UserService.getInstance().update(obj);
 		return toDocument(obj);
 	}
 	
-	private static void assignNewPassword(User obj) throws Exception{
+	private static void assignNewPassword(User obj,boolean sendMail) throws Exception{
 		String newPwd=genRandomText(12);
 		String encriptedPassword=ApplicationFactory.encrypt(newPwd);
 		obj.setLoginPassword(encriptedPassword);
-		sendNewPwd(obj,newPwd);
+		if(sendMail) sendNewPwd(obj,newPwd);
 	}
 	
 	public static void sendNewPwd(User user,String newPwd) {
@@ -231,6 +256,135 @@ public class UserManager extends BaseUtil{
 		return result;
 	}
 	
+	
+	private static void updateFromSIP(User obj, Map data,List<String> errors) {
+		/*
+		 *{
+	"status" : 1,
+  "pesan" : "Sukses",
+  "token" : "4664370e4af91052e0e92113d6cb25f9aaf5c5a0",
+  "user" : {
+    "row_id" : 242,
+    "user" : "196402051989031001",
+    "pass" : "09039ee80d5f4342b4244de63422e90d",
+    "admin" : 0
+  },
+  "profile" : {
+    "row_id" : 9,
+    "nip_lama" : "",
+    "nip_baru" : "196402051989031001",
+    "instansi_induk" : "Badan Nasional Penanggulangan Terorisme",
+    "instansi_asal" : "Kementerian Luar Negeri",
+    "stts_pegawai" : "Organik",
+    "unit_kerja" : "3",
+    "gelar_depan" : "",
+    "nm_lengkap" : "Mohamad Kamal",
+    "gelar_belakang" : "SH.LL.M",
+    "jabatan" : "Staf Khusus Biro Umum",
+    "pendidikan" : "S II",
+    "pangkat" : "PEMBINA TK.I IV/B",
+    "angkatan" : "PNS",
+    "korps_tni" : "",
+    "sumber_pa" : "",
+    "tpt_lahir" : "Jakarta",
+    "tgl_lahir" : "1964-02-05",
+    "status_nikah" : "Menikah",
+    "agama" : "Islam",
+    "jns_kelamin" : "Laki - laki",
+    "gol_darah" : "O",
+    "no_karis" : "",
+    "no_karpeg" : "E 744277",
+    "no_taspen" : "0000038162529",
+    "no_askes" : "0000038162529",
+    "no_npwp" : "05.939.719.0-025.000",
+    "data_rekbank" : "001201152504509",
+    "email" : "adekamal@gmail.com",
+    "no_tlp_kntr" : "",
+    "no_tlp_rmh" : "",
+    "no_hp" : "081290331864",
+    "no_randis" : "",
+    "no_kpi" : "",
+    "no_kta" : "",
+    "no_label_sec" : "",
+    "no_ktp" : 0,
+    "foto" : "20171026154323.jpg",
+    "status" : 1
+  }
+}
+		 * 
+		 */
+		try {
+			obj.setEmail((String) data.get("email"));
+			obj.setEmployeeNumber(toString(data.get("nip_baru")));
+			obj.setFullName((String) data.get("nm_lengkap"));
+			obj.setHomePhoneNumber(toString(data.get("no_tlp_rmh")));
+			obj.setMobileNumber(toString(data.get("no_tlp_kntr")));
+			obj.setMobilePhoneNumber(toString(data.get("no_hp")));
+			obj.setName((String) data.get("nm_lengkap"));
+			obj.setTitle((String) data.get("gelar_depan"));
+		//	obj.setAlias((String) data.get("alias"));
+//			if(obj.getName()==null){
+//				obj.setName((obj.getAlias()!=null?obj.getAlias():obj.getFullName())); 
+//			}
+			//DEFAULTED
+			//Lookup userLevel= LookupService.getInstance().getByTypeandCode("userLevel", "customer"));
+			//if(userLevel!=null) 
+			obj.setUserLevel(ApplicationConstant.getLookup("userLevel", "customer"));
+			
+/*
+		if(!nvl(data.get("organizationId"))){
+			try {
+				Organization org= OrganizationService.getInstance().get(toLong(data.get("organizationId")));
+				if(org!=null)obj.setOrganization(org);
+			} catch (Exception e) {
+				errors.add("error.invalid.organization");
+			}
+		}
+		if(!nvl(data.get("positionId"))){
+			try {
+				Lookup position= LookupService.getInstance().get(toLong(data.get("positionId")));
+				if(position!=null) obj.setPosition(position);
+			} catch (Exception e) {
+				errors.add("error.invalid.position");
+			}
+		}
+		if(!nvl(data.get("userLevelId"))){
+			try {
+				//Lookup userLevel= LookupService.getInstance().getByTypeandCode("userLevel", (String)data.get("userLevel"));
+				Lookup userLevel= LookupService.getInstance().get(toLong(data.get("userLevelId")));
+				if(userLevel!=null) obj.setUserLevel(userLevel);
+			} catch (Exception e) {
+				errors.add("error.invalid.userLevel");
+			}
+		}
+		if(!nvl(data.get("securityLevelId"))){
+			try {
+				//Lookup securityLevel= LookupService.getInstance().getByTypeandCode("securityLevel", (String)data.get("securityLevel"));
+				Lookup securityLevel= LookupService.getInstance().get(toLong(data.get("securityLevelId")));
+				if(securityLevel!=null) obj.setSecurityLevel(securityLevel);
+			} catch (Exception e) {
+				errors.add("error.invalid.securityLevel");
+			}
+		}*/
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			errors.add(e.getMessage());
+		}
+
+		/*
+		if(!nvl(data.get("statusId"))){
+			try {
+				Status status= StatusService.getInstance().get(toLong(data.get("statusId")));
+				if(status!=null) obj.setStatus(status);
+			} catch (Exception e) {
+				errors.add("error.invalid.status");
+			}
+		}
+		*/
+
+	}
+	
 	private static void updateFromMap(User obj, Map data,List<String> errors) {
 		try {
 			obj.setEmail((String) data.get("email"));
@@ -297,26 +451,6 @@ public class UserManager extends BaseUtil{
 			}
 		}
 		*/
-//		RoleService.getInstance().getBy("role.name='ADMINISTRATOR'");
-//		obj.setRoles(roles);
-
-//		obj.setPicture(picture);
-//		obj.setFirstLogin("true");
-//		obj.setIPassport(IPassport);
-//		obj.setLanguage(language);
-//		obj.setLastActive(lastActive);
-//		obj.setLastPassword(lastPassword);
-//		obj.setLastPasswordUpdate(lastPasswordUpdate);
-//		obj.setLastPinCode(lastPinCode);
-//		obj.setLastPinCodeUpdate(lastPinCodeUpdate);
-//		obj.setLastReleasedDate(lastReleasedDate);
-//		obj.setLastUpdatedBy(lastUpdatedBy);
-//		obj.setLastUpdatedDate(lastUpdatedDate);
-//		obj.setLoginFailed(loginFailed);
-//		obj.setMaxRelease(maxRelease);
-//		
-//		obj.setPinCode(pinCode);
-//		obj.setSessionCode(sessionCode);
 	}
 	
 	
@@ -426,4 +560,7 @@ public class UserManager extends BaseUtil{
 		if (obj.getUserLevel()==null) errors.add("error.userLevel.null");
 		if (obj.getName()==null) errors.add("error.name.null");
 	}
+	
+	
+	
 }

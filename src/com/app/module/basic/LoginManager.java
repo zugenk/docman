@@ -35,6 +35,14 @@ public class LoginManager extends BaseUtil{
 		init();
 		String apiToken=null;
 		String nip=null;
+	/*	try{
+			apiToken=itoken;
+			nip=itoken; 
+			System.out.println(apiToken+"::"+nip);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("error.invalid.token");
+		}*/
 		try{
 			apiToken=new String(Base64.getDecoder().decode(itoken));
 			nip=apiToken.substring(apiToken.lastIndexOf(":")+1);
@@ -45,8 +53,9 @@ public class LoginManager extends BaseUtil{
 			throw new Exception("error.invalid.token");
 		}
 		if (!APIKEY_MAP.containsValue(apiToken)) throw new Exception("error.invalid.token");
+		
 		User loginUser = null;
-		loginUser = UserService.getInstance().getBy(" AND user.employeeNumber = '"+nip+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
+		loginUser = UserService.getInstance().getBy(" AND user.loginName = '"+nip+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
 		if(loginUser==null) throw new Exception("error.login.notFound");
 	 	Document iPass=PassportManager.issuePassport(loginUser,itoken);
 	 	if(iPass.get("_id")==null){
@@ -203,13 +212,16 @@ public class LoginManager extends BaseUtil{
 		try {
 //			lm.loginWithBasicAuth(bauth);
 			
-			String itoken= "r02u7JZu2p7uGMdQKCycCrsM6pANO34E::"+System.currentTimeMillis()+":"+"1111111111111111";
+			String itoken= "r02u7JZu2p7uGMdQKCycCrsM6pANO34E::"+System.currentTimeMillis()+":"+"admin";
 			System.out.println("itoken=["+itoken+"]");
 			String enc=Base64.getEncoder().encodeToString(itoken.getBytes());
-			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI3NDYyNjAxMjI6MTExMTExMTExMTExMTExMQ==";
+			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI5NzA3MjkzMzQ6bWFydGlu"; martin
+			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI5NzA5MjE5MzQ6YWRtaW4="; admin
+			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI5MzIzNzQ3OTY6MTk4NjExMTAyMDE0MDMxMDAy";
 			System.out.println("enc=["+enc+"]");
 			System.out.println("dec=["+new String(Base64.getDecoder().decode(enc.getBytes()))+"]");
-			
+			//198611102014031002
+			//198611102014031002
 			//[{"key":"itoken","value":"cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI3NDYyNjAxMjI6MTExMTExMTExMTExMTExMQ==","description":""}]
 		} catch (Exception e) {
 			// TODO: handle exception

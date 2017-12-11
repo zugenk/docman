@@ -43,6 +43,27 @@ public class UserController extends BaseUtil{
 		return reply(response);  
 	}
 	
+	@RequestMapping(value = "syncUser",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> syncUser(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@RequestBody final Map dataMap) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/user/syncUser ,  dataMap="+Utility.debug(dataMap));
+			response.put("result",UserManager.syncUser(dataMap));
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			
+		}
+		return reply(response);  
+	}
+	
+		
 	@RequestMapping(value = "{ID}/update",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> update(
 			@RequestHeader(value="itoken", required = false) String itoken,

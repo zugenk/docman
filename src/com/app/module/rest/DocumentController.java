@@ -342,9 +342,9 @@ public class DocumentController extends BaseUtil{
 	//public @ResponseBody ResponseEntity<String> repoDl(@PathVariable("fileId") String fileId) {
 	public @ResponseBody ResponseEntity<?> repoDl(
 		@PathVariable(value="fileId") String fileId,
-		@RequestHeader(value="itoken", required = false) String itoken,
-		@RequestHeader(value="ipassport", required = false) String ipassport,
-		@RequestHeader(value="Authorization", required = false) String basicAuth,
+		@RequestParam(value="itoken", required = false) String itoken,
+		@RequestParam(value="ipassport", required = false) String ipassport,
+		@RequestParam(value="Authorization", required = false) String basicAuth,
 		@RequestParam(value="mode", required=false) String mode) {	
 		//String errorMessage="";
 		Document response=new Document();

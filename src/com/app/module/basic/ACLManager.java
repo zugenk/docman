@@ -136,6 +136,11 @@ public class ACLManager extends BaseUtil{
 		String description=null;
 		String approvedBy=null;
 		if(passport==null) {
+			if("syncUserSIP".equals(subAction) && "User".equals(entity.getString("modelClass")) && "create".equals(action)){
+				description="Authorize anonymous reset Password ";
+				AuditTrailManager.auditLog(null,action+(subAction!=null?":"+subAction:""),entity,description, approvedBy);
+				return true;
+			}
 			if("resetPassword".equals(subAction) && "User".equals(entity.getString("modelClass")) && "update".equals(action)){
 				description="Authorize anonymous reset Password ";
 				AuditTrailManager.auditLog(null,action+(subAction!=null?":"+subAction:""),entity,description, approvedBy);
