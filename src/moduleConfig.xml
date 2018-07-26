@@ -59,18 +59,22 @@
 		<status name="Rejected" code="rejected" state="active" action="reject" description="Rejected "  />
 		<status name="Pending" code="pending" state="active" action="pending" description="Pending "  />
 		<status name="Processed" code="processed" state="active" action="process" description="Processed "  />
+		<status name="Activated" code="activated" state="active" action="activate" description="Activated "  />
 
 		<status name="Deleted" code="deleted" state="inactive" action="delete" description="Deleted " />
 		<status name="Closed" code="closed" state="inactive" action="close" description="Closed "  />
+		<status name="Archived" code="archived" state="inactive" action="archive" description="Archived " />
 		<status name="Removed" code="removed" state="inactive" action="remove" description="Removed "  />
+		<status name="Blocked" code="blocked" state="inactive" action="block" description="Blocked "  />
 		<status name="Cancelled" code="cancelled" state="inactive" action="cancel" description="Cancelled" />
 	</statusList>
 	<action
-		default="create:edit:delete:approve:reject:pending:process:close:cancel"
+		default="create:edit:delete:approve:activate:reject:pending:process:close:cancel:block"
 		mandatory="list:detail"
 		optional="submit:remove"
 	/>
 	<hbm>
+		<mapping resource="hbm/docmgr/Announcement.hbm.xml" />
 		<mapping resource="hbm/docmgr/AuditTrail.hbm.xml" />
 		<mapping resource="hbm/docmgr/EmailLog.hbm.xml" />
 		<mapping resource="hbm/docmgr/Folder.hbm.xml" />
@@ -95,11 +99,14 @@
 		<mapping resource="hbm/docmgr/SystemSequence.hbm.xml" />
 		<mapping resource="hbm/docmgr/User.hbm.xml" />
 		<mapping resource="hbm/docmgr/UserHistory.hbm.xml" />
+		<mapping resource="hbm/docmgr/Wiki.hbm.xml" />
+		<mapping resource="hbm/docmgr/WikiHistory.hbm.xml" />
 
 
 	</hbm>
 	<web>
 		<segment name="public" secured="yes" privilegeBase="" privilegeCache="yes">
+			<mapping resource="hbm/docmgr/Announcement.hbm.xml" />
 			<mapping resource="hbm/docmgr/AuditTrail.hbm.xml" />
 			<mapping resource="hbm/docmgr/EmailLog.hbm.xml" />
 			<mapping resource="hbm/docmgr/Folder.hbm.xml" />
@@ -124,9 +131,12 @@
 			<mapping resource="hbm/docmgr/SystemSequence.hbm.xml" />
 			<mapping resource="hbm/docmgr/User.hbm.xml" />
 			<mapping resource="hbm/docmgr/UserHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/Wiki.hbm.xml" />
+			<mapping resource="hbm/docmgr/WikiHistory.hbm.xml" />
 
 		</segment>
 		<segment name="admin" secured="yes" privilegeBase="ADMIN" privilegeCache="no">
+			<mapping resource="hbm/docmgr/Announcement.hbm.xml" />
 			<mapping resource="hbm/docmgr/AuditTrail.hbm.xml" />
 			<mapping resource="hbm/docmgr/EmailLog.hbm.xml" />
 			<mapping resource="hbm/docmgr/Folder.hbm.xml" />
@@ -151,6 +161,8 @@
 			<mapping resource="hbm/docmgr/SystemSequence.hbm.xml" />
 			<mapping resource="hbm/docmgr/User.hbm.xml" />
 			<mapping resource="hbm/docmgr/UserHistory.hbm.xml" />
+			<mapping resource="hbm/docmgr/Wiki.hbm.xml" />
+			<mapping resource="hbm/docmgr/WikiHistory.hbm.xml" />
 
 		</segment>
 	</web>

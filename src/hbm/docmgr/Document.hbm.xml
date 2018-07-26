@@ -66,6 +66,13 @@
 			length="1000"
 		/>
 		<property
+			name="tag"
+			column="tag"
+			type="string"
+			not-null="false"
+			length="4000"
+		/>
+		<property
 			name="priority"
 			column="priority"
 			type="integer"

@@ -20,8 +20,11 @@ import com.app.docmgr.service.OrganizationService;
 import com.app.docmgr.service.SharedDocumentService;
 import com.app.docmgr.service.UserService;
 import com.app.module.security.AuditTrailManager;
+import com.simas.webservice.Utility;
 
 public class ACLManager extends BaseUtil{
+	private static Logger log = Logger.getLogger(ACLManager.class.getName());
+	
 	public static String DOCMAN_PACKAGE="com.app.docmgr.model";
 	public static String ACTION_CREATE="create";
 	public static String ACTION_DETAIL="detail";
@@ -32,8 +35,8 @@ public class ACLManager extends BaseUtil{
 	public static String ACTION_SEARCH="search";
 	public static String ACTION_SHARE="share";
 	public static String ACTION_CLOSE="close";
-	public static String ACTION_ARCHIVE="archived";
-	
+	public static String ACTION_ARCHIVE="archive";
+	public static String ACTION_RESTORE="restore";
 	
 	/*
 	
@@ -82,7 +85,7 @@ public class ACLManager extends BaseUtil{
 	*/
 	
 	private boolean isSibling(User owner, User guest) {
-		return guest.getOrganization().getId()==owner.getUserLevel().getId();
+		return guest.getOrganization()==owner.getOrganization();
 	}
 	
 	public static boolean isDownlineOf(Long orgId, Long targetOrgId) {
@@ -151,24 +154,53 @@ public class ACLManager extends BaseUtil{
 			throw new Exception("error.forbidden");
 			
 		}
-		String loginUserName= passport.getString("loginName");
-		String loginUserLevel= passport.getString("userLevel");
+
+		String loginUserLevel= passport.getString("userLevelCode");
 		Long loginUserOrgId=passport.getLong("organizationId");
 		Long loginUserId=passport.getLong("userId");
-		String createdBy=entity.getString("createdBy");
 		
-		Long ownerId=new Long(0);
-		
-		
-		ownerId=toLong(entity.get("ownerId"),0);
-		boolean isOwner=(ownerId>0?loginUserId==ownerId: loginUserName.equals(createdBy));
+		Long ownerId=toLong(entity.get("ownerId"),-1);
+		Map createdBy=(Map) entity.get("createdBy");
+		if (ownerId<0 && createdBy!=null) ownerId=(Long) createdBy.get("id");
+		if(ownerId<0 && !nvl(entity.get("subscriberId"))) ownerId=toLong(entity.get("subscriberId"),-2);
+
+		boolean isOwner=(ownerId>0 && ownerId.longValue()==loginUserId);  //(ownerId>0?loginUserId==ownerId:loginUserId==createdById); //loginUserName.equals(createdBy));
 		boolean isAdmin="admin".equals(loginUserLevel);
 		boolean isExecutive="executive".equals(loginUserLevel);
+		log.trace(Utility.debug(entity));
+		log.trace("ownerId=["+ownerId +"] , loginUserLevel=["+ loginUserLevel+"] , loginUserId=["+loginUserId+"] , loginUserOrgId=["+loginUserOrgId+"]");
+		log.trace("longValue=> isOwner["+isOwner+"] , isAdmin["+isAdmin+"] , isExecutive["+isExecutive+"]");
 		try {
+			//OVERRIDE
+			if("Database".equals(entity.getString("modelClass"))) {
+				description="Override for Database Backup/Restore";//Authorized as Admin";
+				return true;
+			}
+			
 			if (isAdmin) {
 				description="Authorized as Admin";
 				return true;
 			}
+			
+			if("Wiki".equals(entity.getString("modelClass"))){
+				if("create".equals(action) || "delete".equals(action)) {
+					description="UnAuthorize action "+action+" on Wiki Resource";
+					throw new Exception("error.forbidden");
+				} else {
+					description="UnRestricted access on Public Resource";
+					return true;
+				}
+			}
+			if("WikiHistory".equals(entity.getString("modelClass"))) {
+				if("restore".equals(action) || "delete".equals(action) ) {
+					description="UnAuthorize action "+action+" on WikiHistory Resource";
+					throw new Exception("error.forbidden");
+				} else {
+					description="UnRestricted access on Public Resource";
+					return true;
+				}
+			}
+			
 			if("SystemParameter".equals(entity.getString("modelClass"))) {
 				description="UnAuthorize action "+action+" on SystemParameter Resource";
 				throw new Exception("error.forbidden");
@@ -178,10 +210,20 @@ public class ACLManager extends BaseUtil{
 				description="No Restriction to "+subAction+" to/from Topic Resource";
 				return true;
 			}
-			
+			if("User".equals(entity.getString("modelClass")) && "update".equals(action)) {
+				if (entity.getLong("id")==loginUserId) {
+					description="Authorize as onwer on User Resource";
+				}
+			}
+	
+
 			if ("PUBLIC".equals(aclMode)){
 				if (isExecutive) {
 					description="Authorized as Executive on Public Resource";
+					return true;
+				}
+				if ("list|search".contains(action)){
+					description="Authorized for list/search to any public resource";
 					return true;
 				}
 				if("update|delete|share".contains(action)) {
@@ -195,12 +237,6 @@ public class ACLManager extends BaseUtil{
 				description="UnRestricted access on Public Resource";
 				return true;
 			} 
-			if("User".equals(entity.getString("modelClass")) && "update".equals(action)) {
-				if (entity.getLong("id")==loginUserId) {
-					description="Authorize as onwer on User Resource";
-				}
-			}
-	
 			if ("SYSTEM".equals(aclMode)){
 				if ("detail|list|search".contains(action)) {
 					description="UnRestricted access on System Resource";
@@ -210,8 +246,12 @@ public class ACLManager extends BaseUtil{
 				throw new Exception("error.forbidden");
 			}  
 			if ("PRIVATE".equals(aclMode)){
-				if("list".equals(action) && "listByOwner".equals(subAction)){
+				if("list|search".contains(action) && ("listByOwner".equals(subAction) || "listComplexByOwner".equals(subAction))){
 					description="Authorized as Owner on Private Resource";
+					return true;
+				}
+				if ("list|search".contains(action)){
+					description="Authorized for list/search limited to selfOwned Private resource";
 					return true;
 				}
 				if("create".equals(action)){
@@ -304,11 +344,16 @@ public class ACLManager extends BaseUtil{
 				}
 					
 			}	
+			
+			log.debug(">>> ACL_NORULE <<<");
+//			description="No Restriction Area, no ACL defined for this action ";
+//			return true;
 			description="Restricted Area no ACL defined for this action ";
 			throw new Exception("error.forbidden");
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			description=e.getMessage();
+			log.error("ACL Authorize ",e);
 		} finally {
 			AuditTrailManager.auditLog(passport,action+(subAction!=null?":"+subAction:""),entity,description, approvedBy);
 		}

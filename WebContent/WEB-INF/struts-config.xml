@@ -7,7 +7,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 05-11-2017 02:31:32
+ * @createDate 07-04-2018 14:33:54
  */
  -->
 <struts-config>
@@ -38,6 +38,8 @@
     	<form-bean name="systemSequenceForm" type="com.app.docmgr.form.SystemSequenceForm" />
     	<form-bean name="userForm" type="com.app.docmgr.form.UserForm" />
     	<form-bean name="userHistoryForm" type="com.app.docmgr.form.UserHistoryForm" />
+    	<form-bean name="wikiForm" type="com.app.docmgr.form.WikiForm" />
+    	<form-bean name="wikiHistoryForm" type="com.app.docmgr.form.WikiHistoryForm" />
   	</form-beans>
 
 	<global-forwards>
@@ -78,9 +80,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/announcement/announcement_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/announcement/announcement_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/announcement/announcement_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/announcement/announcement_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/announcement/announcement_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/announcement/announcement_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/announcement/announcement_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/announcement/announcement_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/announcement/announcement_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/auditTrail" name="auditTrailForm" scope="request" input="/WEB-INF/jsp/auditTrail/auditTrail_create.jsp" type="com.app.docmgr.action.AuditTrailAction">
@@ -99,9 +103,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/auditTrail/auditTrail_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/emailLog" name="emailLogForm" scope="request" input="/WEB-INF/jsp/emailLog/emailLog_create.jsp" type="com.app.docmgr.action.EmailLogAction">
@@ -120,9 +126,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/emailLog/emailLog_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/emailLog/emailLog_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/emailLog/emailLog_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/emailLog/emailLog_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/emailLog/emailLog_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/emailLog/emailLog_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/emailLog/emailLog_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/emailLog/emailLog_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/emailLog/emailLog_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/folder" name="folderForm" scope="request" input="/WEB-INF/jsp/folder/folder_create.jsp" type="com.app.docmgr.action.FolderAction">
@@ -141,9 +149,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/folder/folder_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/folder/folder_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/folder/folder_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/folder/folder_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/folder/folder_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/folder/folder_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/folder/folder_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/folder/folder_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/folder/folder_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/forum" name="forumForm" scope="request" input="/WEB-INF/jsp/forum/forum_create.jsp" type="com.app.docmgr.action.ForumAction">
@@ -162,9 +172,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/forum/forum_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/forum/forum_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/forum/forum_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/forum/forum_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/forum/forum_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/forum/forum_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/forum/forum_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/forum/forum_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/forum/forum_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/bookmark" name="bookmarkForm" scope="request" input="/WEB-INF/jsp/bookmark/bookmark_create.jsp" type="com.app.docmgr.action.BookmarkAction">
@@ -183,9 +195,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/bookmark/bookmark_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/bookmark/bookmark_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/bookmark/bookmark_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/bookmark/bookmark_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/bookmark/bookmark_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/bookmark/bookmark_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/bookmark/bookmark_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/bookmark/bookmark_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/bookmark/bookmark_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/document" name="documentForm" scope="request" input="/WEB-INF/jsp/document/document_create.jsp" type="com.app.docmgr.action.DocumentAction">
@@ -204,9 +218,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/document/document_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/document/document_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/document/document_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/document/document_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/document/document_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/document/document_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/document/document_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/document/document_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/document/document_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/sharedDocument" name="sharedDocumentForm" scope="request" input="/WEB-INF/jsp/sharedDocument/sharedDocument_create.jsp" type="com.app.docmgr.action.SharedDocumentAction">
@@ -225,9 +241,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/sharedDocument/sharedDocument_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/documentHistory" name="documentHistoryForm" scope="request" input="/WEB-INF/jsp/documentHistory/documentHistory_create.jsp" type="com.app.docmgr.action.DocumentHistoryAction">
@@ -246,9 +264,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/documentHistory/documentHistory_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/topic" name="topicForm" scope="request" input="/WEB-INF/jsp/topic/topic_create.jsp" type="com.app.docmgr.action.TopicAction">
@@ -267,9 +287,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/topic/topic_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/topic/topic_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/topic/topic_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/topic/topic_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/topic/topic_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/topic/topic_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/topic/topic_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/topic/topic_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/topic/topic_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/message" name="messageForm" scope="request" input="/WEB-INF/jsp/message/message_create.jsp" type="com.app.docmgr.action.MessageAction">
@@ -288,9 +310,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/message/message_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/message/message_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/message/message_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/message/message_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/message/message_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/message/message_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/message/message_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/message/message_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/message/message_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/notification" name="notificationForm" scope="request" input="/WEB-INF/jsp/notification/notification_create.jsp" type="com.app.docmgr.action.NotificationAction">
@@ -309,9 +333,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/notification/notification_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/notification/notification_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/notification/notification_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/notification/notification_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/notification/notification_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/notification/notification_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/notification/notification_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/notification/notification_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/notification/notification_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/genericReport" name="genericReportForm" scope="request" input="/WEB-INF/jsp/genericReport/genericReport_create.jsp" type="com.app.docmgr.action.GenericReportAction">
@@ -330,9 +356,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/genericReport/genericReport_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/genericReport/genericReport_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/genericReport/genericReport_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/genericReport/genericReport_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/genericReport/genericReport_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/genericReport/genericReport_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/genericReport/genericReport_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/genericReport/genericReport_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/genericReport/genericReport_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/iPassportPool" name="iPassportPoolForm" scope="request" input="/WEB-INF/jsp/iPassportPool/iPassportPool_create.jsp" type="com.app.docmgr.action.IPassportPoolAction">
@@ -351,9 +379,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/iPassportPool/iPassportPool_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/loginHistory" name="loginHistoryForm" scope="request" input="/WEB-INF/jsp/loginHistory/loginHistory_create.jsp" type="com.app.docmgr.action.LoginHistoryAction">
@@ -372,9 +402,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/loginHistory/loginHistory_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/lookup" name="lookupForm" scope="request" input="/WEB-INF/jsp/lookup/lookup_create.jsp" type="com.app.docmgr.action.LookupAction">
@@ -393,9 +425,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/lookup/lookup_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/lookup/lookup_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/lookup/lookup_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/lookup/lookup_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/lookup/lookup_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/lookup/lookup_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/lookup/lookup_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/lookup/lookup_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/lookup/lookup_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/organization" name="organizationForm" scope="request" input="/WEB-INF/jsp/organization/organization_create.jsp" type="com.app.docmgr.action.OrganizationAction">
@@ -414,9 +448,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/organization/organization_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/organization/organization_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/organization/organization_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/organization/organization_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/organization/organization_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/organization/organization_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/organization/organization_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/organization/organization_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/organization/organization_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/privilege" name="privilegeForm" scope="request" input="/WEB-INF/jsp/privilege/privilege_create.jsp" type="com.app.docmgr.action.PrivilegeAction">
@@ -435,9 +471,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/privilege/privilege_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/privilege/privilege_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/privilege/privilege_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/privilege/privilege_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/privilege/privilege_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/privilege/privilege_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/privilege/privilege_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/privilege/privilege_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/privilege/privilege_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/role" name="roleForm" scope="request" input="/WEB-INF/jsp/role/role_create.jsp" type="com.app.docmgr.action.RoleAction">
@@ -456,9 +494,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/role/role_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/role/role_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/role/role_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/role/role_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/role/role_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/role/role_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/role/role_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/role/role_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/role/role_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/status" name="statusForm" scope="request" input="/WEB-INF/jsp/status/status_create.jsp" type="com.app.docmgr.action.StatusAction">
@@ -477,9 +517,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/status/status_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/status/status_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/status/status_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/status/status_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/status/status_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/status/status_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/status/status_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/status/status_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/status/status_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/systemParameter" name="systemParameterForm" scope="request" input="/WEB-INF/jsp/systemParameter/systemParameter_create.jsp" type="com.app.docmgr.action.SystemParameterAction">
@@ -498,9 +540,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/systemParameter/systemParameter_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/systemParameterHistory" name="systemParameterHistoryForm" scope="request" input="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_create.jsp" type="com.app.docmgr.action.SystemParameterHistoryAction">
@@ -519,9 +563,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/systemParameterHistory/systemParameterHistory_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/systemSequence" name="systemSequenceForm" scope="request" input="/WEB-INF/jsp/systemSequence/systemSequence_create.jsp" type="com.app.docmgr.action.SystemSequenceAction">
@@ -540,9 +586,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/systemSequence/systemSequence_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/user" name="userForm" scope="request" input="/WEB-INF/jsp/user/user_create.jsp" type="com.app.docmgr.action.UserAction">
@@ -561,9 +609,11 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/user/user_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/user/user_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/user/user_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/user/user_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/user/user_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/user/user_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/user/user_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/user/user_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/user/user_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 		<action path="/userHistory" name="userHistoryForm" scope="request" input="/WEB-INF/jsp/userHistory/userHistory_create.jsp" type="com.app.docmgr.action.UserHistoryAction">
@@ -582,10 +632,58 @@
     		<forward name="reject_confirm" path="/WEB-INF/jsp/userHistory/userHistory_reject_confirm.jsp" contextRelative="true"/>
     		<forward name="pending_confirm" path="/WEB-INF/jsp/userHistory/userHistory_pending_confirm.jsp" contextRelative="true"/>
     		<forward name="process_confirm" path="/WEB-INF/jsp/userHistory/userHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/userHistory/userHistory_activate_confirm.jsp" contextRelative="true"/>
     		<forward name="close_confirm" path="/WEB-INF/jsp/userHistory/userHistory_close_confirm.jsp" contextRelative="true"/>
     		<forward name="archive_confirm" path="/WEB-INF/jsp/userHistory/userHistory_archive_confirm.jsp" contextRelative="true"/>
     		<forward name="remove_confirm" path="/WEB-INF/jsp/userHistory/userHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/userHistory/userHistory_block_confirm.jsp" contextRelative="true"/>
     		<forward name="cancel_confirm" path="/WEB-INF/jsp/userHistory/userHistory_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/wiki" name="wikiForm" scope="request" input="/WEB-INF/jsp/wiki/wiki_create.jsp" type="com.app.docmgr.action.WikiAction">
+    		<forward name="list_redirect" path="/wiki.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/wiki/wiki_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/wiki/wiki_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/wiki/wiki_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/wiki/wiki_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/wiki/wiki_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/wiki/wiki_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/wiki/wiki_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/wiki/wiki_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/wiki/wiki_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/wiki/wiki_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/wiki/wiki_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/wiki/wiki_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/wiki/wiki_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/wiki/wiki_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/wiki/wiki_activate_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/wiki/wiki_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="archive_confirm" path="/WEB-INF/jsp/wiki/wiki_archive_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/wiki/wiki_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/wiki/wiki_block_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/wiki/wiki_cancel_confirm.jsp" contextRelative="true"/>
+   		 </action>
+		<action path="/wikiHistory" name="wikiHistoryForm" scope="request" input="/WEB-INF/jsp/wikiHistory/wikiHistory_create.jsp" type="com.app.docmgr.action.WikiHistoryAction">
+    		<forward name="list_redirect" path="/wikiHistory.do" redirect="true"/>
+    		<forward name="list" path="/WEB-INF/jsp/wikiHistory/wikiHistory_list.jsp" contextRelative="true"/>
+    		<forward name="list_popup" path="/WEB-INF/jsp/wikiHistory/wikiHistory_list_popup.jsp" contextRelative="true"/>
+    		<forward name="detail" path="/WEB-INF/jsp/wikiHistory/wikiHistory_detail.jsp" contextRelative="true"/>
+    		<forward name="detail_popup" path="/WEB-INF/jsp/wikiHistory/wikiHistory_detail_popup.jsp" contextRelative="true"/>
+    		<forward name="create" path="/WEB-INF/jsp/wikiHistory/wikiHistory_create.jsp" contextRelative="true"/>
+    		<forward name="create_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_create_confirm.jsp" contextRelative="true"/>
+    		<forward name="edit" path="/WEB-INF/jsp/wikiHistory/wikiHistory_edit.jsp" contextRelative="true"/>
+    		<forward name="edit_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_edit_confirm.jsp" contextRelative="true"/>
+    		<forward name="delete_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_delete_confirm.jsp" contextRelative="true"/>
+    		<forward name="submit_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_submit_confirm.jsp" contextRelative="true"/>
+    		<forward name="approve_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_approve_confirm.jsp" contextRelative="true"/>
+    		<forward name="reject_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_reject_confirm.jsp" contextRelative="true"/>
+    		<forward name="pending_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_pending_confirm.jsp" contextRelative="true"/>
+    		<forward name="process_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_process_confirm.jsp" contextRelative="true"/>
+    		<forward name="activate_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_activate_confirm.jsp" contextRelative="true"/>
+    		<forward name="close_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_close_confirm.jsp" contextRelative="true"/>
+    		<forward name="archive_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_archive_confirm.jsp" contextRelative="true"/>
+    		<forward name="remove_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_remove_confirm.jsp" contextRelative="true"/>
+    		<forward name="block_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_block_confirm.jsp" contextRelative="true"/>
+    		<forward name="cancel_confirm" path="/WEB-INF/jsp/wikiHistory/wikiHistory_cancel_confirm.jsp" contextRelative="true"/>
    		 </action>
 	</action-mappings>
 

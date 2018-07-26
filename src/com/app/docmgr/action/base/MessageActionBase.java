@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -1186,9 +1186,6 @@ public class MessageActionBase extends Action{
 					message.setPostType(postTypeObj);
 				}
 			}catch(Exception ex){}	
-			if(postTypeObj==null){
-				errors.add("message.postType", new ActionError("error.message.postType"));
-			}
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

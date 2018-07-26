@@ -55,7 +55,7 @@ public class StatisticManager extends BaseUtil {
 		String reportPeriod=(String) data.get("reportPeriod");
 		if(!validPeriod.contains(reportPeriod)) throw new Exception("error.invalid.reportPeriod");
 		if(reportPeriod.contains(";")) throw new Exception("Possible SQL Injection");
-		String filterParam=constructPeriodFilter("audit_time", (String) data.get("periodValue"), reportPeriod);
+		String filterParam=constructSQLPeriodFilter("audit_time", (String) data.get("periodValue"), reportPeriod);
 		Map filterMap= (Map) data.get("filter");
 		if (filterMap!=null && !filterMap.isEmpty()) {
 			StringBuffer filterBuff=new StringBuffer("");
@@ -66,12 +66,13 @@ public class StatisticManager extends BaseUtil {
 			filterParam+=filterBuff.toString();
 		}
 		String start=(String) data.get("start");
+		String pageSize=(String) data.get("pageSize");
 		
 		String sqlQuery = " select done_by, entity, to_char(date_trunc('"+recordPeriod+"', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq from audit_trail auditTrail "+
 				" WHERE 1=1 "+filterParam+
 				" group by 1,2,3";
 		System.out.println("REPORT QUERY=["+sqlQuery+"]");
-		if (!nvl(start)) return DBQueryManager.getPartialList("User Activity Statistic", sqlQuery,toInt(start,defaulStart), null);
+		if (!nvl(start)) return DBQueryManager.getPartialList("User Activity Statistic", sqlQuery,toInt(start,defaulStart), toInt(pageSize,ITEM_PER_PAGE), null);
 		return DBQueryManager.getList("User Activity Statistic", sqlQuery, null);
 	}	
 	
@@ -83,8 +84,9 @@ public class StatisticManager extends BaseUtil {
 		String reportPeriod=(String) data.get("reportPeriod");
 		if(!validPeriod.contains(reportPeriod)) throw new Exception("error.invalid.reportPeriod");
 		if(reportPeriod.contains(";")) throw new Exception("Possible SQL Injection");
-		String filterParam=constructPeriodFilter("login_time", (String) data.get("periodValue"), reportPeriod);
+		String filterParam=constructSQLPeriodFilter("login_time", (String) data.get("periodValue"), reportPeriod);
 		String start=(String) data.get("start");
+		String pageSize=(String) data.get("pageSize");
 		Map filterMap= (Map) data.get("filter");
 		if (filterMap!=null && !filterMap.isEmpty()) {
 			StringBuffer filterBuff=new StringBuffer("");
@@ -94,16 +96,123 @@ public class StatisticManager extends BaseUtil {
 			}
 			filterParam+=filterBuff.toString();
 		}
-		String sqlQuery = " SELECT to_char(date_trunc('"+recordPeriod+"', login_time),'DD-MM-YYYY') AS period , appUser.login_name , count(*) AS Freq FROM login_history loginHistory, app_user appUser "+
-				" WHERE appUser.id=loginHistory.user_id "+filterParam+
-				" GROUP BY 1,2  ORDER BY 1 ";
+		/*
+		 select appUser.login_name, appUser.full_name,main.* from 
+(SELECT to_char(date_trunc('day', lh.login_time),'DD-MM-YYYY') AS period , lh.user_id , count(lh.*) AS Freq 
+FROM login_history lh   WHERE date_part('month', lh.login_time)  >= 10 
+GROUP BY 1,2  ORDER BY 1  offset 0 limit 20) main, app_user appUser
+where appUser.id=main.user_id  
+		 */
+		String sqlQuery = " select appUser.login_name, appUser.full_name, main.period, main.freq from "+
+				" (SELECT to_char(date_trunc('"+recordPeriod+"', lh.login_time),'DD-MM-YYYY') AS period , lh.user_id , count(*) AS Freq "+
+				"FROM login_history lh "+
+				" WHERE 1=1 "+filterParam+" GROUP BY 1,2  ORDER BY 1) main , app_user appUser where appUser.id=main.user_id  ";
+		
+//		String sqlQuery = " SELECT to_char(date_trunc('"+recordPeriod+"', login_time),'DD-MM-YYYY') AS period , appUser.login_name , count(*) AS Freq FROM login_history loginHistory, app_user appUser "+
+//				" WHERE appUser.id=loginHistory.user_id "+filterParam+
+//				" GROUP BY 1,2  ORDER BY 1 ";
 		System.out.println("REPORT QUERY=["+sqlQuery+"]");
-		if (!nvl(start)) return DBQueryManager.getPartialList("User Login Statistic", sqlQuery,toInt(start,defaulStart), null);
-		return DBQueryManager.getList("User Login Statistic", sqlQuery, null);
-}
+		String[] keys=new String[]{"full_name"};
+		if (!nvl(start)) return DBQueryManager.decryptList(DBQueryManager.getPartialList("User Login Statistic", sqlQuery,toInt(start,defaulStart), toInt(pageSize,ITEM_PER_PAGE), null),keys);
+		return DBQueryManager.decryptList(DBQueryManager.getList("User Login Statistic", sqlQuery, null),keys);
+	}
+	
+	public static  List<Map<String, Object>> getDocumentStatistic(Document passport,Map data)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getDocumentStatistic", new org.bson.Document("modelClass","Report"));
+		String recordPeriod= (String) data.get("recordPeriod");
+		if(!validPeriod.contains(recordPeriod)) throw new Exception("error.invalid.recordPeriod");
+		if(recordPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String reportPeriod=(String) data.get("reportPeriod");
+		if(!validPeriod.contains(reportPeriod)) throw new Exception("error.invalid.reportPeriod");
+		if(reportPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String filterParam=constructSQLPeriodFilter("created_date", (String) data.get("periodValue"), reportPeriod);
+		Map filterMap= (Map) data.get("filter");
+		if (filterMap!=null && !filterMap.isEmpty()) {
+			StringBuffer filterBuff=new StringBuffer("");
+			for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				filterBuff.append(constructQuery(null,key,filterMap.get(key)));
+			}
+			filterParam+=filterBuff.toString();
+		}
+		String start=(String) data.get("start");
+		String pageSize=(String) data.get("pageSize");
+		
+		String sqlQuery = " select created_by as createdBy, content_type as contentType, to_char(date_trunc('"+recordPeriod+"', created_date),'DD-MM-YYYY') AS period, count(id) as Count from document doc "+
+				" WHERE 1=1 "+filterParam+
+				" group by 1,2,3";
+		System.out.println("REPORT QUERY=["+sqlQuery+"]");
+		String[] keys=new String[]{"createdBy"};
+		if (!nvl(start)) return DBQueryManager.decryptList(DBQueryManager.getPartialList("Document Statistic", sqlQuery,toInt(start,defaulStart), toInt(pageSize,ITEM_PER_PAGE), null),keys);
+		return DBQueryManager.decryptList(DBQueryManager.getList("Document Statistic", sqlQuery, null),keys);
+	}	
 	
 	
-	private static String constructPeriodFilter(String periodField ,String fromPeriod,String reportPeriod) {
+	public static  List<Map<String, Object>> getForumStatistic(Document passport,Map data)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getForumStatistic", new org.bson.Document("modelClass","Report"));
+		String recordPeriod= (String) data.get("recordPeriod");
+		if(!validPeriod.contains(recordPeriod)) throw new Exception("error.invalid.recordPeriod");
+		if(recordPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String reportPeriod=(String) data.get("reportPeriod");
+		if(!validPeriod.contains(reportPeriod)) throw new Exception("error.invalid.reportPeriod");
+		if(reportPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String filterParam=constructSQLPeriodFilter("created_date", (String) data.get("periodValue"), reportPeriod);
+		Map filterMap= (Map) data.get("filter");
+		if (filterMap!=null && !filterMap.isEmpty()) {
+			StringBuffer filterBuff=new StringBuffer("");
+			for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				filterBuff.append(constructQuery(null,key,filterMap.get(key)));
+			}
+			filterParam+=filterBuff.toString();
+		}
+		String start=(String) data.get("start");
+		String pageSize=(String) data.get("pageSize");
+		
+		String sqlQuery = " select created_by as createdBy, content_type as contentType, to_char(date_trunc('"+recordPeriod+"', created_date),'DD-MM-YYYY') AS period, count(t.id) as numberOfTopic from forum f, topic t "+
+				" WHERE t.forum=f.id  "+filterParam+
+				" group by 1,2,3";
+		System.out.println("REPORT QUERY=["+sqlQuery+"]");
+		String[] keys=new String[]{"createdBy"};
+		if (!nvl(start)) return DBQueryManager.decryptList(DBQueryManager.getPartialList("Forum Statistic", sqlQuery,toInt(start,defaulStart), toInt(pageSize,ITEM_PER_PAGE), null),keys);
+		return DBQueryManager.decryptList(DBQueryManager.getList("Forum Statistic", sqlQuery, null),keys);
+	}	
+	
+	/* ===============================+ Dynamic Report =====================================*/
+	public static  List<Map<String, Object>> getDynamicReport(Document passport,Map data,String reportName,String sqlReportQuery, String groupBy, String[] encryptedKeys)  throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, reportName, new org.bson.Document("modelClass","Report"));
+		String recordPeriod= (String) data.get("recordPeriod");
+		if(!validPeriod.contains(recordPeriod)) throw new Exception("error.invalid.recordPeriod");
+		if(recordPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String reportPeriod=(String) data.get("reportPeriod");
+		if(!validPeriod.contains(reportPeriod)) throw new Exception("error.invalid.reportPeriod");
+		if(reportPeriod.contains(";")) throw new Exception("Possible SQL Injection");
+		String filterParam=constructSQLPeriodFilter("created_date", (String) data.get("periodValue"), reportPeriod);
+		Map filterMap= (Map) data.get("filter");
+		if (filterMap!=null && !filterMap.isEmpty()) {
+			StringBuffer filterBuff=new StringBuffer("");
+			for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				filterBuff.append(constructQuery(null,key,filterMap.get(key)));
+			}
+			filterParam+=filterBuff.toString();
+		}
+		String start=(String) data.get("start");			
+		String pageSize=(String) data.get("pageSize");
+		
+		String sqlQuery = sqlReportQuery.replaceAll("${recordPeriod}", recordPeriod) //" select created_by as createdBy, content_type as contentType, to_char(date_trunc('"+recordPeriod+"', created_date),'DD-MM-YYYY') AS period, count(id) as Count from document doc "+
+				+ " WHERE 1=1 "+filterParam+
+				(nvl(groupBy)?"":" group by "+groupBy+" ");
+		System.out.println("REPORT QUERY=["+sqlQuery+"]");
+		
+		//String[] keys= new String[]{"createdBy"};
+		if (!nvl(start)) return DBQueryManager.decryptList(DBQueryManager.getPartialList(reportName, sqlQuery,toInt(start,defaulStart), toInt(pageSize,ITEM_PER_PAGE), null),encryptedKeys);
+		return DBQueryManager.decryptList(DBQueryManager.getList(reportName, sqlQuery, null),encryptedKeys);
+	}	
+	
+	
+	
+/*	private static String constructPeriodFilter(String periodField ,String fromPeriod,String reportPeriod) {
 		if(!nvl(fromPeriod) && fromPeriod.contains("|")){
 			String[] vArr=fromPeriod.split("\\|");
 			if (vArr[0].equals("$LA")){
@@ -135,8 +244,10 @@ public class StatisticManager extends BaseUtil {
 		if("$LE".equals(sOperand)) return "<=";
 		else return "";
 	}
-	
+	*/
 	public static void main(String[] args) {
+		System.out.println(Integer.MAX_VALUE);
+		/*
 		Map<String,Object> data=new HashMap<String,Object>();
 		data.put("start", "0");
 		data.put("recordPeriod", "day");
@@ -153,7 +264,7 @@ public class StatisticManager extends BaseUtil {
 		data.put("filter", filter);
 		System.out.println(Utility.debug(data));
 		try{
-		System.out.println("filter = "+constructPeriodFilter("audit_time",(String) data.get("periodValue"),(String)data.get("reportPeriod")));
+		System.out.println("filter = "+constructSQLPeriodFilter("audit_time",(String) data.get("periodValue"),(String)data.get("reportPeriod")));
 		System.out.println("add = "+constructQuery("auditTrail","done_by","$EQ|admin"));
 		
 		String sqlQuery="select done_by, entity, to_char(date_trunc('week', audit_time),'DD-MM-YYYY') AS period, count(id) as Freq from audit_trail auditTrail  WHERE 1=1  AND audit_time > now() - interval '1 month'  group by 1,2,3";
@@ -162,6 +273,8 @@ public class StatisticManager extends BaseUtil {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
 	}
+	
 }
 

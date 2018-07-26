@@ -23,6 +23,7 @@ import com.app.module.forum.TopicManager;
 import com.app.shared.ApplicationConstant;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
+import com.mongodb.util.JSON;
 import com.simas.webservice.Utility;
 
 public class UserManager extends BaseUtil{
@@ -52,21 +53,25 @@ public class UserManager extends BaseUtil{
 		List<String> errors=new LinkedList<String>();
 		Map profile= (Map) data.get("profile");
 		User obj=UserService.getInstance().getBy(" AND user.loginName='"+profile.get("nip_baru")+"' ");
-		if (obj==null) obj= new User();
+		if (obj==null)  obj= new User();
 		updateFromSIP(obj, profile,errors);
 		obj.setCreatedBy((String)profile.get("nip_baru"));
 		obj.setCreatedDate(new Date());
-		
 		obj.setLastUpdatedBy(obj.getCreatedBy());
 		obj.setLastUpdatedDate(obj.getCreatedDate());
 		obj.setLoginName((String) profile.get("nip_baru"));
 		ACLManager.isAuthorize(null,ACL_MODE, ACLManager.ACTION_CREATE, "syncUserSIP", toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "new"));
+		if(nvl(obj.getUserLevel())) obj.setUserLevel(ApplicationConstant.getLookup("userLevel", "customer"));
+		if (nvl(obj.getMaxRelease())) obj.setMaxRelease(Integer.MAX_VALUE);
 		checkValidity(obj,errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
-		assignNewPassword(obj,false);
+		
 	//	System.out.println(Utility.debug(obj));
-		if(obj.getId()==null) UserService.getInstance().add(obj);
+	if(obj.getId()==null) {
+			assignNewPassword(obj,false);
+			UserService.getInstance().add(obj);
+		}
 		else UserService.getInstance().update(obj);
 		return toDocument(obj);
 	}
@@ -98,6 +103,7 @@ public class UserManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
+
 	public static Document chgMyPwd(Document passport,Map data) throws Exception{
 		List<String> errors=new LinkedList<String>();
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
@@ -130,7 +136,7 @@ public class UserManager extends BaseUtil{
 		return toDocument(obj);
 	}
 	
-	public static List myFavTopics(Document passport) throws Exception{
+/*	public static List myFavTopics(Document passport) throws Exception{
 		User obj= UserService.getInstance().get(passport.getLong("userId"));
 		if (obj==null) throw new Exception("error.object.notfound");
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFavTopics", toDocument(obj));
@@ -143,6 +149,26 @@ public class UserManager extends BaseUtil{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFollTopics", toDocument(obj));
 		List<Topic> result=TopicService.getInstance().getList(" AND topic.subscribers.id='"+passport.getLong("userId")+"' ", null);
 		TopicManager.toDocList(result);
+		return result;
+	} */
+	
+	public static List myFavTopics(Document passport) throws Exception{
+		User obj= UserService.getInstance().get(passport.getLong("userId"));
+		if (obj==null) throw new Exception("error.object.notfound");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFavTopics", toDocument(obj));
+		return TopicManager.toDocSimpleList((Set<Topic>) obj.getFavoriteTopics());
+//		PartialList result=TopicService.getInstance().getPartialList(" AND topic.favorite.id='"+passport.getLong("userId")+"' ", null, toInt(start,defaulStart), ITEM_PER_PAGE);
+//		TopicManager.toDocList(result,passport.getLong("userId"));
+//		return result;
+
+	}
+	
+	public static PartialList myFollTopics(Document passport,String start) throws Exception{
+		User obj= UserService.getInstance().get(passport.getLong("userId"));
+		if (obj==null) throw new Exception("error.object.notfound");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_DETAIL, "myFollTopics", toDocument(obj));
+		PartialList result=TopicService.getInstance().getPartialList(" AND topic.subscribers.id='"+passport.getLong("userId")+"' ", null, toInt(start,defaulStart), ITEM_PER_PAGE);
+		TopicManager.toDocList(result,passport);
 		return result;
 	}
 	
@@ -206,6 +232,28 @@ public class UserManager extends BaseUtil{
 		UserService.getInstance().update(obj);
 	}
 
+	public static Document block(Document passport,String objId) throws Exception {
+		User obj=UserService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "Block", toDocument(obj));
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "blocked"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		UserService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
+	public static Document unblock(Document passport,String objId) throws Exception {
+		User obj=UserService.getInstance().get(toLong(objId));
+		if (obj==null) throw new Exception("error.object.notfound");
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_UPDATE, "Unblock", toDocument(obj));
+		obj.setStatus(StatusService.getInstance().getByTypeandCode("User", "activated"));
+		obj.setLastUpdatedDate(new Date());
+		obj.setLastUpdatedBy(passport.getString("loginName"));
+		UserService.getInstance().update(obj);
+		return toDocument(obj);
+	}
+	
 	public static Document detail(Document passport,String objId) throws Exception {
 		User obj=UserService.getInstance().get(toLong(objId));
 		if (obj==null) throw new Exception("error.object.notfound");
@@ -242,7 +290,8 @@ public class UserManager extends BaseUtil{
 			}
 		}
 		if("ALL".equals(mode)){
-			List result=UserService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
+			List result=UserService.getInstance().getPartialList(true,(filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
+			//UserService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
 			return result;
 		}
@@ -251,11 +300,10 @@ public class UserManager extends BaseUtil{
 			toDocList(result);
 			return result;
 		}
-		PartialList result=UserService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		PartialList result=UserService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
 	}
-	
 	
 	private static void updateFromSIP(User obj, Map data,List<String> errors) {
 		/*
@@ -314,6 +362,12 @@ public class UserManager extends BaseUtil{
 		 * 
 		 */
 		try {
+			String dataHash=getHash(data);
+			if(obj.getLastPinCode()!=null && obj.getLastPinCode().equalsIgnoreCase(dataHash)) {
+				log.debug("SyncUser skipped, as profile hashData not changed..!");
+				return;
+			}
+			obj.setLastPinCode(dataHash);
 			obj.setEmail((String) data.get("email"));
 			obj.setEmployeeNumber(toString(data.get("nip_baru")));
 			obj.setFullName((String) data.get("nm_lengkap"));
@@ -322,6 +376,12 @@ public class UserManager extends BaseUtil{
 			obj.setMobilePhoneNumber(toString(data.get("no_hp")));
 			obj.setName((String) data.get("nm_lengkap"));
 			obj.setTitle((String) data.get("gelar_depan"));
+			
+	//Martin 11Jun18 : Adding user.picture from SIP data.foto;
+			obj.setPicture((String) data.get("foto"));
+			//log.debug(">>>>=== Sync User updating user.picture="+data.get("foto")+"  from SIP data.foto .");
+			BaseUtil.updateUserChache(obj);
+			//log.debug(">>>>=== Sync User updating userCache");
 		//	obj.setAlias((String) data.get("alias"));
 //			if(obj.getName()==null){
 //				obj.setName((obj.getAlias()!=null?obj.getAlias():obj.getFullName())); 
@@ -329,7 +389,6 @@ public class UserManager extends BaseUtil{
 			//DEFAULTED
 			//Lookup userLevel= LookupService.getInstance().getByTypeandCode("userLevel", "customer"));
 			//if(userLevel!=null) 
-			obj.setUserLevel(ApplicationConstant.getLookup("userLevel", "customer"));
 			
 /*
 		if(!nvl(data.get("organizationId"))){
@@ -367,6 +426,7 @@ public class UserManager extends BaseUtil{
 			}
 		}*/
 		
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			errors.add(e.getMessage());
@@ -397,6 +457,8 @@ public class UserManager extends BaseUtil{
 			obj.setName((String) data.get("name"));
 			obj.setTitle((String) data.get("title"));
 			obj.setAlias((String) data.get("alias"));
+			obj.setMaxRelease(toInt(data.get("maxRelease")));
+			
 			if(obj.getName()==null){
 				obj.setName((obj.getAlias()!=null?obj.getAlias():obj.getFullName())); 
 			}
@@ -459,6 +521,7 @@ public class UserManager extends BaseUtil{
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
 		doc.append("alias", obj.getAlias());
+		doc.append("maxRelease",obj.getMaxRelease());
 		doc.append("fullName", obj.getFullName());
 		//doc.append("title", obj.getTitle());
 		doc.append("email", obj.getEmail());
@@ -473,8 +536,12 @@ public class UserManager extends BaseUtil{
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		doc.append("createdBy", obj.getCreatedBy());
+		doc.append("createdBy", getUserByLName(obj.getCreatedBy()));
+		doc.append("lastUpdatedBy", getUserByLName(obj.getLastUpdatedBy()));
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
 		doc.append("alias", obj.getAlias());
+		doc.append("maxRelease",obj.getMaxRelease());
 		doc.append("fullName", obj.getFullName());
 		doc.append("title", obj.getTitle());
 		doc.append("email", obj.getEmail());
@@ -500,6 +567,7 @@ public class UserManager extends BaseUtil{
 		}
 		if (obj.getUserLevel()!=null) {
 			doc.append("userLevel", obj.getUserLevel().getName());
+			doc.append("userLevelCode", obj.getUserLevel().getCode());
 			doc.append("userLevelId", obj.getUserLevel().getId());
 		}
 		if(obj.getStatus()!=null){
@@ -520,7 +588,7 @@ public class UserManager extends BaseUtil{
 	
 	public static boolean incrementLoginCounter(User loginUser) throws Exception{
 		boolean isBlocked=false;
-		int ctr=loginUser.getLoginFailed()+1;
+		int ctr=toInt(loginUser.getLoginFailed(),0)+1;
  		if (ctr>=MAX_WRONG_PASSWD_ATTEMPT) {
  			loginUser.setStatus(BLOCKED_USER_STATUS);
  			isBlocked=true;
@@ -529,6 +597,12 @@ public class UserManager extends BaseUtil{
  		UserService.getInstance().update(loginUser);
  		return isBlocked;
 	}
+	
+	public static void resetLoginCounter(User loginUser) throws Exception{
+		if(loginUser.getLoginFailed()==null || loginUser.getLoginFailed()<=0) return;
+		loginUser.setLoginFailed(0);
+ 		UserService.getInstance().update(loginUser);
+ 	}
 
 	
 	public static List<String> getRoleNames(User user) {
@@ -561,6 +635,26 @@ public class UserManager extends BaseUtil{
 		if (obj.getName()==null) errors.add("error.name.null");
 	}
 	
+	public static String getFavoritedTopic(long userId) throws Exception{
+		String sqlQuery="select topic_id from favorite_topic ft, topic t, status s where user_id='"+userId+"' and ft.topic_id=t.id and t.status=s.id and s.state='active' ";
+		List favList= DBQueryManager.getPlainList("LikeTopic", sqlQuery);
+		StringBuffer buff=new StringBuffer("|");
+		for (Iterator iterator = favList.iterator(); iterator.hasNext();) {
+			String obj = (String) iterator.next();
+			buff.append(obj+"|");
+		}
+		return buff.toString();
+	}
 	
+	public static String getSubscribedTopic(long userId) throws Exception{
+		String sqlQuery="select topic_id from topic_subscriber ts, topic t, status s where user_id='"+userId+"' and ts.topic_id=t.id and t.status=s.id and s.state='active' ";
+		List subsList =DBQueryManager.getPlainList("LikeTopic", sqlQuery);
+		StringBuffer buff=new StringBuffer("|");
+		for (Iterator iterator = subsList.iterator(); iterator.hasNext();) {
+			String obj = (String) iterator.next();
+			buff.append(obj+"|");
+		}
+		return buff.toString();
+	}
 	
 }

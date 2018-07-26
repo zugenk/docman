@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 21:02:14
  */
 -->
 </HEAD>
@@ -59,6 +59,7 @@
 			document.forms.topic.topic_filterCode_filter.value="";
 			document.forms.topic.topic_status_filter.value="";
 			document.forms.topic.topic_forum_filter.value="";
+			document.forms.topic.topic_latestMessage_filter.value="";
 			document.forms.topic.submit();
 		}
 
@@ -259,6 +260,7 @@
 		</td>
 		<td><bean:message key="topic.status.key"/></td>
 		<td><bean:message key="topic.forum.key"/></td>
+		<td><bean:message key="topic.latestMessage.key"/></td>
 
 		<td></td>
 	</tr>	
@@ -292,6 +294,12 @@
 		<td >
 				<logic:notEmpty name="element"	property="forum">								
 					<bean:write name="element" property="forum.name"/>
+				</logic:notEmpty>	
+			
+		</td>
+		<td >
+				<logic:notEmpty name="element"	property="latestMessage">								
+					<bean:write name="element" property="latestMessage.content"/>
 				</logic:notEmpty>	
 			
 		</td>
@@ -438,6 +446,30 @@
 							%>
 						>
 						<bean:write name="forumElement" property="name"/></option>
+					</logic:iterate>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><bean:message key="topic.latestMessage.key"/></td>
+			<td width="10">:</td>
+			<td>
+				<%
+					String  topic_latestMessage_filter_value = (String)request.getSession().getAttribute("topic_latestMessage_filter");
+					if("".equals(topic_latestMessage_filter_value)) topic_latestMessage_filter_value = "0";
+				%>				
+				<select name="topic_latestMessage_filter">
+					<option value=""></option>
+					<logic:iterate id="latestMessageElement" name="latestMessageList"  type="com.app.docmgr.model.Message">
+						
+						<option value="<bean:write name="latestMessageElement" property="id"/>" 
+							<%
+								Long topic_latestMessage_id = latestMessageElement.getId();							
+								Long topic_latestMessage_filter_value_c = new Long(topic_latestMessage_filter_value);
+								if(topic_latestMessage_filter_value_c.equals(topic_latestMessage_id))out.print(" SELECTED ");
+							%>
+						>
+						<bean:write name="latestMessageElement" property="content"/></option>
 					</logic:iterate>
 				</select>
 			</td>

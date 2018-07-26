@@ -74,11 +74,9 @@ public class LookupManager extends BaseUtil{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Lookup"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -108,7 +106,7 @@ public class LookupManager extends BaseUtil{
 			toDocList(result);
 			return result;
 		}	
-		PartialList result=LookupService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		PartialList result=LookupService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
 	}

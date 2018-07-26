@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 21:02:14
  */
 -->
 </HEAD>
@@ -53,6 +53,7 @@
 			document.forms.document.document_repositoryId_filter.value="";
 			document.forms.document.document_documentVersion_filter.value="";
 			document.forms.document.document_description_filter.value="";
+			document.forms.document.document_tag_filter.value="";
 			document.forms.document.document_createdDate_filter_start.value="";
 			document.forms.document.document_createdDate_filter_end.value="";
 			document.forms.document.document_createdBy_filter.value="";
@@ -85,23 +86,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="22" align="right">
+		<td colspan="23" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="22" align="left">
+		<td class="titleHeader" colspan="23" align="left">
 			<bean:message key="page.Document.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="22" align="right">
+		<td colspan="23" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="22" align="right">
+		<td colspan="23" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -207,6 +208,20 @@
 			</logic:notEqual>
 		</td>
 		<td>			
+			<bean:message key="document.tag.key"/>
+			<logic:equal name="document_fieldOrder" value="tag">
+				<logic:equal name="document_orderType" value="ASC">
+					<a href="#" onclick="doOrder('tag', 'DESC');"><img src="template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="document_orderType" value="DESC">
+					<a href="#" onclick="doOrder('tag', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="document_fieldOrder" value="tag">
+				<a href="#" onclick="doOrder('tag', 'ASC');"><img src="template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
 			<bean:message key="document.priority.key"/>
 			<logic:equal name="document_fieldOrder" value="priority">
 				<logic:equal name="document_orderType" value="ASC">
@@ -301,6 +316,7 @@
 		<td><bean:write name="element" property="repositoryId"/></td>
 		<td><bean:write name="element" property="documentVersion"/></td>
 		<td><bean:write name="element" property="description"/></td>
+		<td><bean:write name="element" property="tag"/></td>
 		<td><bean:write name="element" property="priority"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="createdBy"/></td>
@@ -345,12 +361,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="22" align="right">
+		<td colspan="23" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="22" align="right">
+		<td colspan="23" align="right">
 		<% if(com.app.docmgr.action.DocumentAction.allowableAction.contains("create")) { 
 				if (privilegeList.contains("DOCUMENT_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -398,6 +414,11 @@
 		<td width="150"><bean:message key="document.description.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="document_description_filter" value="<bean:write name="document_description_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="document.tag.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="document_tag_filter" value="<bean:write name="document_tag_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150" valign="top"><bean:message key="document.createdDate.key"/></td>

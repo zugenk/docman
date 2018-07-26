@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -1211,9 +1211,6 @@ public class ForumActionBase extends Action{
 					forum.setForumType(forumTypeObj);
 				}
 			}catch(Exception ex){}	
-			if(forumTypeObj==null){
-				errors.add("forum.forumType", new ActionError("error.forum.forumType"));
-			}
 			com.app.docmgr.model.Forum  parentObj =null;
 			com.app.docmgr.service.ForumService parentService = com.app.docmgr.service.ForumService.getInstance();
 			try{

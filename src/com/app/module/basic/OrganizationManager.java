@@ -147,11 +147,9 @@ public class OrganizationManager extends BaseUtil {
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Organization"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -170,7 +168,7 @@ public class OrganizationManager extends BaseUtil {
 				}
 			}
 		}
-		log.trace("filterParam=["+filterParam+"]");
+		log.trace("filterParam=["+filterParam+":"+orderParam+"]");
 		if("ALL".equals(mode)){
 			List result=OrganizationService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
@@ -181,7 +179,7 @@ public class OrganizationManager extends BaseUtil {
 			toDocList(result);
 			return result;
 		}	
-		PartialList result=OrganizationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		PartialList result=OrganizationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
 	}
@@ -235,8 +233,10 @@ public class OrganizationManager extends BaseUtil {
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		doc.append("createdBy", obj.getCreatedBy());
-		//doc.append("createdDate", obj.getCreatedDate());
+		doc.append("createdBy", getUserByLName(obj.getCreatedBy()));
+		doc.append("lastUpdatedBy", getUserByLName(obj.getLastUpdatedBy()));
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
 		doc.append("address", obj.getAddress());
 		doc.append("code", obj.getCode());
 		doc.append("filterCode", obj.getFilterCode());

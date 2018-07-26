@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -1189,9 +1189,6 @@ public class BookmarkActionBase extends Action{
 					bookmark.setBookmarkType(bookmarkTypeObj);
 				}
 			}catch(Exception ex){}	
-			if(bookmarkTypeObj==null){
-				errors.add("bookmark.bookmarkType", new ActionError("error.bookmark.bookmarkType"));
-			}
 /* 			com.app.docmgr.model.Status  statusObj =null;
 			com.app.docmgr.service.StatusService statusService = com.app.docmgr.service.StatusService.getInstance();
 			try{

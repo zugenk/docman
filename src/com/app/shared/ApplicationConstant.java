@@ -11,6 +11,7 @@ import com.app.docmgr.model.*;
 import com.app.docmgr.service.LookupService;
 import com.app.docmgr.service.StatusService;
 import com.app.docmgr.service.SystemParameterService;
+import com.app.docmgr.service.UserService;
 import com.simas.webservice.Utility;
 
 /**
@@ -26,6 +27,8 @@ public class ApplicationConstant {
 	private static Map<String,Map<String,SystemParameter>> SYSTEM_PARAMETER=null;//new HashMap<String,Map<String,SystemParameter>>();
 	private static Map<String,Map<String,Status>> STATUS_MAP=null;//new HashMap<String, Map<String,Status>>();
 	private static Map<String, Map<String,Lookup>> LOOKUP_MAP=null;//new HashMap<String, Map<String,Lookup>>();
+	private static Map<String,String> STATUSNAME_MAP=null;//new HashMap<String, Map<String,Status>>();
+	private static Map<String, String> LOOKUPNAME_MAP=null;//new HashMap<String, Map<String,Lookup>>();
 	//public static Map city=new HashMap();
 	//public static List country=new LinkedList();
 	public static String contextRealPath=""; //eclipse/workspace/iBankEder/WebContent";
@@ -86,11 +89,13 @@ public class ApplicationConstant {
 		if (LOOKUP_MAP!=null) return;
 		try {
 			LOOKUP_MAP= new HashMap<String,Map<String,Lookup>>();
+			LOOKUPNAME_MAP= new HashMap<String,String>();
 			List result=LookupService.getInstance().getList(null, " lookup.type ASC, lookup.code ASC");
 			String type="";
 			Map<String, Lookup> tMap=null;
 			for (Iterator iterator = result.iterator(); iterator.hasNext();) {
 				Lookup lookup = (Lookup) iterator.next();
+				LOOKUPNAME_MAP.put(""+lookup.getId(), lookup.getName());
 				if(!type.equals(lookup.getType())){
 					tMap=new HashMap<String,Lookup>();
 					type=lookup.getType();
@@ -113,16 +118,23 @@ public class ApplicationConstant {
 		return getLookupMap(type).get(code);
 	}
 	
+	public static String getLookupById(Long id) {
+		initLookup();
+		return LOOKUPNAME_MAP.get(id);
+	}
+	
 
 	public static void initStatus() {
 		if (STATUS_MAP!=null) return;
 		try {
 			STATUS_MAP= new HashMap<String,Map<String,Status>>();
+			STATUSNAME_MAP= new HashMap<String,String>();
 			List result=StatusService.getInstance().getList(null, " status.type ASC, status.code ASC");
 			String type="";
 			Map<String, Status> tMap=null;
 			for (Iterator iterator = result.iterator(); iterator.hasNext();) {
 				Status status = (Status) iterator.next();
+				STATUSNAME_MAP.put(""+status.getId(), status.getName());
 				if(!type.equals(status.getType())){
 					tMap=new HashMap<String,Status>();
 					type=status.getType();
@@ -145,7 +157,10 @@ public class ApplicationConstant {
 		return getStatusMap(type).get(code);
 	}
 	
-	
+	public static String getStatusById(Long id) {
+		initStatus();
+		return STATUSNAME_MAP.get(id);
+	}
 
 /*	public String getFirstCityByCountry(String countryName) {
 		return ((City)((List)city.get(countryName)).get(0)).getName();

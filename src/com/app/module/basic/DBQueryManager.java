@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +82,61 @@ public class DBQueryManager extends BaseUtil{
 		}
 	}   
 	
+	public static List getPlainList(String qName,String sqlQuery,String... params)  throws Exception{
+		Session session = null;
+		PreparedStatement ps;
+		ResultSet rs=null;
+		try {
+			List resultList = new LinkedList();
+			session = ConnectionFactory.getInstance().getSession();
+			log.debug("Executing ["+qName+"] :>> ["+sqlQuery+"] ");
+			ps = session.connection().prepareStatement(sqlQuery);			
+			if(params!=null && params.length>0) {
+				for (int i = 0; i < params.length; i++) {
+					ps.setString(i+1, params[i]);
+				}
+			}
+			rs = ps.executeQuery();
+			ResultSetMetaData meta= rs.getMetaData();
+			ps.clearParameters();
+			String row="";
+			String[] keys=new String[meta.getColumnCount()];
+			for (int i = 0; i < keys.length; i++) {
+				keys[i]=meta.getColumnLabel(i+1);
+				row+=(i>0?"|":"")+keys[i];
+			}
+			resultList.add(row);
+			while (rs.next()) { 
+				row="";
+				for (int i = 0; i < keys.length; i++) {
+					row+=(i>0?"|":"")+rs.getObject(i+1);
+				}	
+				resultList.add(row);
+			}
+			return resultList;
+		}catch (Exception e) {
+			log.error("Exception while running query " + e.getMessage());
+			throw new RuntimeException(e);
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch (Exception e) {
+				}
+			}
+			if (rs != null) {
+				try {
+					rs.close();
+				}catch (Exception e) {
+				}
+			} 	
+		}
+	}   
+	
 	public static PartialList getPartialList(String qName,String sqlQuery,int start,String... params)  throws Exception{
+		return getPartialList(qName,sqlQuery,start,ITEM_PER_PAGE,params);
+	}		
+	public static PartialList getPartialList(String qName,String sqlQuery,int start,int pageSize,String... params)  throws Exception{
 		Session session = null;
 		PreparedStatement ps;
 		ResultSet rs=null;
@@ -197,4 +252,97 @@ public class DBQueryManager extends BaseUtil{
 			} 	
 		}
 	}
+	
+	public static Map<String,Object> getFirst(String qName,String sqlQuery,String... params) throws Exception{
+		Session session = null;
+		PreparedStatement ps;
+		ResultSet rs=null;
+		Map<String, Object> row=new HashMap<String, Object>();
+		
+		try {
+			List resultList = new LinkedList();
+			session = ConnectionFactory.getInstance().getSession();
+			log.debug("Executing ["+qName+"] :>> ["+sqlQuery+"] ");
+//			String query; 
+//			if (params!=null && params.length>0) query=ApplicationFactory.mergeParam(sqlQuery,params);
+//			else query= sqlQuery;
+			ps = session.connection().prepareStatement(sqlQuery);			
+			//ps=getPS(qName, session.connection(), sqlQuery);
+			if(params!=null && params.length>0) {
+				for (int i = 0; i < params.length; i++) {
+					ps.setString(i+1, params[i]);
+				}
+			}
+			rs = ps.executeQuery();
+			ResultSetMetaData meta= rs.getMetaData();
+			ps.clearParameters();
+			String[] keys=new String[meta.getColumnCount()];
+			for (int i = 0; i < keys.length; i++) {
+				keys[i]=meta.getColumnLabel(i+1);
+			}
+			if (rs.next()) { 
+//				row=new HashMap<String, Object>();
+				for (int i = 0; i < keys.length; i++) {
+					row.put(keys[i], rs.getObject(i+1));
+				}	
+				return row;
+				//resultList.add(row);
+			}
+			// resultList;
+		}catch (Exception e) {
+			log.error("Exception while running query " + e.getMessage());
+			throw new RuntimeException(e);
+		} finally {
+			if (session != null) {
+				try {
+					session.close();
+				} catch (Exception e) {
+				}
+			}
+			if (rs != null) {
+				try {
+					rs.close();
+				}catch (Exception e) {
+				}
+			} 	
+		}
+		return row;
+	}   
+	
+	
+	public static Map<String, Object> decrypt(Map<String, Object> row, String[] keys){
+		if (row!=null && !row.isEmpty()) {
+			for (int i = 0; i < keys.length; i++) {
+				if (row.get(keys[i])!=null) {
+					try {
+						row.put(keys[i], ApplicationFactory.decryptData((String) row.get(keys[i])));
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+		return row;
+	}
+	
+	
+	public static List decryptList(List list,String[] keys) {
+		if(list!=null && !list.isEmpty() && keys.length>0) {
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Map<String, Object> row = (Map<String, Object>) iterator.next();
+				decrypt(row,keys);
+			}
+		}
+		return list;
+	}
+	
+	public static PartialList decryptList(PartialList plist, String[] keys) {
+		if(plist!=null && !plist.isEmpty() && keys!=null && keys.length>0) {
+			for (Iterator iterator = plist.iterator(); iterator.hasNext();) {
+				Map<String, Object> row = (Map<String, Object>) iterator.next();
+				decrypt(row,keys);
+			}
+		}	
+		return plist;
+	}
+	
 }

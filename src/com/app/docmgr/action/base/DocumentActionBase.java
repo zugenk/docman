@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -217,6 +217,14 @@ public class DocumentActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("document_description_filter", param_document_description_filter);
+		String param_document_tag_filter = "";
+		if(request.getParameter("document_tag_filter")!=null){
+			param_document_tag_filter = request.getParameter("document_tag_filter");
+			if(param_document_tag_filter.length() > 0 ){				
+				document_filterSb.append("  AND document.tag like '%"+param_document_tag_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("document_tag_filter", param_document_tag_filter);
 		String param_document_createdDate_filter_start = "";
 		if(request.getParameter("document_createdDate_filter_start")!=null){
 			param_document_createdDate_filter_start = request.getParameter("document_createdDate_filter_start");
@@ -1206,9 +1214,6 @@ public class DocumentActionBase extends Action{
 			document.setName(name);
 			String documentType = request.getParameter("documentType");
 			document.setDocumentType(documentType);
-			if(documentType==null || documentType.trim().length() == 0 ){
-				errors.add("document.documentType", new ActionError("error.document.documentType"));
-			}
 			String contentType = request.getParameter("contentType");
 			document.setContentType(contentType);
 			if(contentType==null || contentType.trim().length() == 0 ){
@@ -1222,6 +1227,8 @@ public class DocumentActionBase extends Action{
 			document.setDocumentVersion(documentVersion);
 			String description = request.getParameter("description");
 			document.setDescription(description);
+			String tag = request.getParameter("tag");
+			document.setTag(tag);
 			String priority = request.getParameter("priority");
 			try{
 				document.setPriority(new java.lang.Integer(priority));
@@ -1311,9 +1318,6 @@ public class DocumentActionBase extends Action{
 					document.setFolder(folderObj);
 				}
 			}catch(Exception ex){}	
-			if(folderObj==null){
-				errors.add("document.folder", new ActionError("error.document.folder"));
-			}
 			com.app.docmgr.model.Document  parentObj =null;
 			com.app.docmgr.service.DocumentService parentService = com.app.docmgr.service.DocumentService.getInstance();
 			try{

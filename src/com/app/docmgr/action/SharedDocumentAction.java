@@ -27,12 +27,12 @@ import com.app.docmgr.action.base.SharedDocumentActionBase;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 06-10-2017 20:50:25
+ * @createDate 07-04-2018 18:40:05
  */
 
 public class SharedDocumentAction extends SharedDocumentActionBase{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.SharedDocumentAction");	
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -129,17 +129,35 @@ public class SharedDocumentAction extends SharedDocumentActionBase{
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("SHARED_DOCUMENT_PROCESS")) doProcessOk(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("SHARED_DOCUMENT_ACTIVATE")) forward = doActivateConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("SHARED_DOCUMENT_ACTIVATE")) doActivateOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("SHARED_DOCUMENT_CLOSE")) forward = doCloseConfirm(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("close_ok".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("SHARED_DOCUMENT_CLOSE")) doCloseOk(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("SHARED_DOCUMENT_ARCHIVE")) forward = doArchiveConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("SHARED_DOCUMENT_ARCHIVE")) doArchiveOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("remove_confirm".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("SHARED_DOCUMENT_REMOVE")) forward = doRemoveConfirm(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("SHARED_DOCUMENT_REMOVE")) doRemoveOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("SHARED_DOCUMENT_BLOCK")) forward = doBlockConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("SHARED_DOCUMENT_BLOCK")) doBlockOk(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("SHARED_DOCUMENT_CANCEL")) forward = doCancelConfirm(mapping, form, request, response);

@@ -91,19 +91,17 @@ public class NotificationManager extends BaseUtil {
 		//, last_updated_date=LOCALTIMESTAMP ,lastUpdated_by='"+passport.getString("loginName")+"' " 
 		String sqlQuery="update notification set flag='READ' where subscriber='"+passport.getLong("userId")+"' ";
 		DBQueryManager.executeUpdate(sqlQuery);
-		return listByOwner(passport, null);
+		return listByOwner(passport, null,null);
 	}
 	
 	public static List list(Document passport,Map data) throws Exception{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Notification"));
-		String filterParam=null;
-		if("PRIVATE".equals(ACL_MODE) && !isAdmin(passport)) filterParam+=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";
+		String filterParam="";
+		if("PRIVATE".equals(ACL_MODE) && !isAdminExec(passport)) filterParam+=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
-		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -111,17 +109,19 @@ public class NotificationManager extends BaseUtil {
 					String key = (String) iterator.next();
 					filterBuff.append(constructQuery("notification",key,filterMap.get(key))); //filterBuff.append(" AND notification."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
 				}
-				filterParam=filterBuff.toString();
+				filterParam+=filterBuff.toString();
 			}
 			
 			Map orderMap= (Map) data.get("orderBy");
 			if (orderMap!=null && !orderMap.isEmpty()) {
 				for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					orderParam+=(orderParam!=null?", ":"")+" notification."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					if(orderParam==null) orderParam=" notification."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+					else orderParam+=" , notification."+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
 				}
 			}
 		}
+		System.out.println(filterParam+":"+orderParam);
 		if("ALL".equals(mode)){
 			List result=NotificationService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
 			toDocList(result);
@@ -132,9 +132,58 @@ public class NotificationManager extends BaseUtil {
 			toDocList(result);
 			return result;
 		}	
-		PartialList result=NotificationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		PartialList result=NotificationService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
+	}
+	
+	public static List complexList(Document passport, Map data) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "complexList", new Document("modelClass","Notification"));
+		String filterParam="";String orderParam=null;
+		if("PRIVATE".equals(ACL_MODE) && !isAdminExec(passport))  filterParam+=" AND notification.subscriber='"+passport.getLong("userId")+"' ";
+		Map filterMap= (Map) data.get("filter");
+		if (filterMap!=null && !filterMap.isEmpty()) {
+			StringBuffer filterBuff=new StringBuffer("");
+			for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				filterBuff.append(constructQuery(null,key,filterMap.get(key)));
+			}
+			filterParam+=filterBuff.toString();
+		}
+		Map orderMap= (Map) data.get("orderBy");
+		if (orderMap!=null && !orderMap.isEmpty()) {
+			for (Iterator iterator = orderMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				if(orderParam==null) orderParam=" "+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+				else orderParam+=" , "+key+("DESC".equalsIgnoreCase((String)orderMap.get(key))?" DESC":" ASC");
+			}
+		}
+		System.out.println(filterParam+":"+orderParam);
+		return sqlList(filterParam, orderParam, data.get("start"),data.get("pageSize"));
+	}
+		
+
+	public static List sqlList(String filterParam, String orderParam,Object start,Object pageSize) throws Exception{
+//		String sqlQuery="select notification.id, notification.subscriber, notification.flag, message.id as messageId, message.content as messageContent,t.id as topicId,t.name as topicName, u.full_name as sender  "+
+//				"from notification, message, topic, app_user  "+
+//				"where n.post_message=m.id and m.topic=t.id and m.created_by= u.login_name "+filterParam;
+		//System.out.println("SQLLIST with "+filterParam+":"+orderParam);
+		String sqlQuery ="select notification.id as \"notificationId\", notification.subscriber as \"notificationSubscriber\", notification.flag as \"notificationFlag\", "+
+		"message.id as \"messageId\", message.content as \"messageContent\",TO_CHAR(message.created_date, 'DD/MM/YYYY HH24:MI:SS') as \"messageCreatedDate\", topic.id as \"topicId\",topic.name as \"topicName\", "+
+		"app_user.full_name as \"messageCreatedBy\" " +
+		"from notification , message , topic , app_user "+
+		"where notification.post_message=message.id and message.topic=topic.id and message.created_by= app_user.login_name "+(filterParam==null?"":filterParam);
+		if (orderParam!=null) sqlQuery= sqlQuery+" ORDER BY "+orderParam; 
+		System.out.println("REPORT QUERY=["+sqlQuery+"]");
+		String[] keys= new String[]{"messageCreatedBy"};
+		if (!nvl(start)) return DBQueryManager.decryptList(DBQueryManager.getPartialList("User Notification List", sqlQuery,toInt(start,defaulStart),toInt(pageSize,ITEM_PER_PAGE)),keys);
+		return DBQueryManager.decryptList(DBQueryManager.getList("User Notification List", sqlQuery, null),keys);
+	}
+	
+	public static List listComplexByOwner(Document passport,String start,String pageSize) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "listComplexByOwner", new Document("modelClass","Notification"));
+		String filterParam=" AND notification.subscriber='"+passport.getLong("userId")+"' "; //AND notification.flag is null";
+		return sqlList(filterParam, " notification.id DESC ",start,pageSize);
 	}
 	
 	private static void updateFromMap(Notification obj, Map data,List<String> errors) {
@@ -169,11 +218,11 @@ public class NotificationManager extends BaseUtil {
 	
 	
 	
-	public static PartialList listByOwner(Document passport,String start) throws Exception{
+	public static PartialList listByOwner(Document passport,String start,String pageSize) throws Exception{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "listByOwner", new Document("modelClass","Notification"));
-		String filterParam=" AND notification.subscriber.id='"+passport.getLong("userId")+"' AND notification.flag is null";
+		String filterParam=" AND notification.subscriber.id='"+passport.getLong("userId")+"' ";// AND notification.flag is null";
 		String orderParam=" notification.id DESC";
-		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, toInt(start,defaulStart), ITEM_PER_PAGE);
+		PartialList result=NotificationService.getInstance().getPartialList(filterParam, orderParam, toInt(start,defaulStart), toInt(pageSize,ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
 	}
@@ -196,8 +245,8 @@ public class NotificationManager extends BaseUtil {
 			}
 		}
 		if (obj.getSubscriber()!=null) {
-			doc.append("subsriber", obj.getSubscriber().getLoginName());
-			doc.append("subsriberId", obj.getSubscriber().getId());
+			doc.append("subscriber", obj.getSubscriber().getLoginName());
+			doc.append("subscriberId", obj.getSubscriber().getId());
 		}
 		return doc;
 	}

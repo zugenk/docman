@@ -32,7 +32,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 21:02:14
  */
 -->
 </HEAD>
@@ -56,6 +56,7 @@
 			document.forms.documentHistory.documentHistory_repositoryId_filter.value="";
 			document.forms.documentHistory.documentHistory_documentVersion_filter.value="";
 			document.forms.documentHistory.documentHistory_description_filter.value="";
+			document.forms.documentHistory.documentHistory_tag_filter.value="";
 			document.forms.documentHistory.documentHistory_createdDate_filter_start.value="";
 			document.forms.documentHistory.documentHistory_createdDate_filter_end.value="";
 			document.forms.documentHistory.documentHistory_createdBy_filter.value="";
@@ -88,23 +89,23 @@
 <%@ include file="../common/header.jsp" %>
 <TABLE border="0" width="98%" align="center" cellpadding="3" cellspacing="1">
 	<tr>
-		<td colspan="25" align="right">
+		<td colspan="26" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td class="titleHeader" colspan="25" align="left">
+		<td class="titleHeader" colspan="26" align="left">
 			<bean:message key="page.DocumentHistory.List"/>
 		</td>
 	</tr>
 
 	<tr>
-		<td colspan="25" align="right">
+		<td colspan="26" align="right">
 			<bean:write name="paging" filter="false"/>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="25" align="right">
+		<td colspan="26" align="right">
 			<bean:write name="pagingItem" filter="false"/>
 		</td>
 	</tr>
@@ -266,6 +267,20 @@
 			</logic:notEqual>
 		</td>
 		<td>			
+			<bean:message key="documentHistory.tag.key"/>
+			<logic:equal name="documentHistory_fieldOrder" value="tag">
+				<logic:equal name="documentHistory_orderType" value="ASC">
+					<a href="#" onclick="doOrder('tag', 'DESC');"><img src="../template/<%=currentTemplate%>/images/desc.gif" border="0"></a>
+				</logic:equal>
+				<logic:equal name="documentHistory_orderType" value="DESC">
+					<a href="#" onclick="doOrder('tag', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+				</logic:equal>
+			</logic:equal>
+			<logic:notEqual name="documentHistory_fieldOrder" value="tag">
+				<a href="#" onclick="doOrder('tag', 'ASC');"><img src="../template/<%=currentTemplate%>/images/asc.gif"  border="0"></a>
+			</logic:notEqual>
+		</td>
+		<td>			
 			<bean:message key="documentHistory.createdDate.key"/>
 			<logic:equal name="documentHistory_fieldOrder" value="created_date">
 				<logic:equal name="documentHistory_orderType" value="ASC">
@@ -350,6 +365,7 @@
 		<td><bean:write name="element" property="repositoryId"/></td>
 		<td><bean:write name="element" property="documentVersion"/></td>
 		<td><bean:write name="element" property="description"/></td>
+		<td><bean:write name="element" property="tag"/></td>
 		<td><bean:write name="element" property="createdDate" format="dd MMM yyyy"/></td>
 		<td><bean:write name="element" property="createdBy"/></td>
 		<td><bean:write name="element" property="lastUpdatedDate" format="dd MMM yyyy"/></td>
@@ -393,12 +409,12 @@
 		</tr>		
 	</logic:iterate> 
 	<tr>
-		<td colspan="25" align="right">
+		<td colspan="26" align="right">
 			&nbsp;
 		</td>
 	</tr>
 	<tr>
-		<td colspan="25" align="right">
+		<td colspan="26" align="right">
 		<% if(com.app.docmgr.admin.action.DocumentHistoryAction.allowableAction.contains("create")) { 
 				if (UserService.getInstance().hasPrivilege(loginUser,"ADMIN:DOCUMENT_HISTORY_CREATE")) { %>
 			<input type="button" value="<bean:message key="button.add"/>" onclick="this.form.action.value='create';this.form.submit()" />
@@ -469,6 +485,11 @@
 		<td width="150"><bean:message key="documentHistory.description.key"/></td>
 		<td width="10">:</td>
 		<td><input type="text" name="documentHistory_description_filter" value="<bean:write name="documentHistory_description_filter"/>"></td>
+	</tr>
+	<tr>
+		<td width="150"><bean:message key="documentHistory.tag.key"/></td>
+		<td width="10">:</td>
+		<td><input type="text" name="documentHistory_tag_filter" value="<bean:write name="documentHistory_tag_filter"/>"></td>
 	</tr>
 	<tr>
 		<td width="150" valign="top"><bean:message key="documentHistory.createdDate.key"/></td>

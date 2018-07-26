@@ -36,34 +36,34 @@ private static Logger log = Logger.getLogger(PassportManager.class.getName());
 		Document iPass=null;
 		iPass=checkLastPassport(user.getId());
 		if (iPass==null) {
-			iPass=new Document();
+			iPass=UserManager.toDocument(user);    //new Document();
 			iPass.put("userId", user.getId());
-			iPass.put("loginName", user.getLoginName());
-			iPass.put("fullName", user.getFullName());
-			iPass.put("mobileNumber", user.getMobileNumber());
-			iPass.put("phoneNumber", user.getHomePhoneNumber());
-			iPass.put("userLevel", user.getUserLevel().getCode());
-			if(user.getSecurityLevel()!=null) {
-				iPass.put("securityLevel", user.getSecurityLevel().getName());
-				iPass.put("securityLevelId", user.getSecurityLevel().getId());
-			} 
-			if(user.getOrganization()!=null){
-				iPass.put("organization", user.getOrganization().getName());
-				iPass.put("organizationId", user.getOrganization().getId());
-				if(iPass.get("securityLevel")==null){
-					Organization org=OrganizationService.getInstance().get(iPass.getLong("organizationId"));
-					if(org.getSecurityLevel()!=null) {
-						iPass.put("securityLevel", org.getSecurityLevel().getName());
-						iPass.put("securityLevelId", org.getSecurityLevel().getId());
-					}
-				}
-			}
+//			iPass.put("loginName", user.getLoginName());
+//			iPass.put("fullName", user.getFullName());
+//			iPass.put("mobileNumber", user.getMobileNumber());
+//			iPass.put("phoneNumber", user.getHomePhoneNumber());
+//			iPass.put("userLevel", user.getUserLevel().getCode());
+//			if(user.getSecurityLevel()!=null) {
+//				iPass.put("securityLevel", user.getSecurityLevel().getName());
+//				iPass.put("securityLevelId", user.getSecurityLevel().getId());
+//			} 
+//			if(user.getOrganization()!=null){
+//				iPass.put("organization", user.getOrganization().getName());
+//				iPass.put("organizationId", user.getOrganization().getId());
+//				if(iPass.get("securityLevel")==null){
+//					Organization org=OrganizationService.getInstance().get(iPass.getLong("organizationId"));
+//					if(org.getSecurityLevel()!=null) {
+//						iPass.put("securityLevel", org.getSecurityLevel().getName());
+//						iPass.put("securityLevelId", org.getSecurityLevel().getId());
+//					}
+//				}
+//			}
 			createNewPassport(iPass);
 			System.out.println("====================NEW PASSPORT ISSUED======================");
 		}
-//		iPass.put("favTopicIds", UserManager.getFavTopicIds(user));
-//		iPass.put("roleNames", UserManager.getRoleNames(user)); 
-//		System.out.println(Utility.debug(iPass));
+		if(iPass.get("favTopicId")==null)  iPass.put("favTopicId", UserManager.getFavoritedTopic(user.getId()));
+		if(iPass.get("subsTopicId")==null) iPass.put("subsTopicId", UserManager.getSubscribedTopic(user.getId())); 
+		//		System.out.println(Utility.debug(iPass));
 		iPass.put("lastAccess", System.currentTimeMillis());
 		if(!nvl(itoken)) iPass.put("itoken",itoken);
 		savePassport(iPass,null);

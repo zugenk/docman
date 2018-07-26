@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -148,6 +148,9 @@ public class TopicActionBase extends Action{
 			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
 			List forumList = forumService.getList(null, null);
 			request.setAttribute("forumList", forumList);
+			com.app.docmgr.service.MessageService latestMessageService = com.app.docmgr.service.MessageService.getInstance();
+			List latestMessageList = latestMessageService.getList(null, null);
+			request.setAttribute("latestMessageList", latestMessageList);
 		}catch(Exception ex){
 		
 		}
@@ -280,6 +283,14 @@ public class TopicActionBase extends Action{
 			}
 		}		
 		request.getSession().setAttribute("topic_forum_filter", param_topic_forum_filter);
+		String param_topic_latestMessage_filter = "";
+		if(request.getParameter("topic_latestMessage_filter")!=null){
+			param_topic_latestMessage_filter = request.getParameter("topic_latestMessage_filter");
+			if(param_topic_latestMessage_filter.length() > 0 ){				
+				topic_filterSb.append("  AND topic.latestMessage = '"+param_topic_latestMessage_filter+"' ");
+			}
+		}		
+		request.getSession().setAttribute("topic_latestMessage_filter", param_topic_latestMessage_filter);
 		
 		if(topic_fieldOrder!=null && topic_orderType != null )topic_filterSb.append(" ORDER BY "+topic_fieldOrder+" "+topic_orderType);
 		
@@ -408,6 +419,9 @@ public class TopicActionBase extends Action{
  */ 			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
 			List forumList = forumService.getList(null, null);
 			request.setAttribute("forumList", forumList);
+			com.app.docmgr.service.MessageService latestMessageService = com.app.docmgr.service.MessageService.getInstance();
+			List latestMessageList = latestMessageService.getList(null, null);
+			request.setAttribute("latestMessageList", latestMessageList);
 
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
@@ -446,6 +460,9 @@ public class TopicActionBase extends Action{
 */			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
 			List forumList = forumService.getList(null, null);
 			request.setAttribute("forumList", forumList);
+			com.app.docmgr.service.MessageService latestMessageService = com.app.docmgr.service.MessageService.getInstance();
+			List latestMessageList = latestMessageService.getList(null, null);
+			request.setAttribute("latestMessageList", latestMessageList);
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
@@ -507,6 +524,9 @@ public class TopicActionBase extends Action{
 */ 			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
 			List forumList = forumService.getList(null, null);
 			request.setAttribute("forumList", forumList);
+			com.app.docmgr.service.MessageService latestMessageService = com.app.docmgr.service.MessageService.getInstance();
+			List latestMessageList = latestMessageService.getList(null, null);
+			request.setAttribute("latestMessageList", latestMessageList);
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
 			request.setAttribute("userSetList", userSetList);
@@ -540,6 +560,9 @@ public class TopicActionBase extends Action{
  */			com.app.docmgr.service.ForumService forumService = com.app.docmgr.service.ForumService.getInstance();
 			List forumList = forumService.getList(null, null);
 			request.setAttribute("forumList", forumList);
+			com.app.docmgr.service.MessageService latestMessageService = com.app.docmgr.service.MessageService.getInstance();
+			List latestMessageList = latestMessageService.getList(null, null);
+			request.setAttribute("latestMessageList", latestMessageList);
 
 			UserService userService = UserService.getInstance();
 			List userSetList = userService.getList(null, null);
@@ -1267,6 +1290,18 @@ public class TopicActionBase extends Action{
 			if(forumObj==null){
 				errors.add("topic.forum", new ActionError("error.topic.forum"));
 			}
+			com.app.docmgr.model.Message  latestMessageObj =null;
+			com.app.docmgr.service.MessageService latestMessageService = com.app.docmgr.service.MessageService.getInstance();
+			try{
+				String latestMessageStr = request.getParameter("latestMessage");
+				
+				if(latestMessageStr == null || latestMessageStr.trim().length() == 0 ){
+					topic.setLatestMessage(null);
+				}else{			
+					latestMessageObj = latestMessageService.get(new Long(latestMessageStr));
+					topic.setLatestMessage(latestMessageObj);
+				}
+			}catch(Exception ex){}	
 
 			Set userSet = new HashSet();
 			String[] _selectedUser=request.getParameterValues("selected_user");

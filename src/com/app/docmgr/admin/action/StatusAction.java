@@ -27,12 +27,12 @@ import com.app.docmgr.action.base.StatusActionBase;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 07-04-2018 18:40:05
  */
 
 public class StatusAction extends StatusActionBase{
 	private static Logger log = Logger.getLogger("com.app.docmgr.admin.action.StatusAction");	
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;

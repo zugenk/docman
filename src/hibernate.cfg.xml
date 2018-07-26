@@ -5,15 +5,6 @@
 
 <hibernate-configuration>
 	<session-factory>
-<!-- 		<property name="hibernate.connection.url">jdbc:oracle:thin:@10.22.25.131:1521:IBDB</property> -->
-<!--
-		<property name="hibernate.connection.url">jdbc:oracle:thin:@simasbanking.oracle.database:1521:ORCL</property>
-		<property name="hibernate.connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
-		<property name="hibernate.connection.username">SIMASBANKINGPROD</property>
-		<property name="hibernate.connection.password">simasbanking</property>
-		<property name="dialect">org.hibernate.dialect.Oracle9Dialect</property>
--->
-
 		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.username">docman</property>
@@ -26,33 +17,18 @@
 		<property name="hibernate.format_sql">false</property>
 		<property name="hibernate.use_sql_comments">false</property>
 
-		<property name="c3p0.min_size">25</property>
-		<property name="c3p0.max_size">100</property>
+		<property name="c3p0.min_size">5</property>
+		<property name="c3p0.max_size">10</property>
 		<property name="c3p0.timeout">60</property>
 		<property name="c3p0.acquireRetryAttempts">30</property>
 		<property name="c3p0.acquireIncrement">1</property>
 		<property name="c3p0.idleConnectionTestPeriod">300</property>
 		<property name="c3p0.testConnectionOnCheckout">true</property>
-		<property name="c3p0.initialPoolSize">25</property>
-		<property name="c3p0.maxPoolSize">100</property>
-		<property name="c3p0.maxIdleTime">300</property>
-		<property name="c3p0.maxStatements">5</property>
-		<property name="c3p0.minPoolSize">25</property>
-		
-		<!-- PROD SETTING
-		<property name="c3p0.min_size">150</property>
-		<property name="c3p0.max_size">500</property>
-		<property name="c3p0.timeout">60</property>
-		<property name="c3p0.acquireRetryAttempts">30</property>
-		<property name="c3p0.acquireIncrement">1</property>
-		<property name="c3p0.idleConnectionTestPeriod">300</property>
-		<property name="c3p0.testConnectionOnCheckout">true</property>
-		<property name="c3p0.initialPoolSize">150</property>
-		<property name="c3p0.maxPoolSize">500</property>
+		<property name="c3p0.initialPoolSize">5</property>
+		<property name="c3p0.maxPoolSize">10</property>
 		<property name="c3p0.maxIdleTime">300</property>
 		<property name="c3p0.maxStatements">1</property>
-		<property name="c3p0.minPoolSize">150</property>
-		 -->
+		<property name="c3p0.minPoolSize">5</property>
 
 <!-- 		<property name="c3p0.preferredTestQuery">SELECT 1</property> -->
 
@@ -94,5 +70,7 @@
 		<mapping resource="hbm/docmgr/SystemSequence.hbm.xml" />
 		<mapping resource="hbm/docmgr/User.hbm.xml" />
 		<mapping resource="hbm/docmgr/UserHistory.hbm.xml" />
+		<mapping resource="hbm/docmgr/Wiki.hbm.xml" />
+		<mapping resource="hbm/docmgr/WikiHistory.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

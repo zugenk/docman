@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -481,9 +481,6 @@ public class NotificationActionBase extends Action{
 					notification.setNotificationType(notificationTypeObj);
 				}
 			}catch(Exception ex){}	
-			if(notificationTypeObj==null){
-				errors.add("notification.notificationType", new ActionError("error.notification.notificationType"));
-			}
 			com.app.docmgr.model.Message  postMessageObj =null;
 			com.app.docmgr.service.MessageService postMessageService = com.app.docmgr.service.MessageService.getInstance();
 			try{

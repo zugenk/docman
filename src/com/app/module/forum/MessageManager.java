@@ -1,5 +1,6 @@
 package com.app.module.forum;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,9 +24,11 @@ import com.app.module.basic.ACLManager;
 import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.docmgr.service.MessageService;
+import com.app.shared.ApplicationConstant;
 import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 import com.simas.webservice.Utility;
+import com.temenos.tocf.event.test;
 
 public class MessageManager extends BaseUtil{
 	private static Logger log = Logger.getLogger(MessageManager.class);
@@ -39,7 +42,7 @@ public class MessageManager extends BaseUtil{
 	public static List<Map> getTree(String startId)  throws Exception{
 		String sqlQuery = " WITH RECURSIVE frm AS ("+
 	   " SELECT message.id as id, message.id||'' as tree, COALESCE(message.parent,0) as parent, 0 AS level FROM message "+
-	   ((startId==null||startId.length()==0)?" WHERE message.parent is null":" WHERE message.id='"+startId+"' ")+
+	   ((startId==null||startId.length()==0)?" WHERE message.parent is null":" WHERE message.id='"+startId+"' ") +
 	   " UNION  ALL"+
 	   " SELECT f.id as id, (c.tree||'.'||f.id) as tree, COALESCE(f.parent,0) as parent, (c.level + 1) as level FROM frm  c "+
 	   " JOIN message f ON f.parent = c.id )"+
@@ -64,7 +67,58 @@ public class MessageManager extends BaseUtil{
 		//log.debug(Utility.debug(list));
 		return list;
 	}	
-
+	
+	public static List<Document> getTreeByTopic(String topicId) throws Exception{
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT message.id, message.parent, 1 as level "
+		+ " FROM message , status s "+
+		  " WHERE message.parent is null" +
+		  (nvl(topicId)?"":" and message.topic="+topicId)+
+		  " and s.id=message.status  and s.state='active' "+
+		  " UNION ALL"+
+		  " SELECT x.id, x.parent, (q.level+1) as level FROM message  x"+
+		  " JOIN q ON q.id = x.parent) "+ 
+		  " SELECT * FROM q order by level ASC ";
+		List<Document> result= DBQueryManager.getList("MessageDownline", sqlQuery, null); //new String[]{startId});
+		return idListToDoc(result);
+	}	
+	
+	
+	public static List getTreeByTopic(String topicId,String start,String pageSize) throws Exception{
+		PartialList resultList=new PartialList();
+		String countQuery="select count(message.id) as \"total\" from message ,status s where "+
+				 " s.id=message.status  and s.state='active' "+
+				 (nvl(topicId)?"":" and message.topic="+topicId);
+		Map rsCount=DBQueryManager.getFirst("queryCount",countQuery, null);
+		int total=0;
+		if(!rsCount.isEmpty()) {
+			total=toInt(rsCount.get("total"));
+	//		log.debug("count Query Total="+total+":"+rsCount.get("total").getClass());
+	//		log.debug(rsCount);
+		}
+		if (total<=0) {
+			return resultList;
+		}
+		int istart=toInt(start,defaulStart);
+		int ipageSize=toInt(pageSize,ITEM_PER_PAGE);
+		log.debug("========>>>>>"+start+":"+istart+":"+defaulStart);
+		resultList.setStart(istart);
+		resultList.setCount(ipageSize);
+		resultList.setTotal(total);
+		String sqlQuery = " WITH RECURSIVE q AS (  SELECT message.id, message.parent, 1 as level "
+		+ " FROM message , status s "+
+		  " WHERE message.parent is null" +
+		  (nvl(topicId)?"":" and message.topic="+topicId)+
+		  " and s.id=message.status  and s.state='active' "+
+		  " UNION ALL"+
+		  " SELECT x.id, x.parent, (q.level+1) as level FROM message  x"+
+		  " JOIN q ON q.id = x.parent) "+ 
+		  " SELECT * FROM q order by level ASC limit "+ipageSize+" offset "+istart;
+		List<Document> result= DBQueryManager.getList("MessageDownline", sqlQuery, null);
+		resultList.addAll(result);
+		return idListToDoc(resultList);
+	}
+	
+	
 	public static List<Map> getUpline(Document passport,String startId)  throws Exception{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getUpline("+startId+")", new Document("modelClass","Message"));
 		return getUpline( startId);
@@ -107,7 +161,8 @@ public class MessageManager extends BaseUtil{
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		MessageService.getInstance().add(obj);
-		TopicManager.generateNotification(obj);
+		TopicManager.generateNotification(obj,passport.getLong("userId"));
+		
 		return toDocument(obj);
 	}
 	
@@ -137,6 +192,7 @@ public class MessageManager extends BaseUtil{
 		obj.setLastUpdatedDate(new Date());
 		obj.setLastUpdatedBy(passport.getString("loginName"));
 		MessageService.getInstance().update(obj);
+		TopicManager.decreaseNumOfPost(obj.getTopic());
 	}
 
 	public static Document read(Document passport,String objId) throws Exception {
@@ -152,11 +208,9 @@ public class MessageManager extends BaseUtil{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Message"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -186,7 +240,7 @@ public class MessageManager extends BaseUtil{
 			toDocList(result);
 			return result;
 		}	
-		PartialList result=MessageService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		PartialList result=MessageService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
 	}
@@ -200,6 +254,12 @@ public class MessageManager extends BaseUtil{
 		toDocList(result);
 		return result;
 	}
+	
+	public static List treeByTopic(Document passport, String topicId,String start) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "treeByTopic("+topicId+")", new Document("modelClass","Message"));
+		return getTreeByTopic(topicId, start, null);
+	}
+	
 	private static void updateFromMap(Message obj, Map data,List<String> errors) {
 		obj.setContent((String) data.get("content"));
 		obj.setFilterCode((String) data.get("filterCode"));
@@ -243,7 +303,10 @@ public class MessageManager extends BaseUtil{
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		doc.append("createdBy", obj.getCreatedBy());
+		doc.append("createdBy", getUserByLName(obj.getCreatedBy()));
+		doc.append("lastUpdatedBy", getUserByLName(obj.getLastUpdatedBy()));
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
 		doc.append("content", obj.getContent());
 		doc.append("filterCode", obj.getFilterCode());
 		
@@ -257,6 +320,7 @@ public class MessageManager extends BaseUtil{
 		}
 		if (obj.getParent()!=null) {
 			doc.append("parentContent", obj.getParent().getContent());
+			doc.append("parentCreatedBy", getUserByLName(obj.getParent().getCreatedBy()));
 			doc.append("parentId", obj.getParent().getId());
 		}
 		if(obj.getStatus()!=null){
@@ -275,9 +339,79 @@ public class MessageManager extends BaseUtil{
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static List<Document> idListToDoc(List<Document> idList){
+		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+		if(idList.isEmpty()) return idList;
+		for (int i = 0; i < idList.size(); i++) {
+			Map obj = (Map) idList.get(i);
+			try{
+				Message msg=MessageService.getInstance().get((Long) obj.get("id"));
+				obj.putAll(toDocument(msg));
+			} catch (Exception e) {
+			}
+			//idList.set(i, toDocument(msg));
+		}
+		return idList;
+	}
+	
 	public static void checkValidity(Message obj,List errors) {
 	//	if (obj.getPostType()==null) errors.add("error.postType.null");
 		if (obj.getTopic()==null) errors.add("error.topic.null");
+	}
+	
+	private static Document sqlToDoc(Document obj) {		
+		Document doc=new Document();
+		doc.append("createdBy", getUserByLName((String) obj.get("created_by")));
+		doc.append("lastUpdatedBy", getUserByLName((String) obj.get("last_updated_by")));
+		doc.append("createdDate", sdf.format(obj.get("created_date")));
+		doc.append("lastUpdatedDate", sdf.format(obj.get("last_updated_date")));
+		
+		doc.append("content", obj.get("content"));
+		doc.append("filterCode", obj.get("filterCode"));
+		Long idx=null;
+		
+		idx=(Long) obj.get("topic");
+		if(idx!=null){
+			try {
+				Topic topic=TopicService.getInstance().get(idx);
+				doc.append("topicId", idx);
+				doc.append("topic", topic.getName());
+			} catch (Exception e) {
+			}
+		}
+		
+		idx=(Long) obj.get("parent");
+		if(idx!=null){
+			try{
+				Message message=MessageService.getInstance().get(idx);
+				doc.append("parentId", idx);
+				doc.append("parentContent", message.getContent());
+				doc.append("parentCreateBy", getUserByLName(message.getCreatedBy()));
+			} catch (Exception e) {
+			}
+		}
+
+		idx=(Long) obj.get("status");
+		if(idx!=null){
+			doc.append("statusId", idx);
+			doc.append("status", ApplicationConstant.getStatusById(idx));
+		}
+		
+		idx=(Long) obj.get("post_type");
+		if(idx!=null){
+			doc.append("postTypeId", idx);
+			doc.append("postType", ApplicationConstant.getLookupById(idx));
+		}
+		return doc;
+	}
+	
+	public static List<Document> sqlToDocList(List<Document> sqlList){
+		List<Document> result=new LinkedList<Document>();
+		for (Document obj : sqlList) {
+			result.add(sqlToDoc(obj));
+		}
+		return result;
 	}
 
 }

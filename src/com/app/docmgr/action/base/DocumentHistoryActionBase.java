@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -253,6 +253,14 @@ public class DocumentHistoryActionBase extends Action{
 			}
 		}
 		request.getSession().setAttribute("documentHistory_description_filter", param_documentHistory_description_filter);
+		String param_documentHistory_tag_filter = "";
+		if(request.getParameter("documentHistory_tag_filter")!=null){
+			param_documentHistory_tag_filter = request.getParameter("documentHistory_tag_filter");
+			if(param_documentHistory_tag_filter.length() > 0 ){				
+				documentHistory_filterSb.append("  AND documentHistory.tag like '%"+param_documentHistory_tag_filter+"%' ");
+			}
+		}
+		request.getSession().setAttribute("documentHistory_tag_filter", param_documentHistory_tag_filter);
 		String param_documentHistory_createdDate_filter_start = "";
 		if(request.getParameter("documentHistory_createdDate_filter_start")!=null){
 			param_documentHistory_createdDate_filter_start = request.getParameter("documentHistory_createdDate_filter_start");
@@ -1290,6 +1298,8 @@ public class DocumentHistoryActionBase extends Action{
 			documentHistory.setDocumentVersion(documentVersion);
 			String description = request.getParameter("description");
 			documentHistory.setDescription(description);
+			String tag = request.getParameter("tag");
+			documentHistory.setTag(tag);
 /* 			String createdDate = request.getParameter("createdDate");
 			if(createdDate==null || createdDate.trim().length() == 0 ){
 				documentHistory.setCreatedDate(null);

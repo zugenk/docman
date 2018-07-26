@@ -20,6 +20,7 @@ public class Document  implements java.io.Serializable {
      private String repositoryId;
      private String documentVersion;
      private String description;
+     private String tag;
      private Integer priority;
      private Lookup securityLevel;
      private User owner;
@@ -134,6 +135,17 @@ public class Document  implements java.io.Serializable {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * 
+     */
+    public String getTag() {
+        return this.tag;
+    }
+    
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     /**

@@ -2,6 +2,8 @@ package com.app.module.basic;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,10 +24,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import com.app.docmgr.model.Status;
 import com.app.docmgr.model.SystemParameter;
+import com.app.docmgr.model.User;
+import com.app.docmgr.service.UserService;
 import com.app.shared.ApplicationConstant;
 import com.app.shared.PartialList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.IndexOptions;
+import com.mongodb.util.JSON;
 import com.simas.db.MongoManager;
 import com.simas.webservice.Utility;
 
@@ -46,7 +51,7 @@ public class BaseUtil {
 	public static Map<String, Document> REPO_FOLDER_MAP=new HashMap<>(); 
 	public static String REPO_ROOT_FOLDER_ID=null;
 	public static String TEMP_FILE_PREFIX="DocMan_";
-	
+	public static boolean useDbEncryption=true;
 	
 	static String IPASSPORT_COLLECTION="IPassportData";
 	static String MONGO_DB_CFG="DEFAULT|mongo-docman|27017|DOCMAN";
@@ -56,7 +61,9 @@ public class BaseUtil {
 
 	static long SESSION_TIMEOUT_PERIOD=600000; //10 Mins
 	public static Map<String,String> APIKEY_MAP= new HashMap<String,String>();
-	
+	public static SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	public static Map<String,Map> USER_CACHE=new HashMap<String,Map>();
+
 	
 	public static void init() {
 		if(inited) return;
@@ -77,11 +84,13 @@ public class BaseUtil {
 			REPO_API_KEY=repoParam.get("REPO_API_KEY").getSvalue(); 
 			
 			Map<String, SystemParameter> tokenApiParam=ApplicationConstant.getSystemParamMap("API_TOKEN");
-			for (Iterator iterator = tokenApiParam.values().iterator(); iterator.hasNext();) {
-				SystemParameter sParam = (SystemParameter) iterator.next();
-				APIKEY_MAP.put(sParam.getParameter(), sParam.getSvalue());
+			if(tokenApiParam!=null && !tokenApiParam.isEmpty()){
+				for (Iterator iterator = tokenApiParam.values().iterator(); iterator.hasNext();) {
+					SystemParameter sParam = (SystemParameter) iterator.next();
+					APIKEY_MAP.put(sParam.getSvalue(),sParam.getParameter());
+				}
+	//			APIKEY_MAP.put("VeritaKM-FE", "r02u7JZu2p7uGMdQKCycCrsM6pANO34E");
 			}
-//			APIKEY_MAP.put("VeritaKM-FE", "r02u7JZu2p7uGMdQKCycCrsM6pANO34E");
 			MongoManager.init(MONGO_DB_CFG);
 		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("userId", 1),new IndexOptions().unique(true).name("UniqueUserId"));
 		    MongoManager.getCollection(IPASSPORT_COLLECTION).createIndex(new Document("ipassport", 1),new IndexOptions().unique(true).name("UniqueIPassport"));
@@ -134,6 +143,7 @@ public class BaseUtil {
 		if(obj==null) return null;
 		if(obj instanceof Long) return ""+((Long) obj).longValue(); 
 		if(obj instanceof Integer) return ""+((Integer) obj).intValue();
+		if(obj instanceof Double) return ""+((Double) obj).doubleValue();
 		if(obj instanceof String)  return (String) obj;
 //		throw new Exception("Expecting String value instead of "+obj.getClass().getName());
 		return obj.toString();
@@ -142,6 +152,8 @@ public class BaseUtil {
 	public static int toInt(Object obj) throws Exception{
 		if(obj==null) return 0;
 		if(obj instanceof Integer) return ((Integer) obj).intValue();
+		if(obj instanceof Long) return ((Long) obj).intValue(); 
+		if(obj instanceof Double) return ((Double) obj).intValue();
 		if(obj instanceof String)  return Integer.parseInt((String) obj);
 //		throw new Exception("Expecting Integer value instead of "+obj.getClass().getName());
 		return 0;
@@ -151,6 +163,8 @@ public class BaseUtil {
 		try {
 			if(obj==null) return x;
 			if(obj instanceof Integer) return ((Integer) obj).intValue();
+			if(obj instanceof Long) return ((Long) obj).intValue(); 
+			if(obj instanceof Double) return ((Double) obj).intValue();
 			if(obj instanceof String)  return Integer.parseInt((String) obj);
 		} catch (Exception e) {
 		}
@@ -200,14 +214,14 @@ public class BaseUtil {
 		return treeList;
 	}
 	
-	public static String constructQuery(String objName,String key,Object objValue) throws Exception{
+/*	public static String constructQuery(String objName,String key,Object objValue) throws Exception{
 		if(!nvl(objValue) && ((String)objValue).contains(";")) throw new Exception("Possible SQL Injection");
 		//String query=" AND "+objName+"."+key;
 		String query=" AND "+(objName!=null?objName+".":"")+key;
 		String value=toString(objValue);
 		if(value==null) return query+" ISNULL";
 		value=value.trim();
-		if (value.contains("=")) throw new Exception("error.filter.invalidChar");
+		if(value.contains("=")) throw new Exception("error.filter.invalidChar");
 		if(value.equals("$ISNULL")) return query+" ISNULL ";
 		if(value.equals("!$ISNULL")) return query+" IS NOT NULL ";
 		if(value.startsWith("$EQ|")) return query+" = '"+value.substring(4)+"' ";
@@ -229,6 +243,73 @@ public class BaseUtil {
 		if(value.startsWith("$LL|")) return lowQuery+" LIKE '"+value.substring(4)+"' ";
 
 		return query+" LIKE '%"+value+"%'";
+	} */
+	public static String constructQuery(String objName,String key,Object objValue) throws Exception{
+		String sval=(String) objValue;
+		String query=" AND "+(objName!=null?objName+".":"")+key;
+		if(sval==null) return query+" ISNULL";
+		
+		if(sval.contains(";")) throw new Exception("Possible SQL Injection");
+		if(sval.contains("=")) throw new Exception("error.filter.invalidChar");
+		
+		sval=sval.trim();
+		if(sval.equals("$ISNULL")) return query+" ISNULL ";
+		if(sval.equals("!$ISNULL")) return query+" IS NOT NULL ";
+		
+		if(key.contains("(")) {
+			if(objName==null) {
+				query=" AND "+key;
+			} else {
+				int x= key.indexOf("(");
+				String func=key.substring(0,x+1);
+				key=key.substring(x+1);
+				query=" AND "+func+objName+"."+key;
+			}
+		}
+		System.out.println("Trace query "+query);
+		
+		if(!sval.startsWith("$")) return query+" LIKE '%"+sval+"%'";
+		String[] vArr=sval.split("\\|");
+		String lowQuery=" AND lower("+(objName!=null?objName+".":"")+key+") ";
+		if("$EL".equals(vArr[0])) return lowQuery+" = '"+vArr[1]+"' ";
+		if("$LL".equals(vArr[0])) return lowQuery+" LIKE '"+vArr[1]+"' ";
+
+		if("$BT".equals(vArr[0]) && vArr.length==3) return query+" BETWEEN '"+vArr[1]+"' AND  '"+vArr[2]+"' ";
+		return query+toOpr(vArr[0])+" '"+vArr[1]+"' ";
+	}
+	
+	public static String constructSQLPeriodFilter(String periodField ,String fromPeriod,String reportPeriod) {
+		if(!nvl(fromPeriod) && fromPeriod.contains("|")){
+			String[] vArr=fromPeriod.split("\\|");
+			if (vArr[0].equals("$LA")){
+				int from=toInt(vArr[1],1);
+				return " AND "+periodField+" > now() - interval '"+from+" "+reportPeriod+"' ";
+			}
+			if (vArr.length==2) {
+				int from=toInt(vArr[1],0);
+				//if (from>0) return " AND date_part('"+reportPeriod+"',"+periodField+") "+toOpr(vArr[0])+" "+from+" ";
+				//if (from==0) return " AND date_part('"+reportPeriod+"',"+periodField+") "+toOpr(vArr[0])+" date_part('"+reportPeriod+"',current_date) ";
+				return " AND date_part('"+reportPeriod+"',"+periodField+") "+toOpr(vArr[0])+(from>0?from:" (date_part('"+reportPeriod+"',current_date)+ "+from+") ");
+			}
+			
+			if (fromPeriod.startsWith("$BT|") && vArr.length==3){
+				int from=toInt(vArr[1],0);
+				int to=toInt(vArr[2],0);
+				return " AND date_part('"+reportPeriod+"',"+periodField+") between "+(from>0?from:" (date_part('"+reportPeriod+"',current_date)+ "+from+") ")+" and "+(to>0?to:" (date_part('"+reportPeriod+"',current_date)+ "+to+") ")+" ";
+			}
+		}
+		return "";
+
+	}
+	
+	public static String toOpr(String sOperand) {
+		if("$EQ".equals(sOperand)) return " = ";
+		if("$GT".equals(sOperand)) return " > ";
+		if("$GE".equals(sOperand)) return " >= ";
+		if("$LT".equals(sOperand)) return " < ";
+		if("$LE".equals(sOperand)) return " <= ";
+		if("$LK".equals(sOperand)) return " LIKE ";
+		else return " ";
 	}
 	
 	public static String listToString(List<String> list) {
@@ -280,11 +361,8 @@ public class BaseUtil {
     	return ct;
 	}
 	
-	public static boolean isAdmin(Document passport){
-		return "admin".equals(passport.getString("userLevel"));
-		
-//		List<String> roles= (List) iPass.get("roleNames");
-//		return !roles.contains(BaseUtil.ADMIN_ROLE); 
+	public static boolean isAdminExec(Document passport){
+		return "|admin|executive|".contains(passport.getString("userLevelCode"));
 	}
 	
 	public boolean isSame(Document passport, String loginName) {
@@ -316,7 +394,153 @@ public class BaseUtil {
 		}
 	}
 	
+	public static String getFNamebyLname(String loginName) {
+		Map usr=getUserByLName(loginName);
+		return (usr==null?"":(String) usr.get("fullName"));
+	}
+	
+	/*
+	public static User getUserByLName(String loginName) {
+		if(loginName==null) return null;
+		if (USER_CACHE.containsKey(loginName)) return USER_CACHE.get(loginName);
+		try{
+			User user=UserService.getInstance().getBy(" and user.loginName='"+loginName+"'");
+			USER_CACHE.put(loginName, user);
+			return user;
+		}catch (Exception e) {
+		}
+		return null;	
+	}
+*/
+	
+	public static Map getUserByLName(String loginName) {
+		if(loginName==null) return null;
+		if (USER_CACHE.containsKey(loginName)) return USER_CACHE.get(loginName);
+		try{
+			String sqlQuery="select id, full_name as \"fullName\", login_name as \"loginName\", picture as \"picture\"  from app_user order by id asc ";
+			List userList=DBQueryManager.getList("loginNameCache", sqlQuery, null);
+			DBQueryManager.decryptList(userList, new String[]{"fullName"});
+			for (Iterator iterator = userList.iterator(); iterator.hasNext();) {
+				Map usr = (Map) iterator.next();
+				USER_CACHE.put((String)usr.get("loginName"), usr);
+			}
+			if (USER_CACHE.containsKey(loginName)) return USER_CACHE.get(loginName);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	 
+	public static void updateUserChache(User updatedUser) {
+		if(updatedUser==null) return;
+		try{
+			Map usr= USER_CACHE.get(updatedUser.getLoginName());
+			if (usr==null)usr=new HashMap();
+			usr.put("id", updatedUser.getId());
+			usr.put("fullName", updatedUser.getFullName());
+			usr.put("loginName", updatedUser.getLoginName());
+			usr.put("picture", updatedUser.getPicture());
+			USER_CACHE.put(updatedUser.getLoginName(), usr);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static boolean unHandled(Exception ex) {
+		if (ex==null) return true;
+		if(ex.getMessage()==null) return true;
+		if(ex.getMessage().startsWith("error.")) return false;
+		return true;
+	}
+	
+	 public static String getHash(Map dataMap) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        String buff=JSON.serialize(dataMap);
+        byte[] mdbytes = md.digest(buff.getBytes());
+
+        //convert the byte to hex format method 1
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < mdbytes.length; i++) {
+          sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+
+        System.out.println("Hex format : " + sb.toString());
+	        
+       //convert the byte to hex format method 2
+        StringBuffer hexString = new StringBuffer();
+    	for (int i=0;i<mdbytes.length;i++) {
+    	  hexString.append(Integer.toHexString(0xFF & mdbytes[i]));
+    	}
+
+    	System.out.println("Hex format : " + hexString.toString());
+    	return hexString.toString();
+	}
+	
+	 
+	public static void testHash() {
+		 String jsonString="{ \"user\": { "+
+       " \"row_id\": 242,"+
+       " \"user\": \"196402051989031001\","+
+       " \"pass\": \"09039ee80d5f4342b4244de63422e90d\","+
+       " \"admin\": 0"+
+       " }, \"profile\": {"+
+       " \"row_id\": 9,"+
+       " \"nip_lama\": \"\","+
+       " \"nip_baru\": \"196402051989031001\","+
+       " \"instansi_induk\": \"Badan Nasional Penanggulangan Terorisme\","+
+       " \"instansi_asal\": \"Kementerian Luar Negeri\","+
+       " \"stts_pegawai\": \"Organik\","+
+       " \"unit_kerja\": \"3\","+
+       " \"gelar_depan\": \"\","+
+       " \"nm_lengkap\": \"Mohamad Kamal\","+
+       " \"gelar_belakang\": \"SH.LL.M\","+
+       " \"jabatan\": \"Staf Khusus Biro Umum\","+
+       " \"pendidikan\": \"S II\","+
+       " \"pangkat\": \"PEMBINA TK.I IV/B\","+
+       " \"angkatan\": \"PNS\","+
+       " \"korps_tni\": \"\","+
+       " \"sumber_pa\": \"\","+
+       " \"tpt_lahir\": \"Jakarta\","+
+       " \"tgl_lahir\": \"1964-02-05\","+
+       " \"status_nikah\": \"Menikah\","+
+       " \"agama\": \"Islam\","+
+       " \"jns_kelamin\": \"Laki - laki\","+
+       " \"gol_darah\": \"O\","+
+       " \"no_karis\": \"\","+
+       " \"no_karpeg\": \"E 744277\","+
+       " \"no_taspen\": \"0000038162529\","+
+       " \"no_askes\": \"0000038162529\","+
+       " \"no_npwp\": \"05.939.719.0-025.000\","+
+       " \"data_rekbank\": \"001201152504509\","+
+       " \"email\": \"adekamal@gmails.com\","+
+       " \"no_tlp_kntr\": \"\","+
+       " \"no_tlp_rmh\": \"\","+
+       " \"no_hp\": \"081290331864\","+
+       " \"no_randis\": \"\","+
+       " \"no_kpi\": \"\","+
+       " \"no_kta\": \"\","+
+       " \"no_label_sec\": \"\","+
+       " \"no_ktp\": 0,"+
+       " \"foto\": \"201710261543232.jpg\","+
+       " \"status\": 1"+
+       "} }";
+		
+		System.out.println(jsonString);
+		Map dataMap=(Map) JSON.parse(jsonString);
+		try {
+			System.out.println(getHash(dataMap));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//c6591719113c898f8741c6b7cf106f679e306343479fd84cb1e21aeb6b40f115
+		//c6591719113c898f8741c6b7cf106f679e306343479fd84cb1e21aeb6b40f115
+		//eb4fb6e816af56422c6dfd68435e31953b1a42849f6f16fa482eb594744a67e5
+	 }
+	 
 	public static void main(String[] args) {
+		testHash();
+	/*	
 		File f=null;
 		try {
 			f=File.createTempFile(TEMP_FILE_PREFIX, "original Name.txt");
@@ -329,7 +553,7 @@ public class BaseUtil {
 			if(f!=null && f.exists()) f.delete();
 			System.out.println("Temp File Cleared");
 		}
-		
+		*/
 	}
 	
 	public static void main2(String[] args) {

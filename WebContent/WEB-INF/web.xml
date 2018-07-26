@@ -130,33 +130,19 @@
   
   
   
-  <!--  servlet for Server Initiation - - >
+  <!--  servlet for Server Initiation -->
   <servlet>
   	<servlet-name>server-init</servlet-name>
-	<servlet-class>com.ams.apps.shared.ServerInitiationServlet</servlet-class>
-	<init-param>
-		<param-name>log4j-init-file</param-name>
-		<param-value>/WEB-INF/log4j.lcf</param-value>
-	</init-param>
-	<init-param>
-		<param-name>default-template</param-name>
-		<param-value>default</param-value>
-	</init-param>
-	<init-param>
-		<param-name>conf-file</param-name>
-		<param-value>/WEB-INF/conf/config.xml</param-value>
-	</init-param>
-	<init-param>
-		<param-name>message-resource-file</param-name>
-		<param-value>/WEB-INF/classes/MessageResources</param-value>
-	</init-param>
-	<init-param>
-		<param-name>start-daemon-runner</param-name>
-		<param-value>yes</param-value>
-	</init-param>
+	<servlet-class>com.app.shared.ServerInitiationServlet</servlet-class>
 	<load-on-startup>1</load-on-startup>
   </servlet>
-  -->
+  
+  	<!-- Servlet for Server Initiation Mapping -->
+	<servlet-mapping>
+		<servlet-name>server-init</servlet-name>
+		<url-pattern>server-init</url-pattern>
+	</servlet-mapping>
+  
   <servlet>
 		<servlet-name>rest</servlet-name>
 	    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

@@ -35,14 +35,6 @@ public class LoginManager extends BaseUtil{
 		init();
 		String apiToken=null;
 		String nip=null;
-	/*	try{
-			apiToken=itoken;
-			nip=itoken; 
-			System.out.println(apiToken+"::"+nip);
-		}catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("error.invalid.token");
-		}*/
 		try{
 			apiToken=new String(Base64.getDecoder().decode(itoken));
 			nip=apiToken.substring(apiToken.lastIndexOf(":")+1);
@@ -52,11 +44,12 @@ public class LoginManager extends BaseUtil{
 			e.printStackTrace();
 			throw new Exception("error.invalid.token");
 		}
-		if (!APIKEY_MAP.containsValue(apiToken)) throw new Exception("error.invalid.token");
-		
-		User loginUser = null;
-		loginUser = UserService.getInstance().getBy(" AND user.loginName = '"+nip+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
+		if (!APIKEY_MAP.containsKey(apiToken)) throw new Exception("error.invalid.token");
+		log.debug("Login from system ["+APIKEY_MAP.get(apiToken)+"]");
+		User loginUser = UserService.getInstance().getAllBy(" AND user.loginName = '"+nip+"' "); 
 		if(loginUser==null) throw new Exception("error.login.notFound");
+		if(!"active".equals(loginUser.getStatus().getState())) throw new Exception("error.login.userNotActive");
+		UserManager.resetLoginCounter(loginUser);
 	 	Document iPass=PassportManager.issuePassport(loginUser,itoken);
 	 	if(iPass.get("_id")==null){
 	 	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
@@ -67,15 +60,16 @@ public class LoginManager extends BaseUtil{
 	
 	public static Document login(String loginName,String passwd) throws Exception{
 		init();
-		User loginUser = null;
-		loginUser = UserService.getInstance().getBy(" AND user.loginName = '"+loginName+"' AND user.status <> '"+BLOCKED_USER_STATUS.getId()+"' "); 
-		if(loginUser==null) throw new Exception("error.login.failed");
+		User loginUser = UserService.getInstance().getAllBy(" AND user.loginName = '"+loginName+"' "); 
+		if(loginUser==null) throw new Exception("error.login.notFound");
+		if(!"active".equals(loginUser.getStatus().getState())) throw new Exception("error.login.userNotActive");
 		String encriptedPassword=ApplicationFactory.encrypt(passwd);
 	 	if(!encriptedPassword.equals(loginUser.getLoginPassword())){
 	 		recordLoginHistory(loginUser,"rejected",null,"Wrong Password");
 	 		UserManager.incrementLoginCounter(loginUser);
 	 		throw new Exception("error.login.password");
 	 	} 
+	 	UserManager.resetLoginCounter(loginUser);
 	 	Document iPass=PassportManager.issuePassport(loginUser,null);
 	 	if(iPass.get("_id")==null){
 	 	 	Long lhId=recordLoginHistory(loginUser,"approved",(String) iPass.get("passport"),"Login Success via Rest");
@@ -87,11 +81,9 @@ public class LoginManager extends BaseUtil{
 	
 	public static Document loginWithBasicAuth(String basicAuth) throws Exception{ // user, String password, HttpHeaders headers) {
     	String plain=new String(Base64.getDecoder().decode(basicAuth.substring(6)));
-		//String plain=new String(org.springframework.security.crypto.codec.Base64.decode(basicAuth.substring(6).getBytes()));
-    	int idx=plain.indexOf(':');
+		int idx=plain.indexOf(':');
     	String loginName=plain.substring(0,idx);
     	String passwd=plain.substring(idx+1);
-    	//log.debug("["+loginName+"] -> ["+passwd+"]");
     	return login(loginName, passwd); // null; // 
  	}
 	
@@ -212,17 +204,21 @@ public class LoginManager extends BaseUtil{
 		try {
 //			lm.loginWithBasicAuth(bauth);
 			
-			String itoken= "r02u7JZu2p7uGMdQKCycCrsM6pANO34E::"+System.currentTimeMillis()+":"+"admin";
+			String itoken= "r02u7JZu2p7uGMdQKCycCrsM6pANO34E::"+System.currentTimeMillis()+":"+"198611102014031002";//+"admin";
 			System.out.println("itoken=["+itoken+"]");
 			String enc=Base64.getEncoder().encodeToString(itoken.getBytes());
 			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI5NzA3MjkzMzQ6bWFydGlu"; martin
 			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI5NzA5MjE5MzQ6YWRtaW4="; admin
 			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI5MzIzNzQ3OTY6MTk4NjExMTAyMDE0MDMxMDAy";
+			//String enc="cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTM1MTgxNjc1NTI6MTk2NDAyMDUxOTg5MDMxMDkz";
 			System.out.println("enc=["+enc+"]");
 			System.out.println("dec=["+new String(Base64.getDecoder().decode(enc.getBytes()))+"]");
-			//198611102014031002
-			//198611102014031002
-			//[{"key":"itoken","value":"cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTI3NDYyNjAxMjI6MTExMTExMTExMTExMTExMQ==","description":""}]
+		
+			//198611102014031002 = cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTM1MDM3NDUzODI6MTk4NjExMTAyMDE0MDMxMDAy
+			//admin = cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTM1MDM2MjUzMTY6YWRtaW4=
+			//196402051989031093 = cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTM1MDM3MTIxMDk6MTk2NDAyMDUxOTg5MDMxMDkz
+			//196402051989031001 = cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTM1MjQ2MDQ3ODc6MTk4NjExMTAyMDE0MDMxMDAy
+			//198611102014031002 = cjAydTdKWnUycDd1R01kUUtDeWNDcnNNNnBBTk8zNEU6OjE1MTM1NTgwMDUwODM6MTk4NjExMTAyMDE0MDMxMDAy
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

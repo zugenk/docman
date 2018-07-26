@@ -75,6 +75,8 @@ public class User  implements java.io.Serializable {
     	//return super.hashCode();
     }
 
+    
+
     // Property accessors
 
     /**

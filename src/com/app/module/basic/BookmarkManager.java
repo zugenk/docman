@@ -92,19 +92,17 @@ public class BookmarkManager extends BaseUtil{
 //		log.trace("data="+Utility.debug(data));
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Bookmark"));
 		String filterParam=null;
-		if("PRIVATE".equals(ACL_MODE) && !isAdmin(passport)) filterParam+=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
+		if("PRIVATE".equals(ACL_MODE) && !isAdminExec(passport)) filterParam=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
 		String orderParam=null;
-		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
 				for (Iterator iterator = filterMap.keySet().iterator(); iterator.hasNext();) {
 					String key = (String) iterator.next();
-					filterBuff.append(constructQuery("bookmark",key,filterMap.get(key))); //filterBuff.append(" AND bookmark."+key+" LIKE '%"+(String) filterMap.get(key)+"%' ");
+					filterBuff.append(constructQuery("bookmark",key,filterMap.get(key))); 
 				}
 				filterParam=filterBuff.toString();
 			}
@@ -127,19 +125,31 @@ public class BookmarkManager extends BaseUtil{
 			toDocList(result);
 			return result;
 		}	
-		PartialList result=BookmarkService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		PartialList result=BookmarkService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
 	}
 	
-	public static PartialList listByOwner(Document passport,String start) throws Exception{
+	public static PartialList listByOwner(Document passport,String category,String orderBy,String start,String pageSize) throws Exception{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "listByOwner", new Document("modelClass","Bookmark"));
 		log.debug("ListByOwner Bookmark by "+passport.getString("loginName"));
 		String filterParam=" AND bookmark.owner.id='"+passport.getLong("userId")+"' ";
-		String orderParam=" bookmark.category ASC, bookmark.name ASC ";
-		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, toInt(start,defaulStart), ITEM_PER_PAGE);
+		if(category!=null) filterParam+=" AND bookmark.category='"+category+"' ";
+		String orderParam=" bookmark.createdDate DESC ";
+		if(orderBy!=null) {
+			if(orderBy.contains("_")) orderParam=" bookmark."+orderBy.replace('_', ' ');
+			else orderParam=" bookmark."+orderBy+" asc";
+		}
+		
+		PartialList result=BookmarkService.getInstance().getPartialList(filterParam, orderParam, toInt(start,defaulStart), toInt(pageSize,ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
+	}
+	
+	public static  List<Map<String, Object>> getMyCategories(Document passport) throws Exception{
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "getBookmarkCategories", new org.bson.Document("modelClass","Bookmark"));
+		String sqlQuery="select distinct(b.category) from bookmark b, status s where b.status=s.id and s.state='active' and b.owner='"+passport.getLong("userId")+"' ";
+		return DBQueryManager.getList("BookmarkCategories", sqlQuery, null);
 	}
 	
 	
@@ -171,7 +181,10 @@ public class BookmarkManager extends BaseUtil{
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		doc.append("createdBy", obj.getCreatedBy());
+		doc.append("createdBy", getUserByLName(obj.getCreatedBy()));
+		doc.append("lastUpdatedBy", getUserByLName(obj.getLastUpdatedBy()));
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
 		doc.append("category", obj.getCategory());
 		doc.append("name", obj.getName());
 		doc.append("note", obj.getNote());

@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -1312,14 +1312,8 @@ public class OrganizationActionBase extends Action{
     	try{    		
 			String code = request.getParameter("code");
 			organization.setCode(code);
-			if(code==null || code.trim().length() == 0 ){
-				errors.add("organization.code", new ActionError("error.organization.code"));
-			}
 			String mnemonic = request.getParameter("mnemonic");
 			organization.setMnemonic(mnemonic);
-			if(mnemonic==null || mnemonic.trim().length() == 0 ){
-				errors.add("organization.mnemonic", new ActionError("error.organization.mnemonic"));
-			}
 			String name = request.getParameter("name");
 			organization.setName(name);
 			if(name==null || name.trim().length() == 0 ){

@@ -24,7 +24,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 21:02:14
  */
 -->
 </HEAD>
@@ -119,6 +119,15 @@
 			<td>				
 				<logic:notEmpty name="topic"	property="forum">			
 					<bean:write name="topic" property="forum.name"/>
+				</logic:notEmpty>
+			</td>
+		</tr>
+		<tr>
+			<td width="150"><b><bean:message key="topic.latestMessage.key"/></b></td>
+			<td width="10">:</td>
+			<td>				
+				<logic:notEmpty name="topic"	property="latestMessage">			
+					<bean:write name="topic" property="latestMessage.content"/>
 				</logic:notEmpty>
 			</td>
 		</tr>

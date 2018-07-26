@@ -23,7 +23,7 @@ import com.app.docmgr.model.Topic;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 	/**
@@ -63,6 +63,7 @@ public class TopicServiceBase {
 			Hibernate.initialize(topic.getSubscribers());			
 			Hibernate.initialize(topic.getStatus());			
 			Hibernate.initialize(topic.getForum());			
+			Hibernate.initialize(topic.getLatestMessage());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -100,6 +101,7 @@ public class TopicServiceBase {
 				Hibernate.initialize(topic.getSubscribers());			
 				Hibernate.initialize(topic.getStatus());			
 				Hibernate.initialize(topic.getForum());			
+				Hibernate.initialize(topic.getLatestMessage());			
 			}
 			return topic;
 		} catch (HibernateException e) {
@@ -300,6 +302,7 @@ public class TopicServiceBase {
 				Hibernate.initialize(topic.getSubscribers());			
 				Hibernate.initialize(topic.getStatus());			
 				Hibernate.initialize(topic.getForum());			
+				Hibernate.initialize(topic.getLatestMessage());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -340,6 +343,7 @@ public class TopicServiceBase {
 			    Hibernate.initialize(topic.getSubscribers());                   
 			    Hibernate.initialize(topic.getStatus());                    
 			    Hibernate.initialize(topic.getForum());                    
+			    Hibernate.initialize(topic.getLatestMessage());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

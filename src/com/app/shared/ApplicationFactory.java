@@ -156,7 +156,7 @@ public class ApplicationFactory {
 	    	timeout=emailParam.get("SMTP_TIMEOUT").getSvalue();
 		} catch (Exception e) {
 			log.error("Error Initializing App Factory, Email may not work properly... ",e);
-			System.out.println(Utility.debug(emailParam));
+		//	System.out.println(Utility.debug(emailParam));
 		}
     	SMTP_PROP = new Properties();
         SMTP_PROP.put("mail.transport.protocol", "SMTP");
@@ -166,12 +166,14 @@ public class ApplicationFactory {
         if(useSSL){
 	        SMTP_PROP.put("mail.smtp.socketFactory.port", portSmtp); //"465");
 	        SMTP_PROP.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	        SMTP_PROP.setProperty("mail.smtp.ssl.trust", "*");
         }
         if (needSMTPAuth) SMTP_PROP.put("mail.smtp.auth", "true");
         else SMTP_PROP.put("mail.smtp.auth", "false");
 	    SMTP_PROP.put("mail.smtp.port", portSmtp);// "465"); 
 	    SMTP_PROP.put("mail.smtp.timeout", timeout);    
 	    SMTP_PROP.put("mail.smtp.connectiontimeout", timeout);  
+	    log.debug("SMTP_PROP="+Utility.debug(SMTP_PROP));
 	    
 	    SMTP_AUTH =  new Authenticator() {
 	    		@Override
@@ -443,7 +445,7 @@ public class ApplicationFactory {
 	            }
 	        }
 	    );*/
-	    
+	    init();
 	    Session session;
 	    if(SMTP_AUTH!=null) session=Session.getDefaultInstance(SMTP_PROP,SMTP_AUTH);
 	    else session=Session.getDefaultInstance(SMTP_PROP);
@@ -682,7 +684,8 @@ public class ApplicationFactory {
 	  }
 	  
 	  
-	  public static String encryptData( String source ) {
+	  public static String encryptData( String source ) { //throws Exception{
+		  if (source==null) return source;
 		  try {
 		      // Get our secret key
 			  Key key = getKey();
@@ -704,11 +707,20 @@ public class ApplicationFactory {
 		  } catch( Exception e ) {
 			  e.printStackTrace();
 		  }
-		  return null;
+		  return source;
 	  }
 
 	  public static String decryptData( String source ) {
-		  try {
+		  if(source!=null) {
+			  try {
+				  return bareDecryptData(source );
+			  } catch(Exception e) {
+			  }
+		  }
+		  return source;
+	  }
+	  public static String bareDecryptData( String source ) throws Exception {
+		//  try {
 		      // Get our secret key
 		      Key key = getKey();
 	
@@ -726,10 +738,10 @@ public class ApplicationFactory {
 	
 		      // Return the clear text
 		      return new String( cleartext );
-		  } catch( Exception e ) {
-			  e.printStackTrace();
-		  }
-		  return null;
+//		  } catch( Exception e ) {
+//			  e.printStackTrace();
+//		  }
+		 // return null;
 	  }
 
 	  public static String generateKey() {
@@ -769,7 +781,7 @@ public class ApplicationFactory {
 	    return sb.toString();
 	  }
 
-	  private static byte[] getBytes( String str ) {
+	  private static byte[] getBytes( String str ) throws Exception{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		int n=0; String token;
 		while (n<str.length()) {

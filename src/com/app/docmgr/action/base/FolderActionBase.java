@@ -30,7 +30,7 @@ import com.app.docmgr.service.*;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 
@@ -1126,9 +1126,6 @@ public class FolderActionBase extends Action{
     	try{    		
 			String code = request.getParameter("code");
 			folder.setCode(code);
-			if(code==null || code.trim().length() == 0 ){
-				errors.add("folder.code", new ActionError("error.folder.code"));
-			}
 			String name = request.getParameter("name");
 			folder.setName(name);
 			if(name==null || name.trim().length() == 0 ){
@@ -1136,9 +1133,6 @@ public class FolderActionBase extends Action{
 			}
 			String folderRepoId = request.getParameter("folderRepoId");
 			folder.setFolderRepoId(folderRepoId);
-			if(folderRepoId==null || folderRepoId.trim().length() == 0 ){
-				errors.add("folder.folderRepoId", new ActionError("error.folder.folderRepoId"));
-			}
 /* 			String createdDate = request.getParameter("createdDate");
 			if(createdDate==null || createdDate.trim().length() == 0 ){
 				folder.setCreatedDate(null);

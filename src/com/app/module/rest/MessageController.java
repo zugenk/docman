@@ -234,7 +234,7 @@ public class MessageController  extends BaseUtil{
 			@RequestHeader(value="ipassport", required = false) String ipassport,
 			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="topicId") String topicId,
-			@RequestParam(value="start",defaultValue="1") String start) {
+			@RequestParam(value="start",defaultValue="0") String start) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/message/list/"+topicId+"="+ipassport);
@@ -255,7 +255,7 @@ public class MessageController  extends BaseUtil{
 			@RequestHeader(value="ipassport", required = false) String ipassport,
 			@RequestHeader(value="Authorization", required = false) String basicAuth,
 			@PathVariable(value="topicId") String topicId,
-			@RequestParam(value="start",defaultValue="1") String start) {
+			@RequestParam(value="start",defaultValue="0") String start) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/message/list/"+topicId+"="+ipassport);

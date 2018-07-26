@@ -115,7 +115,20 @@
 			<many-to-many column="user_id" class="com.app.docmgr.model.User"/>
 		</set>
 
-
+		<many-to-one
+			name="latestMessage"
+			column="latest_message"
+			class="com.app.docmgr.model.Message"
+			not-null="false"
+		>
+		</many-to-one>
+		<property
+			name="mostPostedBy"
+			column="most_posted_by"
+			type="string"
+			not-null="false"
+			length="30"
+		/>
 
 	</class>
 </hibernate-mapping>

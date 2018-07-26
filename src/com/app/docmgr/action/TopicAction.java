@@ -27,12 +27,12 @@ import com.app.docmgr.action.base.TopicActionBase;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 07-04-2018 18:40:05
  */
 
 public class TopicAction extends TopicActionBase{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.TopicAction");	
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -98,6 +98,72 @@ public class TopicAction extends TopicActionBase{
 	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("delete_ok".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("TOPIC_DELETE")) doDeleteOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("submit_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_SUBMIT")) forward = doSubmitConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("submit_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_SUBMIT")) doSubmitOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("approve_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_APPROVE")) forward = doApproveConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("approve_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_APPROVE")) doApproveOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("reject_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_REJECT")) forward = doRejectConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("reject_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_REJECT")) doRejectOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("pending_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_PENDING")) forward = doPendingConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("pending_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_PENDING")) doPendingOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("process_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_PROCESS")) forward = doProcessConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("process_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_PROCESS")) doProcessOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_ACTIVATE")) forward = doActivateConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_ACTIVATE")) doActivateOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("close_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_CLOSE")) forward = doCloseConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("close_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_CLOSE")) doCloseOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_ARCHIVE")) forward = doArchiveConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_ARCHIVE")) doArchiveOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("remove_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_REMOVE")) forward = doRemoveConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("remove_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_REMOVE")) doRemoveOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_BLOCK")) forward = doBlockConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_BLOCK")) doBlockOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_CANCEL")) forward = doCancelConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("cancel_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("TOPIC_CANCEL")) doCancelOk(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
 			}
     	}else{

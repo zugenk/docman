@@ -42,7 +42,8 @@ public class ForumManager extends BaseUtil{
 	   " UNION  ALL"+
 	   " SELECT f.id as id, f.code,f.name,(c.tree||'.'||f.id) as tree, COALESCE(f.parent,0) as parent, (c.level + 1) as level FROM frm  c "+
 	   " JOIN forum f ON f.parent = c.id )"+
-	   " SELECT * FROM   frm ORDER  BY  frm.tree";
+	   " SELECT * FROM   frm, (select t.forum, count(t.id) as \"numberOfTopic\"  from topic t group by t.forum) tp "+
+	   " where tp.forum=frm.id ORDER  BY  frm.tree";
 		List list= DBQueryManager.getList("ForumTree", sqlQuery, null);
 		//log.debug(Utility.debug(list));
 		return BaseUtil.constructTreeList(list);
@@ -58,7 +59,9 @@ public class ForumManager extends BaseUtil{
 		  " UNION ALL"+
 		  " SELECT x.id, x.code,x.name, x.parent, (q.level+1) as level FROM forum  x"+
 		  " JOIN q ON q.id = x.parent) "+ 
-		  " SELECT * FROM q order by level ASC";
+		  " SELECT * FROM q , (select t.forum, count(t.id) as \"numberOfTopic\"  from topic t group by t.forum) tp "+
+		  " where tp.forum=q.id "+
+		  " order by level ASC";
 		List list= DBQueryManager.getList("ForumDownline", sqlQuery, null); //new String[]{startId});
 		//log.debug(Utility.debug(list));
 		return list;
@@ -73,7 +76,9 @@ public class ForumManager extends BaseUtil{
 		  " UNION ALL"+
 		  " SELECT x.id, x.code,x.name, x.parent, (q.level+1) as level FROM forum  x"+
 		  " JOIN q ON q.parent = x.id) "+ 
-		  " SELECT * FROM q order by level desc";
+		  " SELECT * FROM q , (select t.forum, count(t.id) as \"numberOfTopic\"  from topic t group by t.forum) tp "+
+		  " where tp.forum=frm.id "+
+		  " order by level desc";
 		List list= DBQueryManager.getList("ForumUpline", sqlQuery, null);// new String[]{startId});
 		//log.debug(Utility.debug(list));
 		return list;
@@ -150,11 +155,9 @@ public class ForumManager extends BaseUtil{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new Document("modelClass","Forum"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -184,7 +187,7 @@ public class ForumManager extends BaseUtil{
 			toDocList(result);
 			return result;
 		}	
-		PartialList result=ForumService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
+		PartialList result=ForumService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
 		toDocList(result);
 		return result;
 	}
@@ -225,7 +228,10 @@ public class ForumManager extends BaseUtil{
 		Document doc=new Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		doc.append("createdBy", obj.getCreatedBy());
+		doc.append("createdBy", getUserByLName(obj.getCreatedBy()));
+		doc.append("lastUpdatedBy", getUserByLName(obj.getLastUpdatedBy()));
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
 		doc.append("code", obj.getCode());
 		doc.append("description", obj.getDescription());
 		doc.append("filterCode", obj.getFilterCode());
@@ -243,9 +249,20 @@ public class ForumManager extends BaseUtil{
 			doc.append("status", obj.getStatus().getName());
 			doc.append("statusId",obj.getStatus().getId());
 		}
+		getNumberOfTopic(doc,obj);
+		
 		return doc;
 	}
 	
+	private static void getNumberOfTopic(Document doc,Forum obj) {
+		try {
+			String sqlQuery="select count(t.id) as \"numberOfTopic\"  from topic t where t.forum="+obj.getId();
+			Map result=DBQueryManager.getFirst("query NumOfTopic", sqlQuery);
+			if(!result.isEmpty()) doc.append("numberOfTopic", result.get("numberOfTopic"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	public static void toDocList(List list){
 		//for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 		if(list.isEmpty()) return;

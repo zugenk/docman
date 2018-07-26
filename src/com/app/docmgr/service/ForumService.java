@@ -14,13 +14,15 @@ import org.hibernate.Transaction;
 import com.app.connection.ConnectionFactory;
 import com.app.docmgr.model.Forum;
 import com.app.docmgr.service.base.ForumServiceBase;
+import com.app.module.basic.BaseUtil;
+import com.app.shared.ApplicationFactory;
 import com.app.shared.PartialList;
 
 /**
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 07-04-2018 14:33:54
  */
 
 public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
@@ -34,18 +36,30 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		return instance;
 	}
 	
-	/*
-	@Override
+	private void encryptData(Forum forum){
+		if (!BaseUtil.useDbEncryption ||forum==null) return;
+		forum.setDescription(ApplicationFactory.encryptData(forum.getDescription()));
+	}
+	private void decryptData(Forum forum){
+		if (!BaseUtil.useDbEncryption ||forum==null) return;
+		forum.setDescription(ApplicationFactory.decryptData(forum.getDescription()));
+	}
+	
+	/**
+	 * @author Martin
+	 * @param  Long id;
+	 * get() is retriever by id, 
+	 * Service Class is dedicated to handle all data access to database
+	 */
 	public Forum get(Long id) throws Exception{
 		Forum forum = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
 			forum = (Forum) session.get(Forum.class, id);
-			if(forum!=null) {
-				Hibernate.initialize(forum.getForumType());			
-				Hibernate.initialize(forum.getParentForum());	
-			}
-
+			Hibernate.initialize(forum.getStatus());			
+			Hibernate.initialize(forum.getForumType());			
+			Hibernate.initialize(forum.getParent());	
+			decryptData(forum);
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
 			onfe.printStackTrace();
@@ -65,23 +79,24 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		return forum;
 	}
 
-	/ **
+	/**
 	 * @author Martin
 	 * @filterParam  query;
 	 * getBy() returns single object matching the filter 
-	 * /
-	@Override
+	 */
 	public Forum getBy(String filterParam) throws Exception{
 		Forum forum = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE forum.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;					
 			Query query = session.createQuery("SELECT forum FROM com.app.docmgr.model.Forum forum "+filter+" ");
 			forum = (com.app.docmgr.model.Forum) query.uniqueResult();
 			if(forum!=null) {
+				Hibernate.initialize(forum.getStatus());			
 				Hibernate.initialize(forum.getForumType());			
-				Hibernate.initialize(forum.getParentForum());			
+				Hibernate.initialize(forum.getParent());	
+				decryptData(forum);
 			}
 			return forum;
 		} catch (HibernateException e) {
@@ -101,12 +116,12 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		}
 	}
 
-	@Override
 	public void add(Forum forum) throws Exception {
 		Transaction trx = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try	{
 			trx = session.beginTransaction();
+			encryptData(forum);
 			session.save(forum);
 			trx.commit();
 		} catch (HibernateException he) {
@@ -118,6 +133,7 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 			System.err.println("Hibernate Exception" + he.getMessage());
 			throw new Exception(he);
 		} finally {
+			decryptData(forum);
 			if (session != null){
 				try	{
 					session.close();
@@ -129,11 +145,11 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		}
 	}	
 
-	@Override
 	public void add(Forum forum, Session session) throws Exception {
 		Transaction trx = null;
 		try	{
 			trx = session.beginTransaction();
+			encryptData(forum);
 			session.save(forum);
 			trx.commit();
 		} catch (HibernateException he) {
@@ -145,6 +161,7 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 			System.err.println("Hibernate Exception" + he.getMessage());
 			throw new Exception(he);
 		} finally {
+			decryptData(forum);
 			if (session != null){
 				try	{
 					session.close();
@@ -156,12 +173,12 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		}
 	}	
 	
-	@Override
 	public void update(Forum forum) throws Exception {
 		Transaction trx = null;
 		Session session = ConnectionFactory.getInstance().getSession();
 		try	{
 			trx = session.beginTransaction();
+			encryptData(forum);
 			session.saveOrUpdate(forum);
 			trx.commit();
 		} catch (HibernateException he) {
@@ -173,6 +190,7 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 			System.err.println("Hibernate Exception" + he.getMessage());
 			throw new Exception(he);
 		} finally {
+			decryptData(forum);
 			if (session != null){
 				try	{
 					session.close();
@@ -184,11 +202,11 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		}
 	}	
 
-	@Override
 	public void update(Forum forum, Session session) throws Exception {
 		Transaction trx = null;
 		try	{
 			trx = session.beginTransaction();
+			encryptData(forum);
 			session.saveOrUpdate(forum);
 			trx.commit();
 		} catch (HibernateException he) {
@@ -200,6 +218,7 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 			System.err.println("Hibernate Exception" + he.getMessage());
 			throw new Exception(he);
 		} finally {
+			decryptData(forum);
 			if (session != null){
 				try	{
 					session.close();
@@ -211,7 +230,6 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		}
 	}	
 	
-	@Override
 	public void delete(Forum forum) throws Exception {
 		Transaction trx = null;
 		Session session = ConnectionFactory.getInstance().getSession();
@@ -239,7 +257,6 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		}
 	}	
 
-	@Override
 	public void delete(Forum forum, Session session) throws Exception {
 		Transaction trx = null;
 		try	{
@@ -266,16 +283,15 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		}
 	}	
 	
-	@Override
 	public PartialList getPartialList(String filterParam, String orderParam, int start, int count) throws Exception{
 		PartialList result = new PartialList();
 		Session session = null;
 		try {
-			String filter = " WHERE 1=1 ";
+			String filter = " WHERE forum.status.state='active'  ";
 			if(filterParam!=null) filter = filter + filterParam;
-			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			session = ConnectionFactory.getInstance().getSession();
 			Query queryCount = session.createQuery("SELECT count(*) FROM com.app.docmgr.model.Forum forum "+filter+" ");
+			if(orderParam!=null && orderParam.length()>0) filter = filter + " ORDER BY "+ orderParam;
 			Query query = session.createQuery("SELECT forum FROM com.app.docmgr.model.Forum forum "+filter+" ");
 			result.setTotal((Integer) queryCount.list().iterator().next());
 			result.setStart(start);
@@ -286,8 +302,10 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 			java.util.Iterator itr = result.iterator();
 			while(itr.hasNext()){
 				com.app.docmgr.model.Forum forum = (com.app.docmgr.model.Forum)itr.next();
+				Hibernate.initialize(forum.getStatus());			
 				Hibernate.initialize(forum.getForumType());			
-				Hibernate.initialize(forum.getParentForum());			
+				Hibernate.initialize(forum.getParent());	
+				decryptData(forum);
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -306,12 +324,12 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		return result;
 	}
 
-	@Override
 	public List getList(String filterParam, String orderParam) throws Exception{
+		if(filterParam!=null) filterParam = " and forum.status.state='active' "+filterParam;
+		else filterParam=" and forum.status.state='active' ";
 		return getListAll(filterParam,orderParam);
 	}
-
-	@Override
+	
 	public List getListAll(String filterParam, String orderParam) throws Exception{
 		List result = new LinkedList();
 		Session session = null;
@@ -322,13 +340,14 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 			session = ConnectionFactory.getInstance().getSession();
 			Query query = session.createQuery("SELECT forum FROM com.app.docmgr.model.Forum forum "+filter+" ");
 			result = query.list();
-			log.debug("result :"+result);
 			java.util.Iterator itr = result.iterator();
 			while(itr.hasNext()){
-				com.app.docmgr.model.Forum forum = (com.app.docmgr.model.Forum)itr.next();
-				Hibernate.initialize(forum.getForumType());			
-				Hibernate.initialize(forum.getParentForum());			
-			}	
+			    com.app.docmgr.model.Forum forum = (com.app.docmgr.model.Forum)itr.next();
+			    Hibernate.initialize(forum.getStatus());                    
+			    Hibernate.initialize(forum.getForumType());                    
+			    Hibernate.initialize(forum.getParent());    
+			    decryptData(forum);
+			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());
 			throw new Exception(he);
@@ -345,5 +364,4 @@ public class ForumService extends com.app.docmgr.service.base.ForumServiceBase{
 		
 		return result;
 	}
-	*/
 }

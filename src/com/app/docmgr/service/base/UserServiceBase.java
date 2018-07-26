@@ -23,7 +23,7 @@ import com.app.docmgr.model.User;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 18:40:05
  */
 
 	/**
@@ -66,8 +66,7 @@ public class UserServiceBase {
 			Hibernate.initialize(user.getPosition());			
 			Hibernate.initialize(user.getStatus());			
 			Hibernate.initialize(user.getOrganization());			
-			Hibernate.initialize(user.getSecurityLevel());	              
-		    Hibernate.initialize(user.getFavoriteTopics());        		
+			Hibernate.initialize(user.getSecurityLevel());			
 
 		} catch (ObjectNotFoundException onfe) {
 			System.out.println("ObjectNotFoundException: " + this.getClass().getName() + ".get(Long id) \n" + onfe.getMessage());
@@ -108,8 +107,7 @@ public class UserServiceBase {
 				Hibernate.initialize(user.getPosition());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
-				Hibernate.initialize(user.getSecurityLevel());	              
-			    Hibernate.initialize(user.getFavoriteTopics());     		
+				Hibernate.initialize(user.getSecurityLevel());			
 			}
 			return user;
 		} catch (HibernateException e) {
@@ -313,9 +311,7 @@ public class UserServiceBase {
 				Hibernate.initialize(user.getPosition());			
 				Hibernate.initialize(user.getStatus());			
 				Hibernate.initialize(user.getOrganization());			
-				Hibernate.initialize(user.getSecurityLevel());	              
-			    Hibernate.initialize(user.getFavoriteTopics());     
-				
+				Hibernate.initialize(user.getSecurityLevel());			
 			}			
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getPartialList() \n" + he.getMessage());
@@ -359,8 +355,7 @@ public class UserServiceBase {
 			    Hibernate.initialize(user.getPosition());                    
 			    Hibernate.initialize(user.getStatus());                    
 			    Hibernate.initialize(user.getOrganization());                    
-			    Hibernate.initialize(user.getSecurityLevel());                   
-			    Hibernate.initialize(user.getFavoriteTopics());                     
+			    Hibernate.initialize(user.getSecurityLevel());                    
 			}                       
 		} catch(HibernateException he) {
 			System.out.println("HibernateException: " + this.getClass().getName() + ".getListAll() \n" + he.getMessage());

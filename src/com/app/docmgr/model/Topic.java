@@ -27,6 +27,8 @@ public class Topic  implements java.io.Serializable {
      private String filterCode;
      private Forum forum;
      private Set subscribers;
+     private Message latestMessage;
+     private String mostPostedBy;
 
 
     // Constructors
@@ -53,7 +55,7 @@ public class Topic  implements java.io.Serializable {
     	return 31*id.hashCode();
     	//return super.hashCode();
     }
-    
+
 
     // Property accessors
 
@@ -222,7 +224,27 @@ public class Topic  implements java.io.Serializable {
         this.subscribers = subscribers;
     }
 
+    /**
+     * 
+     */
+    public Message getLatestMessage() {
+        return this.latestMessage;
+    }
+    
+    public void setLatestMessage(Message latestMessage) {
+        this.latestMessage = latestMessage;
+    }
 
+    /**
+     * 
+     */
+    public String getMostPostedBy() {
+        return this.mostPostedBy;
+    }
+    
+    public void setMostPostedBy(String mostPostedBy) {
+        this.mostPostedBy = mostPostedBy;
+    }
 
 
 }

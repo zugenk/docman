@@ -18,7 +18,7 @@ import com.app.module.basic.BaseUtil;
 import com.app.module.basic.DBQueryManager;
 import com.app.shared.PartialList;
 import com.mongodb.util.JSON;
-
+import com.simas.webservice.Utility;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
@@ -112,9 +112,9 @@ public class DocumentManager extends BaseUtil {
 		obj.setCreatedDate(new Date());
 		obj.setLastUpdatedBy(obj.getCreatedBy());
 		obj.setLastUpdatedDate(obj.getCreatedDate());
-		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		obj.setStatus(StatusService.getInstance().getByTypeandCode("Document", "new"));
 		obj.setOwner(UserService.getInstance().get(passport.getLong("userId")));
+		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_CREATE, null, toDocument(obj));
 		checkValidity(obj, errors);
 		if(!errors.isEmpty()) throw new Exception(listToString(errors));
 		if(nvl(obj.getDocumentVersion())) obj.setDocumentVersion("1.0.0");
@@ -123,7 +123,7 @@ public class DocumentManager extends BaseUtil {
 	}
 	
 	public static org.bson.Document update(org.bson.Document passport,Map data,String objId) throws Exception{
-		//log.debug("Create Document :/n/r"+Utility.debug(data));
+		log.debug("Updating obj["+objId+" "+passport.getString("loginName"));
 		List<String> errors=new LinkedList<String>();
 		long uid=Long.parseLong(objId);
 		Document obj= DocumentService.getInstance().get(uid);
@@ -164,11 +164,9 @@ public class DocumentManager extends BaseUtil {
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new org.bson.Document("modelClass","Document"));
 		String filterParam=null;
 		String orderParam=null;
-		int start=defaulStart;
 		String mode=null;
 		if(data!=null && !data.isEmpty()) {
 			mode=(String)data.get("mode");
-			start= toInt(data.get("start"),defaulStart);
 			Map filterMap= (Map) data.get("filter");
 			if (filterMap!=null && !filterMap.isEmpty()) {
 				StringBuffer filterBuff=new StringBuffer("");
@@ -190,40 +188,37 @@ public class DocumentManager extends BaseUtil {
 		}
 		if("ALL".equals(mode)){
 			List result=DocumentService.getInstance().getListAll((filterParam!=null?filterParam.toString():null), orderParam);
-			toSimpleDocList(result);
+			toDocList(result);
 			return result;
 		}
 		if("NOPAGE".equals(mode)){
 			List result=DocumentService.getInstance().getList((filterParam!=null?filterParam.toString():null), orderParam);
-			toSimpleDocList(result);
+			toDocList(result);
 			return result;
 		}	
-		PartialList result=DocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, start, ITEM_PER_PAGE);
-		toSimpleDocList(result);
+		PartialList result=DocumentService.getInstance().getPartialList((filterParam!=null?filterParam.toString():null), orderParam, toInt(data.get("start"),defaulStart), toInt(data.get("pageSize"),ITEM_PER_PAGE));
+		toDocList(result);
 		return result;
 	}
 	
-	public static PartialList myList(org.bson.Document passport,String start) throws Exception{
+	public static PartialList myList(org.bson.Document passport,String start,String pageSize) throws Exception{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, "myList", new org.bson.Document("modelClass","Document"));
 		//return ownBy(passport, passport.getLong("userId"),start);
-		PartialList result=ownBy(passport.getLong("userId"), toInt(start,defaulStart));
-		toSimpleDocList(result);
+		PartialList result=ownBy(passport.getLong("userId"), toInt(start,defaulStart),toInt(pageSize,ITEM_PER_PAGE));
+		toDocList(result);
 		return result;
 	}
 	
-	public static PartialList ownBy(org.bson.Document passport,long userId,String start) throws Exception{
+	public static PartialList ownBy(org.bson.Document passport,long userId,String start,String pageSize) throws Exception{
 		ACLManager.isAuthorize(passport,ACL_MODE, ACLManager.ACTION_LIST, null, new org.bson.Document("modelClass","Document"));
-		PartialList result=ownBy(userId, toInt(start,defaulStart));
-		toSimpleDocList(result);
+		PartialList result=ownBy(userId, toInt(start,defaulStart),toInt(pageSize,ITEM_PER_PAGE));
+		toDocList(result);
 		return result;
 	}
-	public static PartialList ownBy(long userId,int start) throws Exception{
+	public static PartialList ownBy(long userId,int start,int pageSize) throws Exception{
 		String filterParam=" AND document.owner.id='"+userId+"' ";
 		String orderParam=" document.contentType ASC, document.name ASC ";
-//		PartialList result=DocumentService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
-//		toDocList(result);
-//		return result;
-		return DocumentService.getInstance().getPartialList(filterParam, orderParam, start, ITEM_PER_PAGE);
+		return DocumentService.getInstance().getPartialList(filterParam, orderParam, start, pageSize);
 	}
 	
 	public static org.bson.Document getByRepoId(org.bson.Document passport, String fileId) throws Exception{
@@ -292,6 +287,7 @@ public class DocumentManager extends BaseUtil {
 	}
 	
 	private static String updateVersion(String curVersion){	
+		if(curVersion==null) return "1.0.0";
 		String[] vArr=curVersion.split("\\.");
 		int level=vArr.length;
 		boolean kick=false;int x;
@@ -313,6 +309,7 @@ public class DocumentManager extends BaseUtil {
 	private static void updateFromMap(Document obj, Map data,List<String> errors) throws Exception{
 		obj.setContentType((String) data.get("contentType"));
 		obj.setDescription((String) data.get("description"));
+		obj.setTag((String) data.get("tag"));
 		obj.setDocumentNumber(toString(data.get("documentNumber")));
 		//obj.setDocumentVersion(toString(data.get("documentVersion")));
 		obj.setName((String) data.get("name"));
@@ -349,9 +346,13 @@ public class DocumentManager extends BaseUtil {
 		org.bson.Document doc=new org.bson.Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		doc.append("createdBy", obj.getCreatedBy());
+		doc.append("createdBy", getUserByLName(obj.getCreatedBy()));
+		doc.append("lastUpdatedBy", getUserByLName(obj.getLastUpdatedBy()));
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
 		doc.append("contentType", obj.getContentType());
 		doc.append("description", obj.getDescription());
+		doc.append("tag", obj.getTag());
 		doc.append("documentNumber", obj.getDocumentNumber());
 		doc.append("documentType", obj.getDocumentType());
 		doc.append("documentVersion", obj.getDocumentVersion());
@@ -385,7 +386,11 @@ public class DocumentManager extends BaseUtil {
 		org.bson.Document doc=new org.bson.Document();
 		doc.append("modelClass", obj.getClass().getSimpleName());
 		doc.append("id", obj.getId());
-		doc.append("createdBy", obj.getCreatedBy());
+		doc.append("createdBy", getUserByLName(obj.getCreatedBy()));
+		doc.append("lastUpdatedBy", getUserByLName(obj.getLastUpdatedBy()));
+		if(obj.getCreatedDate()!=null) doc.append("createdDate", sdf.format(obj.getCreatedDate()));
+		if(obj.getLastUpdatedDate()!=null) doc.append("lastUpdatedDate", sdf.format(obj.getLastUpdatedDate()));
+		
 //		doc.append("contentType", obj.getContentType());
 //		doc.append("description", obj.getDescription());
 //		doc.append("documentNumber", obj.getDocumentNumber());

@@ -20,7 +20,7 @@
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 12-11-2017 00:00:51
+ * @createDate 07-04-2018 21:02:14
  */
 -->
 </HEAD>
@@ -184,6 +184,14 @@
 			<td width="10">:</td>			
 			<td>
 				<html:text name="documentHistory" property="description"/>
+			</td>
+		</tr>
+
+		<tr>
+			<td width="150"><b><bean:message key="documentHistory.tag.key"/></b></td>
+			<td width="10">:</td>			
+			<td>
+				<html:text name="documentHistory" property="tag"/>
 			</td>
 		</tr>
 

@@ -27,12 +27,12 @@ import com.app.docmgr.action.base.LookupActionBase;
  * @author Martin - Digibox - WebCode Generator 1.5
  * @project Document Manager
  * @version 1.0.0
- * @createDate 03-10-2017 20:59:59
+ * @createDate 07-04-2018 18:40:05
  */
 
 public class LookupAction extends LookupActionBase{
 	private static Logger log = Logger.getLogger("com.app.docmgr.action.LookupAction");	
-    public  static final String allowableAction="list:detail:create:edit:delete:approve:reject:pending:process:close:cancel";
+    public  static final String allowableAction="list:detail:create:edit:delete:approve:activate:reject:pending:process:close:cancel:block";
 
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ActionForward forward = null;
@@ -129,17 +129,35 @@ public class LookupAction extends LookupActionBase{
 	    	}else if("process_ok".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("LOOKUP_PROCESS")) doProcessOk(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("activate_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("LOOKUP_ACTIVATE")) forward = doActivateConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("activate_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("LOOKUP_ACTIVATE")) doActivateOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("close_confirm".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("LOOKUP_CLOSE")) forward = doCloseConfirm(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("close_ok".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("LOOKUP_CLOSE")) doCloseOk(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("archive_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("LOOKUP_ARCHIVE")) forward = doArchiveConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("archive_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("LOOKUP_ARCHIVE")) doArchiveOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("remove_confirm".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("LOOKUP_REMOVE")) forward = doRemoveConfirm(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("remove_ok".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("LOOKUP_REMOVE")) doRemoveOk(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("block_confirm".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("LOOKUP_BLOCK")) forward = doBlockConfirm(mapping, form, request, response);
+	    		else 	forward = mapping.findForward("not_authorized");
+	    	}else if("block_ok".equalsIgnoreCase(action)){
+	    		if (privilegeList.contains("LOOKUP_BLOCK")) doBlockOk(mapping, form, request, response);
 	    		else 	forward = mapping.findForward("not_authorized");
 	    	}else if("cancel_confirm".equalsIgnoreCase(action)){
 	    		if (privilegeList.contains("LOOKUP_CANCEL")) forward = doCancelConfirm(mapping, form, request, response);
