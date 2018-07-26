@@ -93,13 +93,14 @@ public class NotificationController  extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/message/"+objId+"/ ="+ipassport);
+			log.trace("/v1/notification/"+objId+"/ ="+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",NotificationManager.detail(iPass, objId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/notification/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -112,13 +113,14 @@ public class NotificationController  extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/message/"+objId+"/read ="+ipassport);
+			log.trace("/v1/notification/"+objId+"/read ="+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",NotificationManager.markRead(iPass, objId));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/notification/"+objId+"/read",e);
 		}
 		return reply(response);  
 	}
@@ -129,13 +131,14 @@ public class NotificationController  extends BaseUtil{
 			@RequestHeader(value="Authorization", required = false) String basicAuth) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/message/readAll ="+ipassport);
+			log.trace("/v1/notification/readAll ="+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
-			response.put("ipassport",iPass.get("ipassport"));
+			response.put("ipassport",iPass.get("ipassport"));			
 			BaseUtil.putList(response,"result",NotificationManager.markReadAll(iPass));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/notification/readAll",e);
 		}
 		return reply(response);  
 	}
@@ -148,35 +151,77 @@ public class NotificationController  extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/message/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/notification/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", NotificationManager.list(iPass, dataMap));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/notification/list",e);
 		}
 		return reply(response);  
 	}
-
+	@RequestMapping(value = "clist",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> complexList(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@RequestBody final Map dataMap) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/notification/clist ="+ipassport+" dataMap="+Utility.debug(dataMap));
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", NotificationManager.complexList(iPass, dataMap));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/notification/clist",e);
+		}
+		return reply(response);  
+	}
 	
 	@RequestMapping(value = "myList",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> myList(
 			@RequestHeader(value="itoken", required = false) String itoken,
 			@RequestHeader(value="ipassport", required = false) String ipassport,
 			@RequestHeader(value="Authorization", required = false) String basicAuth,
-			@RequestParam(value = "start", required = false) String start) {
+			@RequestParam(value = "start", required = false) String start,
+			@RequestParam(value = "pageSize", required = false) String pageSize) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/message/myList ="+ipassport);
+			log.trace("/v1/notification/myList ="+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			log.debug(" My Notification list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", NotificationManager.listByOwner(iPass, start));
+			BaseUtil.putList(response,"result", NotificationManager.listByOwner(iPass, start,pageSize));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			log.error("Error geting Bookmark-ListByOwner",e);
+			if(unHandled(e))log.error("/v1/notification/myList",e);
+		}
+		return reply(response);  
+	}
+	
+	@RequestMapping(value = "myCList",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> myComplexList(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@RequestParam(value = "start", required = false) String start,
+			@RequestParam(value = "pageSize", required = false) String pageSize) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/notification/myCList ="+ipassport);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			log.debug(" My Notification list by "+ iPass.getString("loginName") );
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", NotificationManager.listComplexByOwner(iPass, start,pageSize));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/notification/myCList",e);
 		}
 		return reply(response);  
 	}

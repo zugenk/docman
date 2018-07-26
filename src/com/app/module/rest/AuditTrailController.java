@@ -45,6 +45,7 @@ public class AuditTrailController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			
 		}
 		return reply(response);  
 	}
@@ -111,6 +112,7 @@ public class AuditTrailController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/auditTrail/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -124,7 +126,7 @@ public class AuditTrailController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/announcement/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/auditTrail/list ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			List<String> roles= (List)iPass.get("roleNames");
 			response.put("ipassport",iPass.get("ipassport"));
@@ -133,6 +135,7 @@ public class AuditTrailController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/auditTrail/list",e);
 		}
 		return reply(response);  
 	}

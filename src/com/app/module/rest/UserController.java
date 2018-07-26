@@ -38,7 +38,7 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			
+			if(unHandled(e))log.error("/v1/user/create",e);
 		}
 		return reply(response);  
 	}
@@ -51,14 +51,25 @@ public class UserController extends BaseUtil{
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/user/syncUser ,  dataMap="+Utility.debug(dataMap));
-			response.put("result",UserManager.syncUser(dataMap));
-			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
-			response.put("ipassport",iPass.get("ipassport"));
-			return reply(response);  
+			log.trace("/v1/user/syncUser , itoken="+itoken+" & dataMap="+Utility.debug(dataMap));
+			Document iPass=null;
+			boolean notFound=false;
+			try {
+				response.put("result",UserManager.syncUser(dataMap));
+				iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+				if(iPass!=null) return reply(iPass);
+			} catch (Exception e) {
+				notFound="error.login.notFound".equals(e.getMessage());
+				if(!notFound) throw e;
+			}
+//			response.put("result",UserManager.syncUser(dataMap));
+//			iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+//			if(iPass!=null) return reply(iPass);
+			//response.put("ipassport",iPass.get("ipassport"));
+			response.put("errorMessage","error.login.syncFailed");
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			
+			if(unHandled(e))log.error("/v1/user/syncUser",e);
 		}
 		return reply(response);  
 	}
@@ -81,6 +92,7 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -101,9 +113,52 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
+	
+	@RequestMapping(value = "{ID}/block",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> block(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@PathVariable(value="ID") String objId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/user/"+objId+"/block ="+ipassport);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",UserManager.block(iPass,objId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/"+objId+"/block",e);
+		}
+		return reply(response);  
+	}
+	@RequestMapping(value = "{ID}/unblock",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> unblock(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@PathVariable(value="ID") String objId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/user/"+objId+"/unblock ="+ipassport);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",UserManager.unblock(iPass,objId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/"+objId+"/unblock",e);
+		}
+		return reply(response);  
+	}
+	
 	
 	@RequestMapping(value = "/{ID}/",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> detail(
@@ -121,6 +176,7 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -140,7 +196,7 @@ public class UserController extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			e.printStackTrace();
+			if(unHandled(e))log.error("/v1/user/list",e);
 		}
 		return reply(response);  
 	}
@@ -159,7 +215,7 @@ public class UserController extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			e.printStackTrace();
+			if(unHandled(e))log.error("/v1/user/myself",e);
 		}
 		return reply(response);  
 	}
@@ -181,6 +237,7 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/updateMe",e);
 		}
 		return reply(response);  
 	}
@@ -200,6 +257,7 @@ public class UserController extends BaseUtil{
 			return reply(response);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/chgMyPwd",e);
 		}
 		return reply(response);  
 	}*/
@@ -217,6 +275,7 @@ public class UserController extends BaseUtil{
 			return reply(response);
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/chgMyPwd",e);
 		}
 		return reply(response);  
 	}
@@ -237,6 +296,7 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/"+objId+"/rstPwd",e);
 		}
 		return reply(response);  
 	}
@@ -253,6 +313,7 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/resetPwd",e);
 		}
 		return reply(response);  
 	}
@@ -273,6 +334,7 @@ public class UserController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/resetPwd/"+loginName,e);
 		}
 		return reply(response);  
 	}
@@ -292,6 +354,7 @@ public class UserController extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/myFavTopics",e);
 		}
 		return reply(response);  
 	}
@@ -299,16 +362,18 @@ public class UserController extends BaseUtil{
 	public @ResponseBody ResponseEntity<Document> myFollTopics(
 			@RequestHeader(value="itoken", required = false) String itoken,
 			@RequestHeader(value="ipassport", required = false) String ipassport,
-			@RequestHeader(value="Authorization", required = false) String basicAuth) {
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@RequestParam(value = "start", required = false) String start) {
 		Document response=new Document();
 		try {
 			log.trace("/v1/user/myFollTopics ="+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", UserManager.myFollTopics(iPass));
+			BaseUtil.putList(response,"result", UserManager.myFollTopics(iPass,start));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/user/myFollTopics",e);
 		}
 		return reply(response);  
 	}

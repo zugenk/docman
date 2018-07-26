@@ -154,7 +154,7 @@ public class LoginHistoryController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			log.error("Error getting LoginHistory list by type ",e);
+			if(unHandled(e))log.error("Error getting LoginHistory list by type ",e);
 			e.printStackTrace();
 		}
 		return reply(response);  

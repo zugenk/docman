@@ -38,9 +38,9 @@ public class SharedDocumentController  extends BaseUtil{
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",SharedDocumentManager.create(iPass, dataMap));
 			return reply(response); 
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/sharedDocument/create",e);
 		}
 		return reply(response); 
 	}
@@ -56,13 +56,12 @@ public class SharedDocumentController  extends BaseUtil{
 		try {
 			log.trace("/v1/sharedDocument/"+objId+"/update ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",SharedDocumentManager.update(iPass, dataMap, objId));
 			return reply(response); 
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/sharedDocument/"+objId+"/update",e);
 		}
 		return reply(response); 
 	}
@@ -82,6 +81,7 @@ public class SharedDocumentController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/sharedDocument/"+objId+"/delete",e);
 		}
 		return reply(response); 
 	}
@@ -101,6 +101,7 @@ public class SharedDocumentController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/sharedDocument/"+objId+"/",e);
 		}
 		return reply(response); 
 	}
@@ -120,6 +121,7 @@ public class SharedDocumentController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/sharedDocument/list",e);
 		}
 		return reply(response); 
 	}

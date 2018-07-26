@@ -114,6 +114,7 @@ public class StatusController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/status/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -136,6 +137,7 @@ public class StatusController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/status/list",e);
 		}
 		return reply(response);  
 	}
@@ -157,6 +159,7 @@ public class StatusController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/status/list/"+type,e);
 		}
 		return reply(response);  
 	}
@@ -178,6 +181,7 @@ public class StatusController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/status/"+type+"/"+code,e);
 		}
 		return reply(response);  
 	}

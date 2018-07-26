@@ -47,6 +47,7 @@ public class LookupController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/lookup/create",e);
 		}
 		return reply(response);  
 	}
@@ -64,10 +65,11 @@ public class LookupController extends BaseUtil{
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",LookupManager.update(iPass, dataMap, objId));
-			return reply(response);  
+			return reply(response);  	
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/lookup/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -88,6 +90,7 @@ public class LookupController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/lookup/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
@@ -108,6 +111,7 @@ public class LookupController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/lookup/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -129,6 +133,7 @@ public class LookupController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/lookup/list",e);
 		}
 		return reply(response);  
 	}
@@ -149,8 +154,7 @@ public class LookupController extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			log.error("Error getting Lookup list by type ",e);
-			e.printStackTrace();
+			if(unHandled(e))log.error("/v1/lookup/list/"+type,e);
 		}
 		return reply(response);  
 	}
@@ -172,6 +176,7 @@ public class LookupController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/lookup/"+type+"/"+code,e);
 		}
 		return reply(response);  
 	}

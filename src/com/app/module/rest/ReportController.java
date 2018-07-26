@@ -58,13 +58,14 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/report/activity = "+ipassport);			
+			log.trace("/v1/report/activity = "+ipassport+" data="+Utility.debug(dataMap));			
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result",StatisticManager.getUserStatistic(iPass,dataMap));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/report/activity",e);
 		}
 		return reply(response);  
 	}
@@ -97,13 +98,34 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/report/login = "+ipassport);			
+			log.trace("/v1/report/login = "+ipassport+" data="+Utility.debug(dataMap));	
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result",StatisticManager.getLoginStat(iPass,dataMap));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/report/login",e);
+		}
+		return reply(response);  
+	}
+	
+	@RequestMapping(value = "/document",produces = "application/json", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Document> document(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@RequestBody final Map dataMap) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/report/document = "+ipassport+" data="+Utility.debug(dataMap));			
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result",StatisticManager.getDocumentStatistic(iPass,dataMap));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/report/document",e);
 		}
 		return reply(response);  
 	}

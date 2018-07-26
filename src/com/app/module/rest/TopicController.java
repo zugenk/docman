@@ -41,6 +41,7 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/create",e);
 		}
 		return reply(response);  
 	}
@@ -59,9 +60,9 @@ public class TopicController extends BaseUtil{
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.update(iPass, dataMap, objId));
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -82,6 +83,7 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
@@ -98,9 +100,9 @@ public class TopicController extends BaseUtil{
 			response.put("ipassport",iPass.get("ipassport"));
 			TopicManager.close(iPass, objId);
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/close",e);
 		}
 		return reply(response);  
 	}
@@ -119,6 +121,7 @@ public class TopicController extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/archive",e);
 		}
 		return reply(response);  
 	}
@@ -136,9 +139,9 @@ public class TopicController extends BaseUtil{
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.read(iPass, objId));
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -159,6 +162,7 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/list",e);
 		}
 		return reply(response);  
 	}
@@ -179,10 +183,31 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/follow",e);
 		}
 		return reply(response);  
 	}
 	
+	@RequestMapping(value = "{ID}/isFollowed",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> isSubscribed(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@PathVariable(value="ID") String objId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/topic/"+objId+"/isFollowed ="+ipassport);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",TopicManager.isSubscribed(iPass, objId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/isFollowed",e);
+		}
+		return reply(response);  
+	}
 	@RequestMapping(value = "{ID}/followers",produces = "application/json", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Document> getSubscriberList(
 			@RequestHeader(value="itoken", required = false) String itoken,
@@ -199,6 +224,7 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/followers",e);
 		}
 		return reply(response);  
 	}
@@ -211,7 +237,7 @@ public class TopicController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/topic/"+objId+"/unfollow ="+ipassport);
+			log.trace("/v1/topic/"+objId+"/unFollow ="+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",TopicManager.unSubscribe(iPass, objId));
@@ -219,6 +245,7 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/unFollow",e);
 		}
 		return reply(response);  
 	}
@@ -239,10 +266,30 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/like",e);
 		}
 		return reply(response);  
 	}
-	
+	@RequestMapping(value = "{ID}/isLiked",produces = "application/json", method = RequestMethod.GET	)
+	public @ResponseBody ResponseEntity<Document> isLike(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@PathVariable(value="ID") String objId) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/topic/"+objId+"/isLiked ="+ipassport);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			response.put("result",TopicManager.isLiked(iPass, objId));
+			return reply(response);  
+			
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/isLiked",e);
+		}
+		return reply(response);  
+	}
 	@RequestMapping(value = "{ID}/unLike",produces = "application/json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Document> unLike(
 			@RequestHeader(value="itoken", required = false) String itoken,
@@ -259,6 +306,7 @@ public class TopicController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/topic/"+objId+"/unLike",e);
 		}
 		return reply(response);  
 	}

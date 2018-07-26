@@ -44,6 +44,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/tree",e);
 		}
 		return reply(response);  
 	}
@@ -63,6 +64,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/"+startId+"/tree",e);
 		}
 		return reply(response);  
 	}
@@ -82,6 +84,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/"+startId+"/fullTree",e);
 		}
 		return reply(response);  
 	}
@@ -103,6 +106,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/"+startId+"/downline",e);
 		}
 		return reply(response);  
 	}
@@ -122,6 +126,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/"+startId+"/upline",e);
 		}
 		return reply(response);  
 	}
@@ -142,6 +147,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/create",e);
 		}
 		return reply(response);  
 	}
@@ -163,6 +169,7 @@ public class OrganizationController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -183,6 +190,7 @@ public class OrganizationController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
@@ -202,6 +210,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -221,6 +230,7 @@ public class OrganizationController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/organization/list",e);
 		}
 		return reply(response);  
 	}

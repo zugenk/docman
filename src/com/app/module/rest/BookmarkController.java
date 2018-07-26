@@ -44,6 +44,7 @@ public class BookmarkController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/bookmark/create",e);
 		}
 		return reply(response); 
 	}
@@ -57,7 +58,7 @@ public class BookmarkController  extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/bookmark/"+objId+"/update/="+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/bookmark/"+objId+"/update ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",BookmarkManager.update(iPass, dataMap, objId));
@@ -65,6 +66,7 @@ public class BookmarkController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/bookmark/"+objId+"/update",e);
 		}
 		return reply(response); 
 	}
@@ -85,6 +87,7 @@ public class BookmarkController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/bookmark/"+objId+"/delete",e);
 		}
 		return new ResponseEntity<Document>(response,HttpStatus.BAD_REQUEST);
 	}
@@ -106,6 +109,7 @@ public class BookmarkController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/bookmark/"+objId+"/",e);
 		}
 		return reply(response);//return reply(response); 
 	}
@@ -127,6 +131,7 @@ public class BookmarkController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/bookmark/list",e);
 		}
 		return reply(response); 
 	}
@@ -136,18 +141,43 @@ public class BookmarkController  extends BaseUtil{
 			@RequestHeader(value="itoken", required = false) String itoken,
 			@RequestHeader(value="ipassport", required = false) String ipassport,
 			@RequestHeader(value="Authorization", required = false) String basicAuth,
-			@RequestParam(value = "start", required = false) String start) {
+			@RequestParam(value = "category", required = false) String category,
+			@RequestParam(value = "orderBy", required = false) String orderBy,
+			@RequestParam(value = "start", required = false) String start,
+			@RequestParam(value = "pageSize", required = false) String pageSize) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/bookmark/myList="+ipassport+" start="+start);
+			log.trace("/v1/bookmark/myList="+ipassport+" category="+category+" start="+start);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			log.debug(" My Bookmark list by "+ iPass.getString("loginName") );
 			response.put("ipassport",iPass.get("ipassport"));
-			BaseUtil.putList(response,"result", BookmarkManager.listByOwner(iPass,start));
+			BaseUtil.putList(response,"result", BookmarkManager.listByOwner(iPass,category,orderBy,start,pageSize));
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			log.error("Error geting Bookmark-ListByOwner",e);
+			if(unHandled(e))log.error("/v1/bookmark/myList",e);
+			//if(unHandled(e))log.error("Error geting Bookmark-ListByOwner",e);
+		}
+		return reply(response); 
+	}
+	
+	@RequestMapping(value = "myCategories",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> myCategories(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/bookmark/myCategories="+ipassport);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			log.debug(" My Bookmark list by "+ iPass.getString("loginName") );
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", BookmarkManager.getMyCategories(iPass));
+			return reply(response); 
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/bookmark/myCategories",e);
+			//if(unHandled(e))log.error("Error geting Bookmark-ListByOwner",e);
 		}
 		return reply(response); 
 	}

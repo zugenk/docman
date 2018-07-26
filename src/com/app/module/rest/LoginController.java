@@ -20,6 +20,8 @@ import com.app.module.basic.BaseUtil;
 import com.app.module.basic.LoginManager;
 import com.app.module.basic.PassportManager;
 import com.app.shared.ApplicationFactory;
+import com.app.shared.DbEncryptionUtility;
+import com.simas.webservice.Utility;
 
 @Controller
 @RequestMapping("/v1")
@@ -33,6 +35,7 @@ public class LoginController  extends BaseUtil{
 			@RequestHeader(value="Authorization", required = false) String basicAuth) {
 		Document response=new Document();
 		try {
+			log.trace("/v1/action/login = "+itoken+":"+ipassport+":"+basicAuth);
 			Document iPass=LoginManager.authenticate(itoken,ipassport,basicAuth); 
 			if(iPass==null)	{
 				response.put("errorMessage", "error.authentication.failed");
@@ -41,11 +44,33 @@ public class LoginController  extends BaseUtil{
 			}
 			
 		} catch (Exception e) {	
-	//		e.printStackTrace();
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("action/login",e);
 		}
 		return reply(response);
 	}																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												
+	
+	@RequestMapping(value = "utility/encryptDb",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> encryptDb(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/utility/encryptDb = "+itoken+":"+ipassport+":"+basicAuth);
+			Document iPass=LoginManager.authenticate(itoken,ipassport,basicAuth); 
+			if(iPass==null)	{
+				response.put("errorMessage", "error.authentication.failed");
+			} else {
+				return reply(DbEncryptionUtility.encryptDb(iPass));
+			}
+			
+		} catch (Exception e) {	
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("action/login",e);
+		}
+		return reply(response);
+	}
 	
 	
 }

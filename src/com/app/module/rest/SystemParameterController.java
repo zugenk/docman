@@ -47,6 +47,7 @@ public class SystemParameterController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/systemParameter/create",e);
 		}
 		return reply(response);  
 	}
@@ -68,6 +69,7 @@ public class SystemParameterController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/systemParameter/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -88,6 +90,7 @@ public class SystemParameterController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/systemParameter/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
@@ -108,6 +111,7 @@ public class SystemParameterController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/systemParameter/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -129,6 +133,7 @@ public class SystemParameterController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/systemParameter/list",e);
 		}
 		return reply(response);  
 	}
@@ -145,17 +150,11 @@ public class SystemParameterController extends BaseUtil{
 			log.trace("/v1/systemParameter/list/"+vgroup+" ="+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
-	/*		List result=SystemParameterService.getInstance().findbyType(type);
-			//System.out.println(Utility.debug(result));
-			SystemParameterManager.toDocList(result);
-			BaseUtil.putList(response,"result", result); */
 			BaseUtil.putList(response,"result", SystemParameterManager.listByVgroup(iPass, vgroup));
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			log.error("Error getting SystemParameter list by type ",e);
-			e.printStackTrace();
+			if(unHandled(e))log.error("/v1/systemParameter/list/"+vgroup,e);
 		}
 		return reply(response);  
 	}
@@ -174,9 +173,9 @@ public class SystemParameterController extends BaseUtil{
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",SystemParameterManager.getByVgroupAndParameter(iPass,vgroup, parameter));
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/systemParameter/"+vgroup+"/"+parameter,e);
 		}
 		return reply(response);  
 	}

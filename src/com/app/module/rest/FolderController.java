@@ -40,6 +40,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/tree",e);
 		}
 		return reply(response);  
 	}
@@ -59,6 +60,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/"+startId+"/tree",e);
 		}
 		return reply(response);  
 	}
@@ -78,6 +80,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/"+startId+"/fullTree",e);
 		}
 		return reply(response);  
 	}
@@ -98,6 +101,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/"+startId+"/downline",e);
 		}
 		return reply(response);  
 	}
@@ -117,6 +121,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/"+startId+"/upline",e);
 		}
 		return reply(response);  
 	}
@@ -129,14 +134,14 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/document/create = "+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/folder/create = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.create(iPass, dataMap));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			
+			if(unHandled(e))log.error("/v1/folder/create",e);
 		}
 		return reply(response);  
 	}
@@ -150,14 +155,14 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/document/"+objId+"/update = "+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/folder/"+objId+"/update = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",FolderManager.update(iPass, dataMap, objId));
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -170,7 +175,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/document/"+objId+"/delete = "+ipassport);
+			log.trace("/v1/folder/"+objId+"/delete = "+ipassport);
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			FolderManager.delete(iPass, objId);
@@ -178,6 +183,7 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
@@ -187,18 +193,18 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestHeader(value="itoken", required = false) String itoken,
 			@RequestHeader(value="ipassport", required = false) String ipassport,
 			@RequestHeader(value="Authorization", required = false) String basicAuth,
-			@PathVariable(value="ID") String folderId) {
+			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
-			log.debug("Detail Folder id["+folderId+"]  by "+iPass.getString("loginName") );
+			log.debug("Detail Folder id["+objId+"]  by "+iPass.getString("loginName") );
 			
 			response.put("ipassport",iPass.get("ipassport"));
-			response.put("result",FolderManager.read(iPass, folderId));
+			response.put("result",FolderManager.read(iPass, objId));
 			return reply(response);  
-			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/folder/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -211,16 +217,15 @@ private org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(this.get
 			@RequestBody final Map dataMap) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/document/list = "+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/folder/list = "+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			log.debug("List Folder by "+iPass.getString("loginName") );
-//			
 			response.put("ipassport",iPass.get("ipassport"));
 			BaseUtil.putList(response,"result", FolderManager.list(iPass, dataMap));
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
-			e.printStackTrace();
+			if(unHandled(e))log.error("/v1/folder/list",e);
 		}
 		return reply(response);  
 	}

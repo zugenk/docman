@@ -45,10 +45,9 @@ public class AnnouncementController extends BaseUtil{
             RedirectAttributes redirectAttributes) {
 		Document response=new Document();
 		try {
-			System.out.println("data=["+data);
 			Gson gson = new Gson();
 			Document dataMap=gson.fromJson(data,Document.class);
-			System.out.println("DataMap="+Utility.debug(dataMap));
+			log.trace("/v1/announcement/create ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			List<File> attachments=new LinkedList<File>();
 			if(files!=null && files.length>0) {
 				File f; String fname; MultipartFile mf;
@@ -56,7 +55,6 @@ public class AnnouncementController extends BaseUtil{
 					if(!files[i].isEmpty()){
 						mf=files[i];
 						fname=mf.getOriginalFilename();
-						System.out.println(files[i].getOriginalFilename());
 						response.append("attachment_"+i, files[i].getOriginalFilename());
 						f=File.createTempFile(TEMP_FILE_PREFIX, fname);
 						Files.write(Paths.get(f.getAbsolutePath()), mf.getBytes());
@@ -64,14 +62,13 @@ public class AnnouncementController extends BaseUtil{
 					}
 				}
 			}
-			log.trace("/v1/announcement/create ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",AnnouncementManager.create(iPass, dataMap,attachments));
 			return reply(response); 
 		} catch (Exception e) {
-			e.printStackTrace();
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/announcement/create",e);
 		}
 		return reply(response);  
 	}
@@ -85,7 +82,7 @@ public class AnnouncementController extends BaseUtil{
 			@PathVariable(value="ID") String objId) {
 		Document response=new Document();
 		try {
-			log.trace("/v1/announcement/"+objId+"/update/="+ipassport+" dataMap="+Utility.debug(dataMap));
+			log.trace("/v1/announcement/"+objId+"/update ="+ipassport+" dataMap="+Utility.debug(dataMap));
 			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
 			response.put("ipassport",iPass.get("ipassport"));
 			response.put("result",AnnouncementManager.update(iPass, dataMap, objId));
@@ -93,6 +90,7 @@ public class AnnouncementController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/announcement/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -113,6 +111,7 @@ public class AnnouncementController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/announcement/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
@@ -133,6 +132,7 @@ public class AnnouncementController extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/announcement/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -152,6 +152,7 @@ public class AnnouncementController extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/announcement/list",e);
 		}
 		return reply(response);  
 	}

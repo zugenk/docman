@@ -39,6 +39,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/tree",e);
 		}
 		return reply(response); 
 	} */
@@ -58,6 +59,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/"+startId+"/tree",e);
 		}
 		return reply(response); 
 	}
@@ -77,6 +79,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/"+startId+"/fullTree",e);
 		}
 		return reply(response); 
 	}
@@ -97,6 +100,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/"+startId+"/downline",e);
 		}
 		return reply(response); 
 	}
@@ -116,6 +120,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response); 
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/"+startId+"/upline",e);
 		}
 		return reply(response); 
 	}
@@ -136,6 +141,7 @@ public class MessageController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/create",e);
 		}
 		return reply(response);  
 	}
@@ -157,6 +163,7 @@ public class MessageController  extends BaseUtil{
 			
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/"+objId+"/update",e);
 		}
 		return reply(response);  
 	}
@@ -176,6 +183,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/"+objId+"/delete",e);
 		}
 		return reply(response);  
 	}
@@ -195,6 +203,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/"+objId+"/",e);
 		}
 		return reply(response);  
 	}
@@ -214,6 +223,7 @@ public class MessageController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/list",e);
 		}
 		return reply(response);  
 	}
@@ -234,6 +244,28 @@ public class MessageController  extends BaseUtil{
 			return reply(response);  
 		} catch (Exception e) {
 			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/list/"+topicId,e);
+		}
+		return reply(response);  
+	}
+	
+	@RequestMapping(value = "tree/{topicId}",produces = "application/json", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Document> treeByTopic(
+			@RequestHeader(value="itoken", required = false) String itoken,
+			@RequestHeader(value="ipassport", required = false) String ipassport,
+			@RequestHeader(value="Authorization", required = false) String basicAuth,
+			@PathVariable(value="topicId") String topicId,
+			@RequestParam(value="start",defaultValue="1") String start) {
+		Document response=new Document();
+		try {
+			log.trace("/v1/message/list/"+topicId+"="+ipassport);
+			Document iPass=LoginManager.authenticate(itoken,ipassport, basicAuth);
+			response.put("ipassport",iPass.get("ipassport"));
+			BaseUtil.putList(response,"result", MessageManager.treeByTopic(iPass, topicId,start));
+			return reply(response);  
+		} catch (Exception e) {
+			response.put("errorMessage", e.getMessage());
+			if(unHandled(e))log.error("/v1/message/list/"+topicId,e);
 		}
 		return reply(response);  
 	}
